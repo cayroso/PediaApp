@@ -19,9 +19,9 @@ module.exports = {
     },
     entry: {
         'administrator': './ClientApp/Administrator/main.js',
-        'manager': './ClientApp/Manager/main.js',
-        'member': './ClientApp/Member/main.js',
-        //'customer': './ClientApp/Customer/main.js',
+        'driver': './ClientApp/Driver/main.js',
+        'rider': './ClientApp/Rider/main.js',
+        
     },
     output: {
         filename: '[name]-[contenthash].js',
@@ -99,42 +99,21 @@ module.exports = {
             chunks: ['administrator'],
             filename: path.resolve(__dirname, "Areas/Administrator/Pages/_Shared/_Layout.cshtml"),
             template: path.resolve(__dirname, "Areas/Administrator/Pages/_Shared/_Layout_Template.cshtml")
+        }),        
+        new HtmlWebpackPlugin({
+            inject: false,
+            scriptLoading: 'defer',
+            chunks: ['driver'],
+            filename: path.resolve(__dirname, "Areas/Driver/Pages/_Shared/_Layout.cshtml"),
+            template: path.resolve(__dirname, "Areas/Driver/Pages/_Shared/_Layout_Template.cshtml")
         }),
         new HtmlWebpackPlugin({
             inject: false,
             scriptLoading: 'defer',
-            chunks: ['manager'],
-            filename: path.resolve(__dirname, "Areas/Manager/Pages/_Shared/_Layout.cshtml"),
-            template: path.resolve(__dirname, "Areas/Manager/Pages/_Shared/_Layout_Template.cshtml")
+            chunks: ['rider'],
+            filename: path.resolve(__dirname, "Areas/Rider/Pages/_Shared/_Layout.cshtml"),
+            template: path.resolve(__dirname, "Areas/Rider/Pages/_Shared/_Layout_Template.cshtml")
         }),
-        new HtmlWebpackPlugin({
-            inject: false,
-            scriptLoading: 'defer',
-            chunks: ['member'],
-            filename: path.resolve(__dirname, "Areas/Member/Pages/_Shared/_Layout.cshtml"),
-            template: path.resolve(__dirname, "Areas/Member/Pages/_Shared/_Layout_Template.cshtml")
-        }),
-        //new HtmlWebpackPlugin({
-        //    inject: false,
-        //    scriptLoading: 'defer',
-        //    chunks: ['admin'],
-        //    filename: path.resolve(__dirname, "Areas/Admin/Pages/_Shared/_Layout.cshtml"),
-        //    template: path.resolve(__dirname, "Areas/Admin/Pages/_Shared/_Layout_Template.cshtml")
-        //}),
-        //new HtmlWebpackPlugin({
-        //    inject: false,
-        //    scriptLoading: 'defer',
-        //    chunks: ['member'],
-        //    filename: path.resolve(__dirname, "Areas/Member/Pages/_Shared/_Layout.cshtml"),
-        //    template: path.resolve(__dirname, "Areas/Member/Pages/_Shared/_Layout_Template.cshtml")
-        //}),
-        //new HtmlWebpackPlugin({
-        //    inject: false,
-        //    scriptLoading: 'defer',
-        //    chunks: ['organization'],
-        //    filename: path.resolve(__dirname, "Areas/Organization/Pages/_Shared/_Layout.cshtml"),
-        //    template: path.resolve(__dirname, "Areas/Organization/Pages/_Shared/_Layout_Template.cshtml")
-        //}),
     ],
 
     optimization: {

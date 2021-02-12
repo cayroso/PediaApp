@@ -1,7 +1,5 @@
-﻿
-using Data.App.Models.Documents;
-using Data.App.Models.FileUploads;
-using Data.App.Models.Teams;
+﻿using Data.App.Models.FileUploads;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -26,13 +24,21 @@ namespace Data.App.Models.Users
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
 
+        public double OverallRating { get; set; }
+        public double TotalRating { get; set; }
+
         public string ConcurrencyToken { get; set; } = Guid.NewGuid().ToString();
 
         public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
         public virtual ICollection<UserTask> UserTasks { get; set; } = new List<UserTask>();
-        public virtual ICollection<TeamMember> TeamMembers { get; set; } = new List<TeamMember>();
 
         //public virtual ICollection<DocumentAccessHistory> DocumentAccessHistories { get; set; } = new List<DocumentAccessHistory>();
+
+        public void CalculateRating(double newRating)
+        {
+            OverallRating = ((OverallRating * TotalRating) + newRating) / (TotalRating + 1);
+            TotalRating += newRating;
+        }
     }
 
     public static class UserExtension

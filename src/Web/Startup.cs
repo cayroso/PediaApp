@@ -58,22 +58,22 @@ namespace Web
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(ApplicationRoles.AdministratorRoleName, policy =>
+                options.AddPolicy(ApplicationRoles.PediaRoleName, policy =>
                    policy.RequireAssertion(context =>
                        context.User.HasClaim(c =>
-                       c.Type == System.Security.Claims.ClaimTypes.Role && c.Value == ApplicationRoles.AdministratorRoleName
+                       c.Type == System.Security.Claims.ClaimTypes.Role && c.Value == ApplicationRoles.PediaRoleName
                            )));
 
-                options.AddPolicy(ApplicationRoles.ManagerRoleName, policy =>
+                options.AddPolicy(ApplicationRoles.ReceptionistRoleName, policy =>
                    policy.RequireAssertion(context =>
                        context.User.HasClaim(c =>
-                       c.Type == System.Security.Claims.ClaimTypes.Role && c.Value == ApplicationRoles.ManagerRoleName
+                       c.Type == System.Security.Claims.ClaimTypes.Role && c.Value == ApplicationRoles.ReceptionistRoleName
                            )));
 
-                options.AddPolicy(ApplicationRoles.MemberRoleName, policy =>
+                options.AddPolicy(ApplicationRoles.ParentRoleName, policy =>
                    policy.RequireAssertion(context =>
                        context.User.HasClaim(c =>
-                       c.Type == System.Security.Claims.ClaimTypes.Role && c.Value == ApplicationRoles.MemberRoleName
+                       c.Type == System.Security.Claims.ClaimTypes.Role && c.Value == ApplicationRoles.ParentRoleName
                            )));
 
 
@@ -95,11 +95,9 @@ namespace Web
             })
             .AddRazorPagesOptions(opt =>
             {
-                opt.Conventions.AuthorizeAreaFolder(ApplicationRoles.AdministratorRoleName, "/", ApplicationRoles.AdministratorRoleName);
-                opt.Conventions.AuthorizeAreaFolder(ApplicationRoles.ManagerRoleName, "/", ApplicationRoles.ManagerRoleName);
-                opt.Conventions.AuthorizeAreaFolder(ApplicationRoles.MemberRoleName, "/", ApplicationRoles.MemberRoleName);
-                //opt.Conventions.AuthorizeAreaFolder(ApplicationRoles.CustomerRoleName, "/", ApplicationRoles.CustomerRoleName);
-                //opt.Conventions.AuthorizeFolder("/Customer", ApplicationRoles.CustomerRoleName);
+                opt.Conventions.AuthorizeAreaFolder(ApplicationRoles.PediaRoleName, "/", ApplicationRoles.PediaRoleName);
+                opt.Conventions.AuthorizeAreaFolder(ApplicationRoles.ReceptionistRoleName, "/", ApplicationRoles.ReceptionistRoleName);
+                opt.Conventions.AuthorizeAreaFolder(ApplicationRoles.ParentRoleName, "/", ApplicationRoles.ParentRoleName);
             });
 
 
@@ -125,6 +123,7 @@ namespace Web
             services.AddScoped<App.Services.ChatService>();
 
             services.AddTransient<ChatHub>();
+            services.AddTransient<TripHub>();
 
             StartupExtension.RegisterCQRS(services);
         }
@@ -148,13 +147,13 @@ namespace Web
                 {
                     context.Request.Path = "/administrator/";
                 }
-                else if (context.Request.Path.Value.StartsWith("/manager/"))
+                else if (context.Request.Path.Value.StartsWith("/driver/"))
                 {
-                    context.Request.Path = "/manager/";
+                    context.Request.Path = "/driver/";
                 }
-                else if (context.Request.Path.Value.StartsWith("/member/"))
+                else if (context.Request.Path.Value.StartsWith("/rider/"))
                 {
-                    context.Request.Path = "/member/";
+                    context.Request.Path = "/rider/";
                 }
 
 
@@ -180,6 +179,7 @@ namespace Web
                 endpoints.MapControllers();
 
                 endpoints.MapHub<ChatHub>("/chatHub");
+                endpoints.MapHub<TripHub>("/tripHub"); 
             });
         }
     }

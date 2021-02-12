@@ -1,10 +1,10 @@
-﻿using Data.App.Models.Accounts;
+﻿
+using Data.App.Models.Appointments;
 using Data.App.Models.Calendars;
 using Data.App.Models.Chats;
-using Data.App.Models.Contacts;
-using Data.App.Models.Documents;
+using Data.App.Models.Clinics;
 using Data.App.Models.FileUploads;
-using Data.App.Models.Teams;
+using Data.App.Models.Parents;
 using Data.App.Models.Users;
 using Data.Identity.Models;
 using Data.Identity.Models.Users;
@@ -65,7 +65,6 @@ namespace Data.App.DbContext
 
         private readonly IConfiguration _configuration;
 
-        public DbSet<Account> Accounts { get; set; }
 
         public DbSet<Calendar> Calendars { get; set; }
 
@@ -73,17 +72,10 @@ namespace Data.App.DbContext
         public DbSet<ChatMessage> ChatMessages { get; set; }
         public DbSet<ChatReceiver> ChatReceivers { get; set; }
 
-        public DbSet<Contact> Contacts { get; set; }
-        public DbSet<ContactAttachment> ContactAttachments { get; set; }
-
-        public DbSet<Document> Documents { get; set; }
 
         public DbSet<FileUpload> FileUploads { get; set; }
 
-
-        public DbSet<Team> Teams { get; set; }
-        public DbSet<TeamMember> TeamMembers { get; set; }
-
+        public DbSet<Clinic> Pharmacies { get; set; }
 
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
@@ -128,45 +120,36 @@ namespace Data.App.DbContext
         {
             base.OnModelCreating(builder);
 
-            CreateAccounts(builder);
+            CreateAppointments(builder);
 
             CreateCalendar(builder);
 
             CreateChats(builder);
 
-            CreateContacts(builder);
-
-            CreateDocuments(builder);
+            CreateClinics(builder);
 
             CreateFileUploads(builder);
 
-            CreateTeams(builder);
+            CreateParents(builder);
 
             CreateUser(builder);
         }
 
-        void CreateAccounts(ModelBuilder builder)
+        void CreateAppointments(ModelBuilder builder)
         {
-            builder.Entity<Account>(b =>
+            builder.Entity<Appointment>(b =>
             {
-                b.ToTable("Account");
-                b.HasKey(e => e.AccountId);
+                b.ToTable("Appointment");
+                b.HasKey(e => e.AppointmentId);
 
-                b.Property(e => e.AccountId).HasMaxLength(KeyMaxLength).IsRequired();
-                b.Property(e => e.CreatedById).HasMaxLength(KeyMaxLength).IsRequired();
-
+                b.Property(e => e.AppointmentId).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.ClinicId).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.ChildId).HasMaxLength(KeyMaxLength).IsRequired();
                 b.Property(e => e.ConcurrencyToken).HasMaxLength(KeyMaxLength).IsRequired();
 
-                b.OwnsOne(e => e.Address, adrss =>
-                {
-                    adrss.ToTable("Account_Address");
-
-                    adrss.WithOwner();
-                });
-
-                b.HasMany(e => e.Contacts)
-                    .WithOne(d => d.Account)
-                    .HasForeignKey(d => d.AccountId);
+                b.HasMany(e => e.MedicalEntries)
+                    .WithOne(d => d.Appointment)
+                    .HasForeignKey(f => f.AppointmentId);
             });
         }
 
@@ -235,78 +218,68 @@ namespace Data.App.DbContext
 
 
         }
-        void CreateContacts(ModelBuilder builder)
+
+        void CreateClinics(ModelBuilder builder)
         {
-            builder.Entity<Contact>(b =>
+            builder.Entity<Clinic>(b =>
             {
-                b.ToTable("Contact");
-                b.HasKey(e => e.ContactId);
+                b.ToTable("Clinic");
+                b.HasKey(e => e.ClinicId);
 
-                b.Property(e => e.ContactId).HasMaxLength(KeyMaxLength).IsRequired();
-                b.Property(e => e.AccountId).HasMaxLength(KeyMaxLength);
-                b.Property(e => e.CreatedById).HasMaxLength(KeyMaxLength);
-                b.Property(e => e.TeamId).HasMaxLength(KeyMaxLength);
-                b.Property(e => e.AssignedToId).HasMaxLength(KeyMaxLength);
-
+                b.Property(e => e.ClinicId).HasMaxLength(KeyMaxLength).IsRequired();
                 b.Property(e => e.ConcurrencyToken).HasMaxLength(KeyMaxLength).IsRequired();
 
-                //b.HasMany(e => e.Notes)
-                //    .WithOne(d => d.Contact)
-                //    .HasForeignKey(d => d.ContactId);
+                b.HasMany(e => e.Appointments)
+                    .WithOne(d => d.Clinic)
+                    .HasForeignKey(f => f.ClinicId);
 
-                b.HasMany(e => e.Attachments)
-                    .WithOne(d => d.Contact)
-                    .HasForeignKey(d => d.ContactId);
+                b.HasMany(e => e.Parents)
+                    .WithOne(d => d.Clinic)
+                    .HasForeignKey(f => f.ClinicId);
 
-                b.HasMany(e => e.Tasks)
-                    .WithOne(d => d.Contact)
-                    .HasForeignKey(d => d.ContactId);
+                b.HasMany(e => e.Staffs)
+                    .WithOne(d => d.Clinic)
+                    .HasForeignKey(f => f.ClinicId);
             });
 
-            //builder.Entity<ContactNote>(b =>
-            //{
-            //    b.ToTable("ContactNote");
-            //    b.HasKey(e => e.ContactNoteId);
-
-            //    b.Property(e => e.ContactNoteId).HasMaxLength(KeyMaxLength).IsRequired();
-            //    b.Property(e => e.ContactId).HasMaxLength(KeyMaxLength).IsRequired();
-            //    b.Property(e => e.Title).HasMaxLength(DescMaxLength).IsRequired();
-            //    b.Property(e => e.Content).HasMaxLength(NoteMaxLength).IsRequired();
-
-            //    b.Property(e => e.ConcurrencyToken).HasMaxLength(KeyMaxLength).IsRequired();
-            //});
-
-            builder.Entity<ContactAttachment>(b =>
+            builder.Entity<ClinicParent>(b =>
             {
-                b.ToTable("ContactAttachment");
-                b.HasKey(e => e.ContactAttachmentId);
+                b.ToTable("ClinicParent");
+                b.HasKey(e => e.ClinicParentId);
 
-                b.Property(e => e.ContactAttachmentId).HasMaxLength(KeyMaxLength).IsRequired();
-                b.Property(e => e.ContactId).HasMaxLength(KeyMaxLength).IsRequired();
-
-                b.Property(e => e.FileUploadId).HasMaxLength(KeyMaxLength);
-                b.Property(e => e.Title).HasMaxLength(DescMaxLength);
-                b.Property(e => e.Content).HasMaxLength(NoteMaxLength);
+                b.Property(e => e.ClinicParentId).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.ClinicId).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.ParentId).HasMaxLength(KeyMaxLength).IsRequired();
             });
-        }
 
-        void CreateDocuments(ModelBuilder builder)
-        {
-            builder.Entity<Document>(b =>
+            builder.Entity<ClinicReview>(b =>
             {
-                b.ToTable("Document");
-                b.HasKey(e => e.DocumentId);
+                b.ToTable("ClinicReview");
+                b.HasKey(e => e.ClinicReviewId);
 
-                b.Property(e => e.DocumentId).HasMaxLength(KeyMaxLength).IsRequired();
-                b.Property(e => e.UploadedById).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.ClinicReviewId).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.ClinicId).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.ParentId).HasMaxLength(KeyMaxLength).IsRequired();
+            });
 
-                b.HasOne(e => e.FileUpload).WithOne().HasForeignKey<Document>(e => e.DocumentId);
+            builder.Entity<ClinicStaff>(b =>
+            {
+                b.ToTable("ClinicStaff");
+                b.HasKey(e => e.ClinicStaffId);
 
-                b.HasMany(p => p.DocumentAccessHistories)
-                    .WithOne(d => d.Document)
-                    .HasForeignKey(d => d.DocumentId)
-                    //.OnDelete(DeleteBehavior.Restrict)
-                    ;
+                b.Property(e => e.ClinicStaffId).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.ClinicId).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.StaffId).HasMaxLength(KeyMaxLength).IsRequired();
+            });
+
+            builder.Entity<Staff>(b =>
+            {
+                b.ToTable("Staff");
+                b.HasKey(e => e.StaffId);
+
+                b.Property(e => e.StaffId).HasMaxLength(KeyMaxLength).IsRequired();
+
+                b.HasOne(e => e.User).WithOne().HasForeignKey<Staff>(fk => fk.StaffId);
             });
         }
 
@@ -327,36 +300,55 @@ namespace Data.App.DbContext
             });
         }
 
-        void CreateTeams(ModelBuilder builder)
+        void CreateParents(ModelBuilder builder)
         {
-            builder.Entity<Team>(b =>
+            builder.Entity<Parent>(b =>
             {
-                b.ToTable("Team");
-                b.HasKey(e => e.TeamId);
+                b.ToTable("Parent");
+                b.HasKey(e => e.ParentId);
 
-                b.Property(e => e.TeamId).HasMaxLength(KeyMaxLength).IsRequired();                
-                b.Property(e => e.Name).HasMaxLength(NameMaxLength);
-                b.Property(e => e.Description).HasMaxLength(DescMaxLength);
+                b.Property(e => e.ParentId).HasMaxLength(KeyMaxLength).IsRequired();
 
+                b.HasOne(e => e.User).WithOne().HasForeignKey<Parent>(fk => fk.ParentId);
+
+                b.HasMany(e => e.Children)
+                    .WithOne(d => d.Parent)
+                    .HasForeignKey(f => f.ParentId);
+
+                b.HasMany(e => e.Clinics)
+                    .WithOne(d => d.Parent)
+                    .HasForeignKey(f => f.ParentId);
+            });
+
+            builder.Entity<Child>(b =>
+            {
+                b.ToTable("Child");
+                b.HasKey(e => e.ChildId);
+
+                b.Property(e => e.ChildId).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.ParentId).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.ImageId).HasMaxLength(KeyMaxLength);
                 b.Property(e => e.ConcurrencyToken).HasMaxLength(KeyMaxLength).IsRequired();
 
-                b.HasOne(e => e.Chat).WithOne().HasForeignKey<Team>(e => e.TeamId);
+                b.HasMany(e => e.MedicalEntries)
+                    .WithOne(d => d.Child)
+                    .HasForeignKey(f => f.ChildId);
 
-                b.HasMany(e => e.Members)
-                    .WithOne(d => d.Team)
-                    .HasForeignKey(d => d.TeamId);
+                b.HasMany(e => e.Appointments)
+                    .WithOne(d => d.Child)
+                    .HasForeignKey(f => f.ChildId);
             });
 
-            builder.Entity<TeamMember>(b =>
+            builder.Entity<ChildMedicalEntry>(b =>
             {
-                b.ToTable("TeamMember");
-                b.HasKey(e => new { e.TeamId, e.MemberId });
+                b.ToTable("ChildMedicalEntry");
+                b.HasKey(e => e.ChildMedicalEntryId);
 
-                b.Property(e => e.TeamId).HasMaxLength(KeyMaxLength).IsRequired();
-                b.Property(e => e.MemberId).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.ChildMedicalEntryId).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.AppointmentId).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.ChildId).HasMaxLength(KeyMaxLength).IsRequired();                
             });
         }
-
 
         static void CreateUser(ModelBuilder builder)
         {
@@ -386,21 +378,19 @@ namespace Data.App.DbContext
 
                 b.Property(e => e.ConcurrencyToken).HasMaxLength(KeyMaxLength).IsRequired();
 
-                //b.HasMany(e => e.OrderStatusHistories)
-                //    .WithOne(d => d.User)
-                //    .HasForeignKey(d => d.UserId);
-
                 b.HasMany(e => e.UserTasks)
                     .WithOne(d => d.User)
                     .HasForeignKey(d => d.UserId);
 
-                //b.HasMany(e => e.UserRoles)
-                //    .WithOne(d => d.User)
-                //    .HasForeignKey(d => d.UserId);
+                //b.HasMany(a => a.GivenFeedbacks)
+                //    .WithOne(j => j.GivenBy)
+                //    .HasForeignKey(j => j.GivenById)
+                //    //.OnDelete(DeleteBehavior.Restrict)
+                //    ;
 
-                //b.HasMany(p => p.DocumentAccessHistories)
-                //    .WithOne(d => d.AccessedBy)
-                //    .HasForeignKey(d => d.AccessedById)
+                //b.HasMany(a => a.ReceivedFeedbacks)
+                //    .WithOne(j => j.ReceivedBy)
+                //    .HasForeignKey(j => j.ReceivedById)
                 //    //.OnDelete(DeleteBehavior.Restrict)
                 //    ;
             });
@@ -419,7 +409,6 @@ namespace Data.App.DbContext
 
                 b.Property(e => e.UserTaskId).HasMaxLength(KeyMaxLength).IsRequired();
                 b.Property(e => e.RoleId).HasMaxLength(KeyMaxLength).IsRequired();
-                b.Property(e => e.ContactId).HasMaxLength(KeyMaxLength).IsRequired();
                 b.Property(e => e.UserId).HasMaxLength(KeyMaxLength);
                 b.Property(e => e.Title).HasMaxLength(NameMaxLength).IsRequired();
                 b.Property(e => e.Description).HasMaxLength(DescMaxLength);

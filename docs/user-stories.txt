@@ -1,0 +1,48 @@
+As a Guest User,
+	I must be able to use/access the system using internet
+		Using browser in desktop, tablet, android phone and iphone
+		Able to install the mobile web app in android phones and iphones
+	I must be able to register as Pedia or Parent.
+
+As a Registered User(Pedia, Receptionist, Parent),
+    	I must be able to use/access the system using internet
+		Using browser in desktop, tablet, android phone and iphone
+		Able to install the mobile web app in android phones and iphones
+	I must be able to login/logout
+	I must be able to manage my profile 
+		Change name, contact #, and upload profile picture
+
+As as Parent,
+    	I must be able to search pedia/clinic
+    	I must be able to view details of a clinic
+		Name, address/location, contact numbers, opening days/hours
+	I must be able to add/manage my children information (name, age, gender)
+		Personal data, medical history, treatment plan etc.
+	I must be able to assign clinics that can view my children information
+    	I must be able to book an appointment for my children to a clinic.
+		Provided the parent assigned the clinic to the children.
+		Clinic will be notified and need confirmation
+    	I must be able to delete my children pending appointment(s)
+    	I must be able to cancel an accepted appointment for my children, specifying the reason.
+	I must be able to view the patient details of my children a given clinic
+		Personal data, medical history, treatment plan etc.
+
+As a Pedia or Receptionist,
+	I must be able to View Patient Records.
+		View the contact details of the Parent.
+    	I must be able to View today, new, upcoming, and overdue appointments (Dashboard)
+	I must be able to book an appointment for Patient(Child) assigned to my Clinic
+		Parent will be notified and need confirmation	
+	I must be able to cancel an accepted appointment, specifying the reason.
+	I must be able to mark an appointment as Completed
+		Parent will be notified
+
+As a Pedia of a Clinic,	
+    	I must be able to add Receptionist(s)
+	I must be able to View Patient Records
+		View the contact details of the Parent.
+		Add medical history, treatment plan etc.	
+    
+As a Receptionist of a Clinic, 
+	- see as pedia or receptionist
+	- function of this user/role is a subset of the Pedia user    

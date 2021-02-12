@@ -16,9 +16,19 @@ namespace Data.migrations.app
             modelBuilder
                 .HasAnnotation("ProductVersion", "5.0.2");
 
-            modelBuilder.Entity("Data.App.Models.Accounts.Account", b =>
+            modelBuilder.Entity("Data.App.Models.Appointments.Appointment", b =>
                 {
-                    b.Property<string>("AccountId")
+                    b.Property<string>("AppointmentId")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ChildId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ClinicId")
+                        .IsRequired()
                         .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
@@ -27,37 +37,28 @@ namespace Data.migrations.app
                         .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("CreatedById")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("DateUpdated")
+                    b.Property<DateTime>("DateEnd")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Email")
+                    b.Property<DateTime>("DateStart")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Fax")
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
 
-                    b.Property<string>("Industry")
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("TEXT");
+                    b.HasKey("AppointmentId");
 
-                    b.Property<string>("Phone")
-                        .HasColumnType("TEXT");
+                    b.HasIndex("ChildId");
 
-                    b.HasKey("AccountId");
+                    b.HasIndex("ClinicId");
 
-                    b.HasIndex("CreatedById");
-
-                    b.ToTable("Account");
+                    b.ToTable("Appointment");
                 });
 
             modelBuilder.Entity("Data.App.Models.Calendars.Calendar", b =>
@@ -201,30 +202,13 @@ namespace Data.migrations.app
                     b.ToTable("ChatReceiver");
                 });
 
-            modelBuilder.Entity("Data.App.Models.Contacts.Contact", b =>
+            modelBuilder.Entity("Data.App.Models.Clinics.Clinic", b =>
                 {
-                    b.Property<string>("ContactId")
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("AccountId")
+                    b.Property<string>("ClinicId")
                         .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Address")
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("AnnualRevenue")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("AssignedToId")
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("BusinessPhone")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Company")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ConcurrencyToken")
@@ -232,26 +216,7 @@ namespace Data.migrations.app
                         .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("CreatedById")
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
                     b.Property<DateTime>("DateCreated")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("DateOfInitialContact")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("DateUpdated")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Fax")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("FirstName")
                         .HasColumnType("TEXT");
 
                     b.Property<double>("GeoX")
@@ -260,154 +225,116 @@ namespace Data.migrations.app
                     b.Property<double>("GeoY")
                         .HasColumnType("REAL");
 
-                    b.Property<string>("HomePhone")
+                    b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Industry")
+                    b.Property<string>("OpeningHours")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("LastName")
+                    b.Property<int>("PharmacyStatus")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ClinicId");
+
+                    b.ToTable("Clinic");
+                });
+
+            modelBuilder.Entity("Data.App.Models.Clinics.ClinicParent", b =>
+                {
+                    b.Property<string>("ClinicParentId")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("MiddleName")
+                    b.Property<string>("ClinicId")
+                        .IsRequired()
+                        .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("MobilePhone")
+                    b.Property<string>("ParentId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ClinicParentId");
+
+                    b.HasIndex("ClinicId");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("ClinicParent");
+                });
+
+            modelBuilder.Entity("Data.App.Models.Clinics.ClinicReview", b =>
+                {
+                    b.Property<string>("ClinicReviewId")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ClinicId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ParentId")
+                        .IsRequired()
+                        .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Rating")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("ReferralSource")
-                        .HasColumnType("TEXT");
+                    b.HasKey("ClinicReviewId");
 
-                    b.Property<int>("Salutation")
-                        .HasColumnType("INTEGER");
+                    b.HasIndex("ClinicId");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("INTEGER");
+                    b.HasIndex("ParentId");
 
-                    b.Property<string>("TeamId")
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Website")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("ContactId");
-
-                    b.HasIndex("AccountId");
-
-                    b.HasIndex("AssignedToId");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("TeamId");
-
-                    b.ToTable("Contact");
+                    b.ToTable("ClinicReview");
                 });
 
-            modelBuilder.Entity("Data.App.Models.Contacts.ContactAttachment", b =>
+            modelBuilder.Entity("Data.App.Models.Clinics.ClinicStaff", b =>
                 {
-                    b.Property<string>("ContactAttachmentId")
+                    b.Property<string>("ClinicStaffId")
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("AttachmentType")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("ConcurrencyToken")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ContactId")
+                    b.Property<string>("ClinicId")
                         .IsRequired()
                         .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Content")
-                        .HasMaxLength(4096)
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("DateUpdated")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("FileUploadId")
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Title")
-                        .HasMaxLength(2048)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("ContactAttachmentId");
-
-                    b.HasIndex("ContactId");
-
-                    b.HasIndex("FileUploadId");
-
-                    b.ToTable("ContactAttachment");
-                });
-
-            modelBuilder.Entity("Data.App.Models.Documents.Document", b =>
-                {
-                    b.Property<string>("DocumentId")
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ConcurrencyToken")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("DateUpdated")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UploadedById")
+                    b.Property<string>("StaffId")
                         .IsRequired()
                         .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
-                    b.HasKey("DocumentId");
+                    b.HasKey("ClinicStaffId");
 
-                    b.HasIndex("UploadedById");
+                    b.HasIndex("ClinicId");
 
-                    b.ToTable("Document");
+                    b.HasIndex("StaffId");
+
+                    b.ToTable("ClinicStaff");
                 });
 
-            modelBuilder.Entity("Data.App.Models.Documents.DocumentAccessHistory", b =>
+            modelBuilder.Entity("Data.App.Models.Clinics.Staff", b =>
                 {
-                    b.Property<string>("DocumentAccessHistoryId")
+                    b.Property<string>("StaffId")
+                        .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("AccessedById")
-                        .HasColumnType("TEXT");
+                    b.HasKey("StaffId");
 
-                    b.Property<DateTime>("DateAccessed")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("DocumentId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("DocumentAccessHistoryId");
-
-                    b.HasIndex("AccessedById");
-
-                    b.HasIndex("DocumentId");
-
-                    b.ToTable("DocumentAccessHistory");
+                    b.ToTable("Staff");
                 });
 
             modelBuilder.Entity("Data.App.Models.FileUploads.FileUpload", b =>
@@ -446,9 +373,9 @@ namespace Data.migrations.app
                     b.ToTable("FileUpload");
                 });
 
-            modelBuilder.Entity("Data.App.Models.Teams.Team", b =>
+            modelBuilder.Entity("Data.App.Models.Parents.Child", b =>
                 {
-                    b.Property<string>("TeamId")
+                    b.Property<string>("ChildId")
                         .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
@@ -460,37 +387,70 @@ namespace Data.migrations.app
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("DateUpdated")
+                    b.Property<string>("FirstName")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Description")
-                        .HasMaxLength(2048)
+                    b.Property<string>("ImageId")
+                        .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
+                    b.Property<string>("LastName")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("TeamId");
+                    b.Property<string>("MiddleName")
+                        .HasColumnType("TEXT");
 
-                    b.ToTable("Team");
+                    b.Property<string>("ParentId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ChildId");
+
+                    b.HasIndex("ImageId");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("Child");
                 });
 
-            modelBuilder.Entity("Data.App.Models.Teams.TeamMember", b =>
+            modelBuilder.Entity("Data.App.Models.Parents.ChildMedicalEntry", b =>
                 {
-                    b.Property<string>("TeamId")
+                    b.Property<string>("ChildMedicalEntryId")
                         .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("MemberId")
+                    b.Property<string>("AppointmentId")
+                        .IsRequired()
                         .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
-                    b.HasKey("TeamId", "MemberId");
+                    b.Property<string>("ChildId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
 
-                    b.HasIndex("MemberId");
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("TEXT");
 
-                    b.ToTable("TeamMember");
+                    b.HasKey("ChildMedicalEntryId");
+
+                    b.HasIndex("AppointmentId");
+
+                    b.HasIndex("ChildId");
+
+                    b.ToTable("ChildMedicalEntry");
+                });
+
+            modelBuilder.Entity("Data.App.Models.Parents.Parent", b =>
+                {
+                    b.Property<string>("ParentId")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ParentId");
+
+                    b.ToTable("Parent");
                 });
 
             modelBuilder.Entity("Data.App.Models.Users.Role", b =>
@@ -541,10 +501,16 @@ namespace Data.migrations.app
                     b.Property<string>("MiddleName")
                         .HasColumnType("TEXT");
 
+                    b.Property<double>("OverallRating")
+                        .HasColumnType("REAL");
+
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasMaxLength(36)
                         .HasColumnType("TEXT");
+
+                    b.Property<double>("TotalRating")
+                        .HasColumnType("REAL");
 
                     b.HasKey("UserId");
 
@@ -573,15 +539,11 @@ namespace Data.migrations.app
             modelBuilder.Entity("Data.App.Models.Users.UserTask", b =>
                 {
                     b.Property<string>("UserTaskId")
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ConcurrencyToken")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ContactId")
                         .IsRequired()
                         .HasMaxLength(36)
                         .HasColumnType("TEXT");
@@ -623,8 +585,6 @@ namespace Data.migrations.app
                         .HasColumnType("TEXT");
 
                     b.HasKey("UserTaskId");
-
-                    b.HasIndex("ContactId");
 
                     b.HasIndex("RoleId");
 
@@ -670,69 +630,23 @@ namespace Data.migrations.app
                     b.ToTable("UserTaskItem");
                 });
 
-            modelBuilder.Entity("Data.App.Models.Accounts.Account", b =>
+            modelBuilder.Entity("Data.App.Models.Appointments.Appointment", b =>
                 {
-                    b.HasOne("Data.App.Models.Users.User", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
+                    b.HasOne("Data.App.Models.Parents.Child", "Child")
+                        .WithMany("Appointments")
+                        .HasForeignKey("ChildId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("Data.Common.Address", "Address", b1 =>
-                        {
-                            b1.Property<string>("AccountId")
-                                .HasColumnType("TEXT");
+                    b.HasOne("Data.App.Models.Clinics.Clinic", "Clinic")
+                        .WithMany("Appointments")
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                            b1.Property<string>("Barangay")
-                                .HasColumnType("TEXT");
+                    b.Navigation("Child");
 
-                            b1.Property<string>("BuildingName")
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("City")
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("Country")
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("FloorNumber")
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("HouseNumber")
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("Municipality")
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("Province")
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("Purok")
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("StreetName")
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("StreetNumber")
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("SubdivisionName")
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("ZipCode")
-                                .HasColumnType("TEXT");
-
-                            b1.HasKey("AccountId");
-
-                            b1.ToTable("Account_Address");
-
-                            b1.WithOwner()
-                                .HasForeignKey("AccountId");
-                        });
-
-                    b.Navigation("Address");
-
-                    b.Navigation("CreatedBy");
+                    b.Navigation("Clinic");
                 });
 
             modelBuilder.Entity("Data.App.Models.Chats.ChatMessage", b =>
@@ -771,112 +685,119 @@ namespace Data.migrations.app
                     b.Navigation("Receiver");
                 });
 
-            modelBuilder.Entity("Data.App.Models.Contacts.Contact", b =>
+            modelBuilder.Entity("Data.App.Models.Clinics.ClinicParent", b =>
                 {
-                    b.HasOne("Data.App.Models.Accounts.Account", "Account")
-                        .WithMany("Contacts")
-                        .HasForeignKey("AccountId");
-
-                    b.HasOne("Data.App.Models.Users.User", "AssignedTo")
-                        .WithMany()
-                        .HasForeignKey("AssignedToId");
-
-                    b.HasOne("Data.App.Models.Users.User", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
-                    b.HasOne("Data.App.Models.Teams.Team", "Team")
-                        .WithMany()
-                        .HasForeignKey("TeamId");
-
-                    b.Navigation("Account");
-
-                    b.Navigation("AssignedTo");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("Team");
-                });
-
-            modelBuilder.Entity("Data.App.Models.Contacts.ContactAttachment", b =>
-                {
-                    b.HasOne("Data.App.Models.Contacts.Contact", "Contact")
-                        .WithMany("Attachments")
-                        .HasForeignKey("ContactId")
+                    b.HasOne("Data.App.Models.Clinics.Clinic", "Clinic")
+                        .WithMany("Parents")
+                        .HasForeignKey("ClinicId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Data.App.Models.FileUploads.FileUpload", "FileUpload")
-                        .WithMany()
-                        .HasForeignKey("FileUploadId");
+                    b.HasOne("Data.App.Models.Parents.Parent", "Parent")
+                        .WithMany("Clinics")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Contact");
+                    b.Navigation("Clinic");
 
-                    b.Navigation("FileUpload");
+                    b.Navigation("Parent");
                 });
 
-            modelBuilder.Entity("Data.App.Models.Documents.Document", b =>
+            modelBuilder.Entity("Data.App.Models.Clinics.ClinicReview", b =>
                 {
-                    b.HasOne("Data.App.Models.FileUploads.FileUpload", "FileUpload")
+                    b.HasOne("Data.App.Models.Clinics.Clinic", "Clinic")
+                        .WithMany()
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Data.App.Models.Parents.Parent", "Parent")
+                        .WithMany()
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Clinic");
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("Data.App.Models.Clinics.ClinicStaff", b =>
+                {
+                    b.HasOne("Data.App.Models.Clinics.Clinic", "Clinic")
+                        .WithMany("Staffs")
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Data.App.Models.Clinics.Staff", "Staff")
+                        .WithMany()
+                        .HasForeignKey("StaffId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Clinic");
+
+                    b.Navigation("Staff");
+                });
+
+            modelBuilder.Entity("Data.App.Models.Clinics.Staff", b =>
+                {
+                    b.HasOne("Data.App.Models.Users.User", "User")
                         .WithOne()
-                        .HasForeignKey("Data.App.Models.Documents.Document", "DocumentId")
+                        .HasForeignKey("Data.App.Models.Clinics.Staff", "StaffId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Data.App.Models.Users.User", "UploadedBy")
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Data.App.Models.Parents.Child", b =>
+                {
+                    b.HasOne("Data.App.Models.FileUploads.FileUpload", "Image")
                         .WithMany()
-                        .HasForeignKey("UploadedById")
+                        .HasForeignKey("ImageId");
+
+                    b.HasOne("Data.App.Models.Parents.Parent", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("FileUpload");
+                    b.Navigation("Image");
 
-                    b.Navigation("UploadedBy");
+                    b.Navigation("Parent");
                 });
 
-            modelBuilder.Entity("Data.App.Models.Documents.DocumentAccessHistory", b =>
+            modelBuilder.Entity("Data.App.Models.Parents.ChildMedicalEntry", b =>
                 {
-                    b.HasOne("Data.App.Models.Users.User", "AccessedBy")
-                        .WithMany()
-                        .HasForeignKey("AccessedById");
+                    b.HasOne("Data.App.Models.Appointments.Appointment", "Appointment")
+                        .WithMany("MedicalEntries")
+                        .HasForeignKey("AppointmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("Data.App.Models.Documents.Document", "Document")
-                        .WithMany("DocumentAccessHistories")
-                        .HasForeignKey("DocumentId");
+                    b.HasOne("Data.App.Models.Parents.Child", "Child")
+                        .WithMany("MedicalEntries")
+                        .HasForeignKey("ChildId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("AccessedBy");
+                    b.Navigation("Appointment");
 
-                    b.Navigation("Document");
+                    b.Navigation("Child");
                 });
 
-            modelBuilder.Entity("Data.App.Models.Teams.Team", b =>
+            modelBuilder.Entity("Data.App.Models.Parents.Parent", b =>
                 {
-                    b.HasOne("Data.App.Models.Chats.Chat", "Chat")
+                    b.HasOne("Data.App.Models.Users.User", "User")
                         .WithOne()
-                        .HasForeignKey("Data.App.Models.Teams.Team", "TeamId")
+                        .HasForeignKey("Data.App.Models.Parents.Parent", "ParentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Chat");
-                });
-
-            modelBuilder.Entity("Data.App.Models.Teams.TeamMember", b =>
-                {
-                    b.HasOne("Data.App.Models.Users.User", "Member")
-                        .WithMany("TeamMembers")
-                        .HasForeignKey("MemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Data.App.Models.Teams.Team", "Team")
-                        .WithMany("Members")
-                        .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Member");
-
-                    b.Navigation("Team");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Data.App.Models.Users.User", b =>
@@ -909,12 +830,6 @@ namespace Data.migrations.app
 
             modelBuilder.Entity("Data.App.Models.Users.UserTask", b =>
                 {
-                    b.HasOne("Data.App.Models.Contacts.Contact", "Contact")
-                        .WithMany("Tasks")
-                        .HasForeignKey("ContactId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Data.App.Models.Users.Role", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId")
@@ -924,8 +839,6 @@ namespace Data.migrations.app
                     b.HasOne("Data.App.Models.Users.User", "User")
                         .WithMany("UserTasks")
                         .HasForeignKey("UserId");
-
-                    b.Navigation("Contact");
 
                     b.Navigation("Role");
 
@@ -943,9 +856,9 @@ namespace Data.migrations.app
                     b.Navigation("UserTask");
                 });
 
-            modelBuilder.Entity("Data.App.Models.Accounts.Account", b =>
+            modelBuilder.Entity("Data.App.Models.Appointments.Appointment", b =>
                 {
-                    b.Navigation("Contacts");
+                    b.Navigation("MedicalEntries");
                 });
 
             modelBuilder.Entity("Data.App.Models.Chats.Chat", b =>
@@ -955,27 +868,31 @@ namespace Data.migrations.app
                     b.Navigation("Receivers");
                 });
 
-            modelBuilder.Entity("Data.App.Models.Contacts.Contact", b =>
+            modelBuilder.Entity("Data.App.Models.Clinics.Clinic", b =>
                 {
-                    b.Navigation("Attachments");
+                    b.Navigation("Appointments");
 
-                    b.Navigation("Tasks");
+                    b.Navigation("Parents");
+
+                    b.Navigation("Staffs");
                 });
 
-            modelBuilder.Entity("Data.App.Models.Documents.Document", b =>
+            modelBuilder.Entity("Data.App.Models.Parents.Child", b =>
                 {
-                    b.Navigation("DocumentAccessHistories");
+                    b.Navigation("Appointments");
+
+                    b.Navigation("MedicalEntries");
                 });
 
-            modelBuilder.Entity("Data.App.Models.Teams.Team", b =>
+            modelBuilder.Entity("Data.App.Models.Parents.Parent", b =>
                 {
-                    b.Navigation("Members");
+                    b.Navigation("Children");
+
+                    b.Navigation("Clinics");
                 });
 
             modelBuilder.Entity("Data.App.Models.Users.User", b =>
                 {
-                    b.Navigation("TeamMembers");
-
                     b.Navigation("UserRoles");
 
                     b.Navigation("UserTasks");

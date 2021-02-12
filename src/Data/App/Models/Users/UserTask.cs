@@ -1,9 +1,9 @@
 ﻿using Common.Extensions;
-using Data.App.Models.Contacts;
 using Data.Enums;
 using Data.Identity.Models.Users;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +13,7 @@ namespace Data.App.Models.Users
 
     public class UserTask
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string UserTaskId { get; set; }
 
         public EnumTaskType Type { get; set; } = EnumTaskType.Unknown;
@@ -24,9 +25,6 @@ namespace Data.App.Models.Users
 
         public string UserId { get; set; }
         public virtual User User { get; set; }
-
-        public string ContactId { get; set; }
-        public virtual Contact Contact { get; set; }
 
         public string Title { get; set; }
         public string Description { get; set; }
