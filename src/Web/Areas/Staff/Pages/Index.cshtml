@@ -1,7 +1,7 @@
 ﻿@page
-@model Web.Areas.Parent.Pages.IndexModel
+@model Web.Areas.Staff.Pages.IndexModel
 @{
-    ViewBag.Title = "Parent";
+    ViewBag.Title = "Staff";
     var urlProfilePicture = User.FindFirst("Profile:UrlProfilePicture").Value;
 }
 <app uid="@Model.UserId" app-name="Pedia App" url-profile-picture="@urlProfilePicture"></app>

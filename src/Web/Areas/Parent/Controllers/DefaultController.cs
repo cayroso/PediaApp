@@ -12,7 +12,7 @@ using Web.Controllers;
 
 namespace Web.Areas.Parent.Controllers
 {
-    [Authorize(Policy = ApplicationRoles.PediaRoleName)]
+    [Authorize(Policy = ApplicationRoles.ParentRoleName)]
     [ApiController]
     [Route("api/parents/[controller]")]
     [Produces("application/json")]

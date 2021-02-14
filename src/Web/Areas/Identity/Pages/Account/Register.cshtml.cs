@@ -112,11 +112,23 @@ namespace Web.Areas.Identity.Pages.Account
                 var userId = Guid.NewGuid().ToString();
                 var token = Guid.NewGuid().ToString();
 
-                var userRole = new IdentityUserRole<string>
+                var userRoles = new List<IdentityUserRole<string>>();
+
+                userRoles.Add(new IdentityUserRole<string>
                 {
                     UserId = userId,
                     RoleId = Input.RoleId
-                };
+                });
+
+                if(Input.RoleId == ApplicationRoles.Pedia.Id)
+                {
+                    userRoles.Add(new IdentityUserRole<string>
+                    {
+                        UserId = userId,
+                        RoleId = ApplicationRoles.Staff.Id
+                    });
+                }
+
 
                 var user = new IdentityWebUser
                 {
@@ -137,7 +149,7 @@ namespace Web.Areas.Identity.Pages.Account
                 };
 
                 await identityWebContext.AddRangeAsync(userInfo);
-                await identityWebContext.AddRangeAsync(userRole);
+                await identityWebContext.AddRangeAsync(userRoles);
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
@@ -159,6 +171,12 @@ namespace Web.Areas.Identity.Pages.Account
 
                     if (Input.RoleId == ApplicationRoles.Pedia.Id)
                     {
+                        appUser.UserRoles.Add(new UserRole
+                        {
+                            UserId = appUser.UserId,
+                            RoleId = ApplicationRoles.Staff.Id
+                        });
+
                         var clinic = new Clinic
                         {
                             ClinicId = Guid.NewGuid().ToString(),
@@ -168,7 +186,7 @@ namespace Web.Areas.Identity.Pages.Account
                         clinic.Staffs.Add(new ClinicStaff
                         {
                             ClinicId = clinic.ClinicId,
-                            Staff = new Staff
+                            Staff = new Data.App.Models.Clinics.Staff
                             {
                                 StaffId = appUser.UserId
                             }

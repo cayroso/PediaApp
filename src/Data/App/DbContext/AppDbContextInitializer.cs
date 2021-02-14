@@ -85,17 +85,15 @@ namespace Data.App.DbContext
                 appUsers.Add(appUser);
 
                 // if Clinic
-                if (userRoles.Any(e => e.RoleId == ApplicationRoles.Pedia.Id || e.RoleId == ApplicationRoles.Receptionist.Id))
+                if (userRoles.Any(e => e.RoleId == ApplicationRoles.Pedia.Id || e.RoleId == ApplicationRoles.Staff.Id))
                 {
-                    var staff = new Staff
-                    {
-                        StaffId = appUser.UserId
-                    };
-
                     var ownerOrStaff = new ClinicStaff
                     {
                         ClinicId = clinic.ClinicId,
-                        Staff = staff
+                        Staff = new Staff
+                        {
+                            StaffId = appUser.UserId
+                        }
                     };
 
                     appDbContext.Add(ownerOrStaff);

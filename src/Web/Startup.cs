@@ -64,10 +64,10 @@ namespace Web
                        c.Type == System.Security.Claims.ClaimTypes.Role && c.Value == ApplicationRoles.PediaRoleName
                            )));
 
-                options.AddPolicy(ApplicationRoles.ReceptionistRoleName, policy =>
+                options.AddPolicy(ApplicationRoles.StaffRoleName, policy =>
                    policy.RequireAssertion(context =>
                        context.User.HasClaim(c =>
-                       c.Type == System.Security.Claims.ClaimTypes.Role && c.Value == ApplicationRoles.ReceptionistRoleName
+                       c.Type == System.Security.Claims.ClaimTypes.Role && c.Value == ApplicationRoles.StaffRoleName
                            )));
 
                 options.AddPolicy(ApplicationRoles.ParentRoleName, policy =>
@@ -96,7 +96,7 @@ namespace Web
             .AddRazorPagesOptions(opt =>
             {
                 opt.Conventions.AuthorizeAreaFolder(ApplicationRoles.PediaRoleName, "/", ApplicationRoles.PediaRoleName);
-                opt.Conventions.AuthorizeAreaFolder(ApplicationRoles.ReceptionistRoleName, "/", ApplicationRoles.ReceptionistRoleName);
+                opt.Conventions.AuthorizeAreaFolder(ApplicationRoles.StaffRoleName, "/", ApplicationRoles.StaffRoleName);
                 opt.Conventions.AuthorizeAreaFolder(ApplicationRoles.ParentRoleName, "/", ApplicationRoles.ParentRoleName);
             });
 
@@ -143,18 +143,29 @@ namespace Web
             }
             app.Use(async (context, next) =>
             {
-                if (context.Request.Path.Value.StartsWith("/administrator/"))
+                var path = context.Request.Path.Value;
+
+                ApplicationRoles.Items.ForEach(r =>
                 {
-                    context.Request.Path = "/administrator/";
-                }
-                else if (context.Request.Path.Value.StartsWith("/driver/"))
-                {
-                    context.Request.Path = "/driver/";
-                }
-                else if (context.Request.Path.Value.StartsWith("/rider/"))
-                {
-                    context.Request.Path = "/rider/";
-                }
+                    var find = $"/{r.Id}/";
+
+                    if (path.StartsWith(find))
+                    {
+                        context.Request.Path = find;
+                    }
+                });
+                //if (context.Request.Path.Value.StartsWith("/pedia/"))
+                //{
+                //    context.Request.Path = "/pedia/";
+                //}
+                //else if (context.Request.Path.Value.StartsWith("/staff/"))
+                //{
+                //    context.Request.Path = "/staff/";
+                //}
+                //else if (context.Request.Path.Value.StartsWith("/parent/"))
+                //{
+                //    context.Request.Path = "/parent/";
+                //}
 
 
                 //context.Response.ContentType = "text/html";
