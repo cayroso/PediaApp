@@ -18,5 +18,8 @@ namespace Data.App.Models.Clinics
 
         public string StaffId { get; set; }
         public virtual Staff Staff { get; set; }
+
+        public string RoleId { get; set; }
+        public virtual Role Role { get; set; }
     }
 }

@@ -85,30 +85,35 @@ namespace Data.App.DbContext
                 appUsers.Add(appUser);
 
                 // if Clinic
-                if (userRoles.Any(e => e.RoleId == ApplicationRoles.Pedia.Id || e.RoleId == ApplicationRoles.Staff.Id))
+                var staff = new Staff
                 {
-                    var ownerOrStaff = new ClinicStaff
+                    StaffId = appUser.UserId
+                };
+
+                userRoles.ForEach(ur =>
+                {
+                    if (ur.RoleId == ApplicationRoles.Pedia.Id || ur.RoleId == ApplicationRoles.Staff.Id)
                     {
-                        ClinicId = clinic.ClinicId,
-                        Staff = new Staff
+                        var ownerOrStaff = new ClinicStaff
                         {
-                            StaffId = appUser.UserId
-                        }
-                    };
+                            ClinicId = clinic.ClinicId,
+                            RoleId = ur.RoleId,
+                            Staff = staff
+                        };
 
-                    appDbContext.Add(ownerOrStaff);
-                }
-
-                // if rider
-                if (userRoles.Any(e => e.RoleId == ApplicationRoles.Parent.Id))
-                {
-                    var customer = new Parent
+                        appDbContext.Add(ownerOrStaff);
+                    }
+                    if (ur.RoleId == ApplicationRoles.Parent.Id)
                     {
-                        ParentId = appUser.UserId,
-                    };
+                        var customer = new Parent
+                        {
+                            ParentId = appUser.UserId,
+                        };
 
-                    appDbContext.Add(customer);
-                }
+                        appDbContext.Add(customer);
+                    }
+                });
+
             });
 
             appDbContext.AddRange(appUsers);

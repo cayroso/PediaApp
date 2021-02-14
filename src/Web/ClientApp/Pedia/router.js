@@ -12,9 +12,9 @@ import teamsIndex from './Pages/Teams/index.vue';
 import teamsAdd from './Pages/Teams/add.vue';
 import teamsView from './Pages/Teams/index.vue';
 
-import usersIndex from './Pages/Users/index.vue';
-import usersAdd from './Pages/Users/add.vue';
-import usersView from './Pages/Users/view.vue';
+import clinicIndex from './Pages/Clinic/index.vue';
+//import usersAdd from './Pages/Users/add.vue';
+//import usersView from './Pages/Users/view.vue';
 
 
 //import tasksIndex from './Pages/Tasks/index.vue';
@@ -36,9 +36,9 @@ const routes = [
     { path: '/teams/add', name: "teamsAdd", component: teamsAdd },
     { path: '/teams/view/:id', name: "teamsView", component: teamsView, props: true },
 
-    { path: '/users', name: "users", component: usersIndex },
-    { path: '/users/add', name: "usersAdd", component: usersAdd },
-    { path: '/users/view/:id', name: "usersView", component: usersView, props: true },
+    { path: '/clinic', name: "clinicIndex", component: clinicIndex },
+    //{ path: '/users/add', name: "usersAdd", component: usersAdd },
+    //{ path: '/users/view/:id', name: "usersView", component: usersView, props: true },
 
     //{ path: '/tasks', name: "tasks", component: tasksIndex },
 

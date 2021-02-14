@@ -10,12 +10,13 @@ import contactsIndex from './Pages/Contacts/index.vue';
 import contactsAdd from './Pages/Contacts/add.vue';
 import contactsView from './Pages/Contacts/View/index.vue';
 
-import documentsIndex from './Pages/Documents/index.vue';
-import documentsAdd from './Pages/Documents/add.vue';
-import documentsView from './Pages/Documents/view.vue';
+import childrenIndex from './Pages/Children/index.vue';
+import childrenAdd from './Pages/Children/add.vue';
+import childrenView from './Pages/Children/view.vue';
 
 
-import tasksIndex from './Pages/Tasks/index.vue';
+import clinicsIndex from './Pages/Clinics/index.vue';
+import clinicsView from './Pages/Clinics/View/index.vue';
 //import tasksAdd from './Pages/Tasks/add.vue';
 //import tasksView from './Pages/Tasks/View/index.vue';
 
@@ -36,19 +37,19 @@ const routes = [
     { path: '/contacts/add', name: "contactsAdd", component: contactsAdd },
     { path: '/contacts/view/:id', name: "contactsView", component: contactsView, props: true },
 
-    { path: '/documents', name: "documents", component: documentsIndex },
-    { path: '/documents/add', name: "documentsAdd", component: documentsAdd },
-    { path: '/documents/view/:id', name: "documentsView", component: documentsView, props: true },
+    { path: '/children', name: "childrenIndex", component: childrenIndex },
+    { path: '/children/add', name: "childrenAdd", component: childrenAdd },
+    { path: '/children/view/:id', name: "childrenView", component: childrenView, props: true },
 
-    { path: '/trips', name: "trips", component: tripsIndex },
-    { path: '/trips/add', name: "tripsAdd", component: tripsAdd },
-    { path: '/trips/view/:id', name: "tripsView", component: tripsView, props: true },
+    { path: '/clinics', name: "clinicsIndex", component: clinicsIndex },
+    //{ path: '/trips/add', name: "tripsAdd", component: tripsAdd },
+    { path: '/clinics/view/:id', name: "clinicsView", component: clinicsView, props: true },
 
     { path: '*', component: NotFound },
 ];
 
 const router = new VueRouter({
-    base:'/rider',
+    base:'/parent',
     mode: "history",
     routes: routes,
 });

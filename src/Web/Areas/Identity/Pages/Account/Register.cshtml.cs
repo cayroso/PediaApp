@@ -183,14 +183,23 @@ namespace Web.Areas.Identity.Pages.Account
                             Name = $"{appUser.FirstLastName} Clinic",
                         };
 
+                        var staff = new Data.App.Models.Clinics.Staff
+                        {
+                            StaffId = appUser.UserId,
+                        };
                         clinic.Staffs.Add(new ClinicStaff
                         {
                             ClinicId = clinic.ClinicId,
-                            Staff = new Data.App.Models.Clinics.Staff
-                            {
-                                StaffId = appUser.UserId
-                            }
+                            RoleId = ApplicationRoles.Pedia.Id,
+                            Staff = staff
                         });
+                        clinic.Staffs.Add(new ClinicStaff
+                        {
+                            ClinicId = clinic.ClinicId,
+                            RoleId = ApplicationRoles.Staff.Id,
+                            Staff = staff
+                        });
+
 
                         await appDbContext.AddAsync(clinic);
                     }

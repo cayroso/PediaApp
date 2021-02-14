@@ -211,6 +211,9 @@ namespace Data.migrations.app
                     b.Property<string>("Address")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("ClinicStatus")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("ConcurrencyToken")
                         .IsRequired()
                         .HasMaxLength(36)
@@ -219,11 +222,17 @@ namespace Data.migrations.app
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Email")
+                        .HasColumnType("TEXT");
+
                     b.Property<double>("GeoX")
                         .HasColumnType("REAL");
 
                     b.Property<double>("GeoY")
                         .HasColumnType("REAL");
+
+                    b.Property<string>("MobileNumber")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
@@ -231,8 +240,8 @@ namespace Data.migrations.app
                     b.Property<string>("OpeningHours")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("PharmacyStatus")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("ClinicId");
 
@@ -312,6 +321,11 @@ namespace Data.migrations.app
                         .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("StaffId")
                         .IsRequired()
                         .HasMaxLength(36)
@@ -320,6 +334,8 @@ namespace Data.migrations.app
                     b.HasKey("ClinicStaffId");
 
                     b.HasIndex("ClinicId");
+
+                    b.HasIndex("RoleId");
 
                     b.HasIndex("StaffId");
 
@@ -731,6 +747,12 @@ namespace Data.migrations.app
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Data.App.Models.Users.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Data.App.Models.Clinics.Staff", "Staff")
                         .WithMany()
                         .HasForeignKey("StaffId")
@@ -738,6 +760,8 @@ namespace Data.migrations.app
                         .IsRequired();
 
                     b.Navigation("Clinic");
+
+                    b.Navigation("Role");
 
                     b.Navigation("Staff");
                 });

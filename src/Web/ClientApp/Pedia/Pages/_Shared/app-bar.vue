@@ -46,10 +46,10 @@
 
                         <div class="dropdown-divider"></div>
 
-                        <a href="/" class="dropdown-item">
+                        <router-link to="/clinic" class="dropdown-item">
                             <i class="fas fa-home fa-sm fa-fw mr-2"></i>
-                            Home Page
-                        </a>
+                            Clinic Info
+                        </router-link>
 
                         <div class="dropdown-divider"></div>
 
@@ -66,7 +66,7 @@
         <!--<nav-drawer :appName="appName"></nav-drawer>-->
         <notifications-drawer :notifications="notifications"></notifications-drawer>
         <messages-drawer :messages="messages"></messages-drawer>
-        <teams-drawer :uid="uid"></teams-drawer>
+        <!--<teams-drawer :uid="uid"></teams-drawer>-->
     </b-navbar>
 </template>
 <script>
@@ -76,7 +76,7 @@
 
     import NotificationsDrawer from '../../../_Common/Drawers/notifications-drawer.vue';
     import MessagesDrawer from '../../../_Common/Drawers/messages-drawer.vue';
-    import TeamsDrawer from '../../../_Common/Drawers/teams-drawer.vue';
+    //import TeamsDrawer from '../../../_Common/Drawers/teams-drawer.vue';
 
     export default {
         mixins: [navbarMixin],
@@ -93,7 +93,7 @@
             //navDrawer,
             NotificationsDrawer,
             MessagesDrawer,
-            TeamsDrawer
+            //TeamsDrawer
         }
     };
 </script>

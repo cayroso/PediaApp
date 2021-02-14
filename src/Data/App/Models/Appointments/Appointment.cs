@@ -49,4 +49,25 @@ namespace Data.App.Models.Appointments
 
         public virtual ICollection<ChildMedicalEntry> MedicalEntries { get; set; } = new List<ChildMedicalEntry>();
     }
+
+    public static class AppointmentExtension
+    {
+        public static void ThrowIfNull(this Appointment me)
+        {
+            if (me == null)
+                throw new ApplicationException("Appointment not found.");
+        }
+        public static void ThrowIfNullOrAlreadyUpdated(this Appointment me, string currentToken, string newToken)
+        {
+            me.ThrowIfNull();
+
+            if (string.IsNullOrWhiteSpace(newToken))
+                throw new ApplicationException("Anti-forgery token not found.");
+
+            if (me.ConcurrencyToken != currentToken)
+                throw new ApplicationException("Already updated by another user.");
+
+            me.ConcurrencyToken = newToken;
+        }
+    }
 }

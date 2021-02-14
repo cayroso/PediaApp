@@ -13,17 +13,17 @@ namespace Data.App.Models.Clinics
     {
         public string ClinicId { get; set; }
 
-        public EnumPharmacyStatus PharmacyStatus { get; set; }
+        public EnumClinicStatus ClinicStatus { get; set; }
+        
         public string Name { get; set; }
-
+        public string PhoneNumber { get; set; }
+        public string MobileNumber { get; set; }
+        public string Email { get; set; }
+        public string OpeningHours { get; set; }
         public string Address { get; set; }
         public double GeoX { get; set; }
-        public double GeoY { get; set; }
-        /// <summary>
-        /// Example > Hours: Mo-Fr 10am-7pm Sa 10am-22pm Su 10am-21pm
-        /// </summary>
-        public string OpeningHours { get; set; }
-
+        public double GeoY { get; set; }        
+        
         DateTime _dateCreated = DateTime.UtcNow.Truncate();
         public DateTime DateCreated
         {
@@ -38,5 +38,26 @@ namespace Data.App.Models.Clinics
         public virtual ICollection<ClinicStaff> Staffs { get; set; } = new List<ClinicStaff>();
        // public virtual ICollection<ClinicReview> Reviews { get; set; } = new List<ClinicReview>();
         //public virtual ICollection<ClinicStaff> Staffs { get; set; } = new List<ClinicStaff>();
+    }
+
+    public static class ClinicExtension
+    {
+        public static void ThrowIfNull(this Clinic me)
+        {
+            if (me == null)
+                throw new ApplicationException("Clinic not found.");
+        }
+        public static void ThrowIfNullOrAlreadyUpdated(this Clinic me, string currentToken, string newToken)
+        {
+            me.ThrowIfNull();
+
+            if (string.IsNullOrWhiteSpace(newToken))
+                throw new ApplicationException("Anti-forgery token not found.");
+
+            if (me.ConcurrencyToken != currentToken)
+                throw new ApplicationException("Already updated by another user.");
+
+            me.ConcurrencyToken = newToken;
+        }
     }
 }

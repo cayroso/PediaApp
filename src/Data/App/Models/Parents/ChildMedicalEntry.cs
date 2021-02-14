@@ -18,6 +18,11 @@ namespace Data.App.Models.Parents
         public string ChildId { get; set; }
         public virtual Child Child { get; set; }
 
+        public double Age { get; set; }
+        public double Height { get; set; }
+        public double Weight { get; set; }
+
+        public string Summary { get; set; }
 
         DateTime _dateCreated = DateTime.UtcNow.Truncate();
         public DateTime DateCreated

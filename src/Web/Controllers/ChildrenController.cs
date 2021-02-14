@@ -1,0 +1,94 @@
+﻿using App.CQRS;
+using App.CQRS.Clinics.Common.Commands.Command;
+using App.CQRS.Clinics.Common.Queries.Query;
+using App.Hubs;
+using App.Services;
+using Data.App.DbContext;
+using Data.App.Models.Chats;
+using Data.Common;
+using Data.Constants;
+using Data.Identity.DbContext;
+using Data.Providers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Web.BackgroundServices;
+using Web.Models;
+
+namespace Web.Controllers
+{
+    [Authorize]
+    [ApiController]
+    [Route("api/[controller]")]
+    [Produces("application/json")]
+    public class ChildrenController : BaseController
+    {
+        readonly IQueryHandlerDispatcher _queryHandlerDispatcher;
+        readonly ICommandHandlerDispatcher _commandHandlerDispatcher;
+        readonly AppDbContext _appDbContext;
+        readonly IHubContext<TripHub, ITripClient> _tripHubContext;
+
+        public ChildrenController(
+            IQueryHandlerDispatcher queryHandlerDispatcher,
+            ICommandHandlerDispatcher commandHandlerDispatcher,
+            AppDbContext appDbContext,
+            IHubContext<TripHub, ITripClient> tripHubContext)
+        {
+            _queryHandlerDispatcher = queryHandlerDispatcher ?? throw new ArgumentNullException(nameof(queryHandlerDispatcher));
+            _commandHandlerDispatcher = commandHandlerDispatcher ?? throw new ArgumentNullException(nameof(commandHandlerDispatcher));
+            _appDbContext = appDbContext ?? throw new ArgumentNullException(nameof(appDbContext));
+            _tripHubContext = tripHubContext ?? throw new ArgumentNullException(nameof(tripHubContext));
+        }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> Search(string c, int p, int s, string sf, int so)
+        {
+            var query = new SearchClinicQuery("", TenantId, UserId, c, p, s, sf, so);
+
+            var dto = await _queryHandlerDispatcher.HandleAsync<SearchClinicQuery, Paged<SearchClinicQuery.Clinic>>(query);
+
+            return Ok(dto);
+        }
+
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Search(string id)
+        {
+            var query = new GetClinicByIdQuery("", TenantId, UserId, id);
+
+            var dto = await _queryHandlerDispatcher.HandleAsync<GetClinicByIdQuery, GetClinicByIdQuery.Clinic>(query);
+
+            return Ok(dto);
+        }
+
+        //[HttpGet("my-clinic")]
+        //public async Task<IActionResult> Get()
+        //{
+        //    var query = new GetClinicByIdQuery("", TenantId, UserId, ClinicId);
+
+        //    var dto = await _queryHandlerDispatcher.HandleAsync<GetClinicByIdQuery, GetClinicByIdQuery.Clinic>(query);
+
+        //    return Ok(dto);
+        //}
+
+        //[HttpPut]
+        //public async Task<IActionResult> Edit([FromBody] EditClinicInfo info)
+        //{
+        //    var cmd = new EditClinicCommand("", TenantId, UserId, info.ClinicId, info.Token, info.ClinicStatus,
+        //        info.Name, info.PhoneNumber, info.MobileNumber, info.Email, info.OpeningHours,
+        //        info.Address, info.GeoX, info.GeoY);
+
+        //    await _commandHandlerDispatcher.HandleAsync(cmd);
+
+        //    return Ok();
+        //}
+    }
+}

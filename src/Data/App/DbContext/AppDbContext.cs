@@ -66,16 +66,21 @@ namespace Data.App.DbContext
         private readonly IConfiguration _configuration;
 
 
+        public DbSet<Appointment> Appointments { get; set; }
+
         public DbSet<Calendar> Calendars { get; set; }
 
         public DbSet<Chat> Chats { get; set; }
         public DbSet<ChatMessage> ChatMessages { get; set; }
         public DbSet<ChatReceiver> ChatReceivers { get; set; }
 
+        public DbSet<Clinic> Clinics { get; set; }
+        public DbSet<ClinicStaff> ClinicStaffs { get; set; }
 
         public DbSet<FileUpload> FileUploads { get; set; }
 
-        public DbSet<Clinic> Pharmacies { get; set; }
+        public DbSet<Parent> Parents { get; set; }
+        public DbSet<Child> Children { get; set; }
 
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
@@ -270,6 +275,7 @@ namespace Data.App.DbContext
                 b.Property(e => e.ClinicStaffId).HasMaxLength(KeyMaxLength).IsRequired();
                 b.Property(e => e.ClinicId).HasMaxLength(KeyMaxLength).IsRequired();
                 b.Property(e => e.StaffId).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.RoleId).HasMaxLength(KeyMaxLength).IsRequired();
             });
 
             builder.Entity<Staff>(b =>
@@ -334,9 +340,9 @@ namespace Data.App.DbContext
                     .WithOne(d => d.Child)
                     .HasForeignKey(f => f.ChildId);
 
-                b.HasMany(e => e.Appointments)
-                    .WithOne(d => d.Child)
-                    .HasForeignKey(f => f.ChildId);
+                //b.HasMany(e => e.Appointments)
+                //    .WithOne(d => d.Child)
+                //    .HasForeignKey(f => f.ChildId);
             });
 
             builder.Entity<ChildMedicalEntry>(b =>

@@ -9,6 +9,16 @@ namespace Web.Controllers
 {
     public class BaseController : ControllerBase
     {
+        protected string ClinicId
+        {
+            get
+            {
+                var storeId = User.FindFirstValue("ClinicId");
+
+                return storeId;
+            }
+        }
+
         protected string UserId
         {
             get

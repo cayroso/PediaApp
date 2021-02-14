@@ -42,10 +42,12 @@
             return {
                 menus: [
                     { to: '/', label: 'Home', icon: 'fas fa-fw fa-home' },
-                    //{ to: '/contacts', label: 'Contacts', icon: 'fas fa-fw fa-id-card' },
-                    //{ to: '/tasks', label: 'Tasks', icon: 'fas fa-fw fa-tasks' },
+                    { to: '/clinics', label: 'Clinics', icon: 'fas fa-fw fa-clinic-medical' },
+                    { to: '/appointments', label: 'Appointments', icon: 'fas fa-fw fa-calendar' },
+                    { to: '/children', label: 'Children', icon: 'fas fa-fw fa-address-book' },
+                    
+                    
                     //{ to: '/documents', label: 'Documents', icon: 'fas fa-fw fa-archive' },
-                    { to: '/trips', label: 'Trips', icon: 'fas fa-fw fa-map-marked' },
                 ]
             }
         },
