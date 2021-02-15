@@ -1,6 +1,10 @@
 ﻿<template>
     <div v-cloak>
         View Clinic
+
+        <router-link :to="{name: 'clinicsAddAppointment', params:{id: id}}">
+            Book Appointment
+        </router-link>
     </div>
 </template>
 <script>

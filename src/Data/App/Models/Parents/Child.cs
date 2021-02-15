@@ -1,5 +1,6 @@
 ﻿using Common.Extensions;
 using Data.App.Models.Appointments;
+using Data.App.Models.Clinics;
 using Data.App.Models.FileUploads;
 using Data.App.Models.Users;
 using Data.Enums;
@@ -36,7 +37,7 @@ namespace Data.App.Models.Parents
         }
 
         [NotMapped]
-        public string FirstLastName => $"{FirstName} {LastName}";
+        public string FirstLastName => $"{FirstName} {MiddleName} {LastName}";
         [NotMapped]
         public string Initials => $"{FirstName[0]}{LastName[0]}".ToUpper();
 
@@ -50,7 +51,7 @@ namespace Data.App.Models.Parents
         public string ConcurrencyToken { get; set; } = Guid.NewGuid().ToString();
 
         public virtual ICollection<ChildMedicalEntry> MedicalEntries { get; set; } = new List<ChildMedicalEntry>();
-        //public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
+        public virtual ICollection<ClinicChild> Clinics { get; set; } = new List<ClinicChild>();
     }
 
     public static class ChildExtension

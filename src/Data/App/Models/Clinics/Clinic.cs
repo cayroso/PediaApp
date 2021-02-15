@@ -34,7 +34,7 @@ namespace Data.App.Models.Clinics
         public string ConcurrencyToken { get; set; } = Guid.NewGuid().ToString();
 
         public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
-        public virtual ICollection<ClinicParent> Parents { get; set; } = new List<ClinicParent>();
+        public virtual ICollection<ClinicChild> Parents { get; set; } = new List<ClinicChild>();
         public virtual ICollection<ClinicStaff> Staffs { get; set; } = new List<ClinicStaff>();
        // public virtual ICollection<ClinicReview> Reviews { get; set; } = new List<ClinicReview>();
         //public virtual ICollection<ClinicStaff> Staffs { get; set; } = new List<ClinicStaff>();

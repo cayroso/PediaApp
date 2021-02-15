@@ -1,4 +1,6 @@
 ﻿using App.CQRS;
+using App.CQRS.Children.Common.Commands.Command;
+using App.CQRS.Children.Common.Queries.Query;
 using App.CQRS.Clinics.Common.Commands.Command;
 using App.CQRS.Clinics.Common.Queries.Query;
 using App.Hubs;
@@ -48,47 +50,66 @@ namespace Web.Controllers
             _tripHubContext = tripHubContext ?? throw new ArgumentNullException(nameof(tripHubContext));
         }
 
-        [HttpGet("search")]
-        public async Task<IActionResult> Search(string c, int p, int s, string sf, int so)
+        [HttpGet("parent/search")]
+        public async Task<IActionResult> SearchByParent(string c, int p, int s, string sf, int so)
         {
-            var query = new SearchClinicQuery("", TenantId, UserId, c, p, s, sf, so);
+            var query = new SearchChildrenByParentIdQuery("", TenantId, UserId, UserId, c, p, s, sf, so);
 
-            var dto = await _queryHandlerDispatcher.HandleAsync<SearchClinicQuery, Paged<SearchClinicQuery.Clinic>>(query);
+            var dto = await _queryHandlerDispatcher.HandleAsync<SearchChildrenByParentIdQuery, Paged<SearchChildrenByParentIdQuery.Child>>(query);
+
+            return Ok(dto);
+        }
+
+        [HttpGet("clinic/search")]
+        public async Task<IActionResult> SearchByCLinic(string c, int p, int s, string sf, int so)
+        {
+            var query = new SearchChildrenByClinicQuery("", TenantId, UserId, ClinicId, c, p, s, sf, so);
+
+            var dto = await _queryHandlerDispatcher.HandleAsync<SearchChildrenByClinicQuery, Paged<SearchChildrenByClinicQuery.Child>>(query);
 
             return Ok(dto);
         }
 
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Search(string id)
+        public async Task<IActionResult> Get(string id)
         {
-            var query = new GetClinicByIdQuery("", TenantId, UserId, id);
+            var query = new GetChildByIdQuery("", TenantId, UserId, id);
 
-            var dto = await _queryHandlerDispatcher.HandleAsync<GetClinicByIdQuery, GetClinicByIdQuery.Clinic>(query);
+            var dto = await _queryHandlerDispatcher.HandleAsync<GetChildByIdQuery, GetChildByIdQuery.Child>(query);
 
             return Ok(dto);
         }
 
-        //[HttpGet("my-clinic")]
-        //public async Task<IActionResult> Get()
-        //{
-        //    var query = new GetClinicByIdQuery("", TenantId, UserId, ClinicId);
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] AddChildInfo info)
+        {
+            var cmd = new AddChildCommand("", TenantId, UserId, GuidStr(), UserId, info.Gender, info.FirstName, info.MiddleName, info.LastName, info.DateOfBirth); ;
 
-        //    var dto = await _queryHandlerDispatcher.HandleAsync<GetClinicByIdQuery, GetClinicByIdQuery.Clinic>(query);
+            await _commandHandlerDispatcher.HandleAsync(cmd);
 
-        //    return Ok(dto);
-        //}
+            return Ok(cmd.ChildId);
+        }
 
-        //[HttpPut]
-        //public async Task<IActionResult> Edit([FromBody] EditClinicInfo info)
-        //{
-        //    var cmd = new EditClinicCommand("", TenantId, UserId, info.ClinicId, info.Token, info.ClinicStatus,
-        //        info.Name, info.PhoneNumber, info.MobileNumber, info.Email, info.OpeningHours,
-        //        info.Address, info.GeoX, info.GeoY);
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody] EditChildInfo info)
+        {
+            var cmd = new EditChildCommand("", TenantId, UserId, info.ChildId, info.Token, info.Gender, info.FirstName, info.MiddleName, info.LastName, info.DateOfBirth); ;
 
-        //    await _commandHandlerDispatcher.HandleAsync(cmd);
+            await _commandHandlerDispatcher.HandleAsync(cmd);
 
-        //    return Ok();
-        //}
+            return Ok(cmd.ChildId);
+        }
+
+        [HttpPost("medical-entry")]
+        public async Task<IActionResult> PostMedicalEntry([FromBody] AddChildMedicalEntryInfo info)
+        {
+            var cmd = new AddMedicalEntryCommand("", TenantId, UserId, info.AppointmentId, info.ChildId, info.Age, info.Height, info.Weight, info.Summary);
+
+            await _commandHandlerDispatcher.HandleAsync(cmd);
+
+            return Ok(cmd.ChildId);
+        }
+
     }
 }

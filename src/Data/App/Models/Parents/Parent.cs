@@ -15,6 +15,6 @@ namespace Data.App.Models.Parents
         public virtual User User { get; set; }
 
         public virtual ICollection<Child> Children { get; set; } = new List<Child>();
-        public virtual ICollection<ClinicParent> Clinics { get; set; } = new List<ClinicParent>();
+        
     }
 }

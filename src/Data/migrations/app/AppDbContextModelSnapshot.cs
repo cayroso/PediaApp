@@ -46,8 +46,14 @@ namespace Data.migrations.app
                     b.Property<DateTime>("DateStart")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Notes")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("Status")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("StatusReason")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("Type")
                         .HasColumnType("INTEGER");
@@ -59,6 +65,41 @@ namespace Data.migrations.app
                     b.HasIndex("ClinicId");
 
                     b.ToTable("Appointment");
+                });
+
+            modelBuilder.Entity("Data.App.Models.Appointments.AppointmentTimeline", b =>
+                {
+                    b.Property<string>("AppointmentTimelineId")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AppointmentId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateTimeline")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("AppointmentTimelineId");
+
+                    b.HasIndex("AppointmentId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AppointmentTimeline");
                 });
 
             modelBuilder.Entity("Data.App.Models.Calendars.Calendar", b =>
@@ -389,6 +430,64 @@ namespace Data.migrations.app
                     b.ToTable("FileUpload");
                 });
 
+            modelBuilder.Entity("Data.App.Models.Notifications.Notification", b =>
+                {
+                    b.Property<string>("NotificationId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateSent")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("IconClass")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("NotificationType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ReferenceId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Subject")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("NotificationId");
+
+                    b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("Data.App.Models.Notifications.NotificationReceiver", b =>
+                {
+                    b.Property<string>("NotificationReceiverId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateRead")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateReceived")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NotificationId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ReceiverId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("NotificationReceiverId");
+
+                    b.HasIndex("NotificationId");
+
+                    b.HasIndex("ReceiverId");
+
+                    b.ToTable("NotificationReceivers");
+                });
+
             modelBuilder.Entity("Data.App.Models.Parents.Child", b =>
                 {
                     b.Property<string>("ChildId")
@@ -403,8 +502,14 @@ namespace Data.migrations.app
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("FirstName")
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("Gender")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("ImageId")
                         .HasMaxLength(36)
@@ -436,6 +541,9 @@ namespace Data.migrations.app
                         .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
+                    b.Property<double>("Age")
+                        .HasColumnType("REAL");
+
                     b.Property<string>("AppointmentId")
                         .IsRequired()
                         .HasMaxLength(36)
@@ -448,6 +556,15 @@ namespace Data.migrations.app
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("TEXT");
+
+                    b.Property<double>("Height")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("Summary")
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("Weight")
+                        .HasColumnType("REAL");
 
                     b.HasKey("ChildMedicalEntryId");
 
@@ -649,7 +766,7 @@ namespace Data.migrations.app
             modelBuilder.Entity("Data.App.Models.Appointments.Appointment", b =>
                 {
                     b.HasOne("Data.App.Models.Parents.Child", "Child")
-                        .WithMany("Appointments")
+                        .WithMany()
                         .HasForeignKey("ChildId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -663,6 +780,25 @@ namespace Data.migrations.app
                     b.Navigation("Child");
 
                     b.Navigation("Clinic");
+                });
+
+            modelBuilder.Entity("Data.App.Models.Appointments.AppointmentTimeline", b =>
+                {
+                    b.HasOne("Data.App.Models.Appointments.Appointment", "Appointment")
+                        .WithMany("Timelines")
+                        .HasForeignKey("AppointmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Data.App.Models.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Appointment");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Data.App.Models.Chats.ChatMessage", b =>
@@ -777,6 +913,21 @@ namespace Data.migrations.app
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Data.App.Models.Notifications.NotificationReceiver", b =>
+                {
+                    b.HasOne("Data.App.Models.Notifications.Notification", "Notification")
+                        .WithMany("Receivers")
+                        .HasForeignKey("NotificationId");
+
+                    b.HasOne("Data.App.Models.Users.User", "Receiver")
+                        .WithMany("NotificationReceivers")
+                        .HasForeignKey("ReceiverId");
+
+                    b.Navigation("Notification");
+
+                    b.Navigation("Receiver");
+                });
+
             modelBuilder.Entity("Data.App.Models.Parents.Child", b =>
                 {
                     b.HasOne("Data.App.Models.FileUploads.FileUpload", "Image")
@@ -883,6 +1034,8 @@ namespace Data.migrations.app
             modelBuilder.Entity("Data.App.Models.Appointments.Appointment", b =>
                 {
                     b.Navigation("MedicalEntries");
+
+                    b.Navigation("Timelines");
                 });
 
             modelBuilder.Entity("Data.App.Models.Chats.Chat", b =>
@@ -901,10 +1054,13 @@ namespace Data.migrations.app
                     b.Navigation("Staffs");
                 });
 
+            modelBuilder.Entity("Data.App.Models.Notifications.Notification", b =>
+                {
+                    b.Navigation("Receivers");
+                });
+
             modelBuilder.Entity("Data.App.Models.Parents.Child", b =>
                 {
-                    b.Navigation("Appointments");
-
                     b.Navigation("MedicalEntries");
                 });
 
@@ -917,6 +1073,8 @@ namespace Data.migrations.app
 
             modelBuilder.Entity("Data.App.Models.Users.User", b =>
                 {
+                    b.Navigation("NotificationReceivers");
+
                     b.Navigation("UserRoles");
 
                     b.Navigation("UserTasks");

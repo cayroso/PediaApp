@@ -52,7 +52,7 @@ export default {
 
             await vm.connectChatHub();
 
-            await vm.connectTripHub();
+            //await vm.connectTripHub();
 
             vm.$bus.$on('event:open-chat', vm.onOpenChat);
             vm.$bus.$on('event:close-chat', vm.onCloseChat);

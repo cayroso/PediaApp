@@ -45,9 +45,7 @@
                     { to: '/clinics', label: 'Clinics', icon: 'fas fa-fw fa-clinic-medical' },
                     { to: '/appointments', label: 'Appointments', icon: 'fas fa-fw fa-calendar' },
                     { to: '/children', label: 'Children', icon: 'fas fa-fw fa-address-book' },
-                    
-                    
-                    //{ to: '/documents', label: 'Documents', icon: 'fas fa-fw fa-archive' },
+                    { to: '/calendar', label: 'Calendar', icon: 'fas fa-fw fa-calendar' },
                 ]
             }
         },

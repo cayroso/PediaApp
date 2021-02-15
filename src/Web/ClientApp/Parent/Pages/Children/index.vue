@@ -103,88 +103,53 @@
 
         <b-overlay :show="busy">
             <div class="mt-2 table-responsive shadow-sm">
-                <table-list :header="{key: 'documentId', columns:[]}" :items="filter.items" :getRowNumber="getRowNumber" :setSelected="setSelected" :isSelected="isSelected" table-css="">
+                <table-list :header="{key: 'childId', columns:[]}" :items="filter.items" :getRowNumber="getRowNumber" :setSelected="setSelected" :isSelected="isSelected" table-css="">
                     <template #header>
                         <th class="text-center">#</th>
                         <th>Name</th>
-                        <th>Filename</th>
-                        <th>Size</th>
-                        <th>Type</th>
-                        <th>Uploaded By</th>
-                        <th>Date</th>
-                        <th></th>
+                        <th>Gender</th>
+                        <th>Date of Birth</th>
                     </template>
                     <template slot="table" slot-scope="row">
                         <td v-text="getRowNumber(row.index)" class="text-center"></td>
                         <td class="text-break">
-                            {{row.item.name}}
-                            <!--<router-link :to="{name:'documentsView', params:{id:row.item.documentId}}">
-
-                            </router-link>-->
-                            <div class="small">
-                                {{row.item.description}}
-                            </div>
-                        </td>
-                        <td v-text="row.item.fileName" class="text-break"></td>
-                        <td>
-                            {{formatBytes(row.item.length)}}
-                        </td>
-                        <td v-text="row.item.contentType" class="text-break"></td>
-                        <td v-text="row.item.uploadedBy" class="text-break"></td>
-                        <td>
-                            <div class="small">
-                                Created: {{row.item.dateCreated|moment('calendar')}}
-                            </div>
-                            <div v-if="row.item.dateCreated!==row.item.dateUpdated" class="small">
-                                Updated: {{row.item.dateUpdated|moment('calendar')}}
-                            </div>
+                            <b-avatar :src="row.item.imageUrl"></b-avatar>
+                            <router-link :to="{name: 'childrenView', params:{id: row.item.childId}}">
+                                {{row.item.firstName}} {{row.item.middleName}} {{row.item.lastName}}
+                            </router-link>
                         </td>
                         <td>
-                            <a :href="row.item.url" class="btn btn-sm btn-primary">
-                                <i class="fas fa-fw fa-file-download"></i>
-                            </a>
+                            {{row.item.genderText}}
+                        </td>
+                        <td>
+                            {{row.item.dateOfBirth|moment('calendar')}}
                         </td>
                     </template>
 
                     <template slot="list" slot-scope="row">
-                        <div>
-                            <div class="form-group mb-0 row no-gutters">
-                                <label class="col-4 col-form-label">Name</label>
-                                <div class="col align-self-center">
-                                    {{row.item.name}}
-                                    <!--<router-link :to="{name:'documentsView', params:{id:row.item.documentId}}">
-
-                                    </router-link>-->
-                                    <div class="small mb-2">
-                                        {{row.item.description}}
-                                    </div>
-                                </div>
+                        <div class="form-group mb-0 row no-gutters">
+                            <div class="offset-4 col align-self-center">
+                                <b-avatar :src="row.item.imageUrl"></b-avatar>
                             </div>
-                            <div class="form-group mb-0 row no-gutters">
-                                <label class="col-4 col-form-label">Filename</label>
-                                <div class="col align-self-center">
-                                    <div class=" text-break">
-                                        <a :href="row.item.url" class="btn btn-sm btn-outline-primary mr-1">
-                                            <i class="fas fa-fw fa-file-download"></i>
-                                        </a>
-                                        {{row.item.fileName}}
-                                        <div>
-                                            {{formatBytes(row.item.length)}}
-                                        </div>
-                                    </div>
-                                </div>
+                        </div>
+                        <div class="form-group mb-0 row no-gutters">
+                            <label class="col-4 col-form-label">Name</label>
+                            <div class="col align-self-center">
+                                <router-link :to="{name: 'childrenView', params:{id: row.item.childId}}">
+                                    {{row.item.firstName}} {{row.item.middleName}} {{row.item.lastName}}
+                                </router-link>
                             </div>
-                            <div class="form-group mb-0 row no-gutters">
-                                <label class="col-4 col-form-label">Type</label>
-                                <div class="col align-self-center">
-                                    {{row.item.contentType}}
-                                </div>
+                        </div>
+                        <div class="form-group mb-0 row no-gutters">
+                            <label class="col-4 col-form-label">Gender</label>
+                            <div class="col align-self-center">
+                                {{row.item.genderText}}
                             </div>
-                            <div class="form-group mb-0 row no-gutters">
-                                <label class="col-4 col-form-label">Uploaded By</label>
-                                <div class="col align-self-center">
-                                    {{row.item.uploadedBy}}
-                                </div>
+                        </div>
+                        <div class="form-group mb-0 row no-gutters">
+                            <label class="col-4 col-form-label">Date of Brith</label>
+                            <div class="col align-self-center">
+                                {{row.item.dateOfBirth|moment('calendar')}}
                             </div>
                         </div>
                     </template>
@@ -217,9 +182,9 @@
         },
         data() {
             return {
-                baseUrl: `/api/members/documents`,
+                baseUrl: `/api/children/parent/search`,
                 filter: {
-                    cacheKey: `filter-${this.uid}/contacts`,
+                    cacheKey: `filter-${this.uid}/children/parent/search`,
                     //query: {
                     //    orderStatus: 0,
                     //    dateStart: moment().startOf('week').format('YYYY-MM-DD'),
@@ -249,17 +214,7 @@
         },
 
         methods: {
-            formatBytes(bytes, decimals = 2) {
-                if (bytes === 0) return '0 Bytes';
 
-                const k = 1024;
-                const dm = decimals < 0 ? 0 : decimals;
-                const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-
-                const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-                return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-            }
         }
     }
 </script>

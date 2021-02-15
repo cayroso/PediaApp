@@ -12,7 +12,8 @@ namespace App.CQRS.Children.Common.Queries.Handler
 {
     public sealed class ChildrenCommonQueryHandler :
         IQueryHandler<GetChildByIdQuery, GetChildByIdQuery.Child>,
-        IQueryHandler<SearchChildrenQuery, Paged<SearchChildrenQuery.Child>>
+        IQueryHandler<SearchChildrenByClinicQuery, Paged<SearchChildrenByClinicQuery.Child>>,
+        IQueryHandler<SearchChildrenByParentIdQuery, Paged<SearchChildrenByParentIdQuery.Child>>
     {
         readonly AppDbContext _appDbContext;
         public ChildrenCommonQueryHandler(AppDbContext appDbContext)
@@ -59,14 +60,17 @@ namespace App.CQRS.Children.Common.Queries.Handler
             return dto;
         }
 
-        async Task<Paged<SearchChildrenQuery.Child>> IQueryHandler<SearchChildrenQuery, Paged<SearchChildrenQuery.Child>>.HandleAsync(SearchChildrenQuery query)
+        async Task<Paged<SearchChildrenByClinicQuery.Child>> IQueryHandler<SearchChildrenByClinicQuery, Paged<SearchChildrenByClinicQuery.Child>>.HandleAsync(SearchChildrenByClinicQuery query)
         {
             var sql = from c in _appDbContext.Children.AsNoTracking()
+                      join cc in _appDbContext.ClinicChildren.AsNoTracking() on c.ChildId equals cc.ChildId
 
-                      select new SearchChildrenQuery.Child
+                      where cc.ClinicId == query.ClinicId
+
+                      select new SearchChildrenByClinicQuery.Child
                       {
                           ChildId = c.ChildId,
-                          Parent = new SearchChildrenQuery.Parent
+                          Parent = new SearchChildrenByClinicQuery.Parent
                           {
                               ParentId = c.Parent.ParentId,
                               Name = c.Parent.User.FirstLastName,
@@ -85,5 +89,35 @@ namespace App.CQRS.Children.Common.Queries.Handler
 
             return dto;
         }
+
+        async Task<Paged<SearchChildrenByParentIdQuery.Child>> IQueryHandler<SearchChildrenByParentIdQuery, Paged<SearchChildrenByParentIdQuery.Child>>.HandleAsync(SearchChildrenByParentIdQuery query)
+        {
+            var sql = from c in _appDbContext.Children.AsNoTracking()
+
+                      where c.ParentId == query.ParentId
+
+                      select new SearchChildrenByParentIdQuery.Child
+                      {
+                          ChildId = c.ChildId,
+                          Parent = new SearchChildrenByParentIdQuery.Parent
+                          {
+                              ParentId = c.Parent.ParentId,
+                              Name = c.Parent.User.FirstLastName,
+                              PhoneNumber = c.Parent.User.PhoneNumber,
+                              Email = c.Parent.User.Email,
+                          },
+                          Gender = c.Gender,
+                          ImageUrl = c.Image.Url,
+                          FirstName = c.FirstName,
+                          MiddleName = c.MiddleName,
+                          LastName = c.LastName,
+                          DateOfBirth = c.DateOfBirth,
+                      };
+
+            var dto = await sql.ToPagedItemsAsync(query.PageIndex, query.PageSize);
+
+            return dto;
+        }
+
     }
 }

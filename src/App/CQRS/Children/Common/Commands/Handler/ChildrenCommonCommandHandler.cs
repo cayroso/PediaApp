@@ -14,7 +14,9 @@ namespace App.CQRS.Children.Common.Commands.Handler
 {
     public sealed class ChildrenCommonCommandHandler :
         ICommandHandler<AddChildCommand>,
-        ICommandHandler<AddMedicalEntryCommand>
+        ICommandHandler<AddMedicalEntryCommand>,
+        ICommandHandler<EditChildCommand>
+
     {
         readonly AppDbContext _appDbContext;
         readonly ISequentialGuidGenerator _sequentialGuidGenerator;
@@ -63,6 +65,21 @@ namespace App.CQRS.Children.Common.Commands.Handler
             };
 
             await _appDbContext.AddAsync(childMedicalEntry);
+
+            await _appDbContext.SaveChangesAsync();
+        }
+
+        async Task ICommandHandler<EditChildCommand>.HandleAsync(EditChildCommand command)
+        {
+            var data = await _appDbContext.Children.FirstOrDefaultAsync(e => e.ChildId == command.ChildId);
+
+            data.ThrowIfNullOrAlreadyUpdated(command.Token, _sequentialGuidGenerator.NewId());
+
+            data.Gender = command.Gender;
+            data.FirstName = command.FirstName;
+            data.MiddleName = command.MiddleName;
+            data.LastName = command.LastName;
+            data.DateOfBirth = command.DateOfBirth;
 
             await _appDbContext.SaveChangesAsync();
         }

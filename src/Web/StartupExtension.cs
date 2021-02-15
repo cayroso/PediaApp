@@ -14,7 +14,7 @@ namespace Web
     {
         public static void RegisterCQRS(IServiceCollection services)
         {
-            //services.AddSingleton<JobQueue<Trip>>();
+            //services.AddSingleton<NotificationService>();
             //services.AddHostedService<MyJobBackgroundService>();
 
             services.AddTransient<IContainer, DotNetCoreContainer>();

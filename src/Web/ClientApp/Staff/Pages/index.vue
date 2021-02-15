@@ -2,11 +2,7 @@
     <div v-cloak>
 
         <div>
-            Drivers
-
-            <div v-for="driver in item.topDrivers" class="card p-2">
-                {{driver}}
-            </div>
+           Dashboard (under construction)
         </div>
         
         <div class="d-none row row-cols-2 row-cols-sm-3">

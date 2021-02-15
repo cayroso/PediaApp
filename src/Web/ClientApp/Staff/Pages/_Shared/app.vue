@@ -45,7 +45,7 @@
                     //{ to: '/contacts', label: 'Contacts', icon: 'fas fa-fw fa-id-card' },
                     //{ to: '/tasks', label: 'Tasks', icon: 'fas fa-fw fa-tasks' },
                     //{ to: '/documents', label: 'Documents', icon: 'fas fa-fw fa-archive' },
-                    { to: '/trips', label: 'Trips', icon: 'fas fa-fw fa-map-marked' },
+                    //{ to: '/trips', label: 'Trips', icon: 'fas fa-fw fa-map-marked' },
                 ]
             }
         },

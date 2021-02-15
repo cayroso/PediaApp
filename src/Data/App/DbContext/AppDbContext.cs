@@ -4,6 +4,7 @@ using Data.App.Models.Calendars;
 using Data.App.Models.Chats;
 using Data.App.Models.Clinics;
 using Data.App.Models.FileUploads;
+using Data.App.Models.Notifications;
 using Data.App.Models.Parents;
 using Data.App.Models.Users;
 using Data.Identity.Models;
@@ -76,8 +77,12 @@ namespace Data.App.DbContext
 
         public DbSet<Clinic> Clinics { get; set; }
         public DbSet<ClinicStaff> ClinicStaffs { get; set; }
+        public DbSet<ClinicChild> ClinicChildren { get; set; }
 
         public DbSet<FileUpload> FileUploads { get; set; }
+
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<NotificationReceiver> NotificationReceivers { get; set; }
 
         public DbSet<Parent> Parents { get; set; }
         public DbSet<Child> Children { get; set; }
@@ -152,9 +157,23 @@ namespace Data.App.DbContext
                 b.Property(e => e.ChildId).HasMaxLength(KeyMaxLength).IsRequired();
                 b.Property(e => e.ConcurrencyToken).HasMaxLength(KeyMaxLength).IsRequired();
 
+                b.HasMany(e => e.Timelines)
+                    .WithOne(d => d.Appointment)
+                    .HasForeignKey(f => f.AppointmentId);
+
                 b.HasMany(e => e.MedicalEntries)
                     .WithOne(d => d.Appointment)
                     .HasForeignKey(f => f.AppointmentId);
+            });
+
+            builder.Entity<AppointmentTimeline>(b =>
+            {
+                b.ToTable("AppointmentTimeline");
+                b.HasKey(e => e.AppointmentTimelineId);
+
+                b.Property(e => e.AppointmentTimelineId).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.UserId).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.AppointmentId).HasMaxLength(KeyMaxLength).IsRequired();
             });
         }
 
@@ -247,14 +266,14 @@ namespace Data.App.DbContext
                     .HasForeignKey(f => f.ClinicId);
             });
 
-            builder.Entity<ClinicParent>(b =>
+            builder.Entity<ClinicChild>(b =>
             {
-                b.ToTable("ClinicParent");
-                b.HasKey(e => e.ClinicParentId);
+                b.ToTable("ClinicChild");
+                b.HasKey(e => e.ClinicChildId);
 
-                b.Property(e => e.ClinicParentId).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.ClinicChildId).HasMaxLength(KeyMaxLength).IsRequired();
                 b.Property(e => e.ClinicId).HasMaxLength(KeyMaxLength).IsRequired();
-                b.Property(e => e.ParentId).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.ChildId).HasMaxLength(KeyMaxLength).IsRequired();
             });
 
             builder.Entity<ClinicReview>(b =>
@@ -306,6 +325,33 @@ namespace Data.App.DbContext
             });
         }
 
+        void CreateNotifications(ModelBuilder builder)
+        {
+            builder.Entity<Notification>(b =>
+            {
+                b.ToTable("Notification");
+                b.HasKey(e => e.NotificationId);
+
+                b.Property(e => e.NotificationId).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.ConcurrencyStamp).HasMaxLength(KeyMaxLength).IsRequired();
+
+                b.HasMany(e => e.Receivers)
+                    .WithOne(d => d.Notification)
+                    .HasForeignKey(f => f.NotificationId);
+            });
+
+            builder.Entity<NotificationReceiver>(b =>
+            {
+                b.ToTable("NotificationReceiver");
+                b.HasKey(e => e.NotificationReceiverId);
+
+                b.Property(e => e.NotificationReceiverId).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.NotificationId).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.ReceiverId).HasMaxLength(KeyMaxLength).IsRequired();
+            });
+
+        }
+
         void CreateParents(ModelBuilder builder)
         {
             builder.Entity<Parent>(b =>
@@ -321,9 +367,7 @@ namespace Data.App.DbContext
                     .WithOne(d => d.Parent)
                     .HasForeignKey(f => f.ParentId);
 
-                b.HasMany(e => e.Clinics)
-                    .WithOne(d => d.Parent)
-                    .HasForeignKey(f => f.ParentId);
+
             });
 
             builder.Entity<Child>(b =>
@@ -340,9 +384,9 @@ namespace Data.App.DbContext
                     .WithOne(d => d.Child)
                     .HasForeignKey(f => f.ChildId);
 
-                //b.HasMany(e => e.Appointments)
-                //    .WithOne(d => d.Child)
-                //    .HasForeignKey(f => f.ChildId);
+                b.HasMany(e => e.Clinics)
+                    .WithOne(d => d.Child)
+                    .HasForeignKey(f => f.ChildId);
             });
 
             builder.Entity<ChildMedicalEntry>(b =>
@@ -352,7 +396,7 @@ namespace Data.App.DbContext
 
                 b.Property(e => e.ChildMedicalEntryId).HasMaxLength(KeyMaxLength).IsRequired();
                 b.Property(e => e.AppointmentId).HasMaxLength(KeyMaxLength).IsRequired();
-                b.Property(e => e.ChildId).HasMaxLength(KeyMaxLength).IsRequired();                
+                b.Property(e => e.ChildId).HasMaxLength(KeyMaxLength).IsRequired();
             });
         }
 
@@ -387,6 +431,10 @@ namespace Data.App.DbContext
                 b.HasMany(e => e.UserTasks)
                     .WithOne(d => d.User)
                     .HasForeignKey(d => d.UserId);
+
+                b.HasMany(e => e.NotificationReceivers)
+                    .WithOne(d => d.Receiver)
+                    .HasForeignKey(d => d.ReceiverId);
 
                 //b.HasMany(a => a.GivenFeedbacks)
                 //    .WithOne(j => j.GivenBy)

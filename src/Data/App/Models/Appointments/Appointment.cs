@@ -16,7 +16,7 @@ namespace Data.App.Models.Appointments
 
         public EnumAppointmentType Type { get; set; }
         public EnumAppointmentStatus Status { get; set; }
-
+        public string StatusReason { get; set; }
         public string ClinicId { get; set; }
         public virtual Clinic Clinic { get; set; }
 
@@ -38,6 +38,8 @@ namespace Data.App.Models.Appointments
             set => _dateEnd = value.Truncate();
         }
 
+        public string Notes { get; set; }
+
         DateTime _dateCreated = DateTime.UtcNow.Truncate();
         public DateTime DateCreated
         {
@@ -47,6 +49,7 @@ namespace Data.App.Models.Appointments
 
         public string ConcurrencyToken { get; set; } = Guid.NewGuid().ToString();
 
+        public virtual ICollection<AppointmentTimeline> Timelines { get; set; } = new List<AppointmentTimeline>();
         public virtual ICollection<ChildMedicalEntry> MedicalEntries { get; set; } = new List<ChildMedicalEntry>();
     }
 

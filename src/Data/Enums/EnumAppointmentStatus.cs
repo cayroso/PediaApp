@@ -9,13 +9,25 @@ namespace Data.Enums
     public enum EnumAppointmentStatus
     {
         Unknown = 0,
-        Placed,
-        NeedClinicConfirmation,
-        NeedParentConfirmation,
+        
+        ParentRequested,
+        ClinicRequested,
+        
+        //NeedClinicConfirmation,
+        //NeedParentConfirmation,
+        
+        ParentRejected,
+        ClinicRejected,
+
         Accepted,
+
         InProgress,
+        
         Completed,
-        Cancelled,
+        
+        ParentCancelled,
+        ClinicCancelled,
+
         Archived
     }
 }

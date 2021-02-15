@@ -30,6 +30,7 @@ namespace App.CQRS.Children.Common.Commands.Command
             FirstName = firstName;
             MiddleName = middleName;
             LastName = lastName;
+            DateOfBirth = dateOfBirth;
         }
 
 

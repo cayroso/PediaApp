@@ -1,4 +1,5 @@
 ﻿using Common.Extensions;
+using Data.App.Models.Notifications;
 using Data.Enums;
 using Data.Identity.Models.Users;
 using System;
@@ -61,6 +62,8 @@ namespace Data.App.Models.Users
         public string ConcurrencyToken { get; set; } = Guid.NewGuid().ToString();
 
         public virtual ICollection<UserTaskItem> UserTaskItems { get; set; } = new List<UserTaskItem>();
+
+        
     }
 
     public class UserTaskItem

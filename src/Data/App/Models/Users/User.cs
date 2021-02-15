@@ -1,5 +1,5 @@
 ﻿using Data.App.Models.FileUploads;
-
+using Data.App.Models.Notifications;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -32,7 +32,7 @@ namespace Data.App.Models.Users
         public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
         public virtual ICollection<UserTask> UserTasks { get; set; } = new List<UserTask>();
 
-        //public virtual ICollection<DocumentAccessHistory> DocumentAccessHistories { get; set; } = new List<DocumentAccessHistory>();
+        public virtual ICollection<NotificationReceiver> NotificationReceivers { get; set; } = new List<NotificationReceiver>();
 
         public void CalculateRating(double newRating)
         {
