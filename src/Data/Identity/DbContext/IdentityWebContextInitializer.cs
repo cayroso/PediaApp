@@ -50,7 +50,7 @@ namespace Data.Identity.DbContext
 
             //};
 
-            var email1 = "user1@pedia.com";
+            var email1 = "user1@pediaapp.com";
             var token1 = Guid.NewGuid().ToString();
             var admin1 = new IdentityWebUser
             {
@@ -90,7 +90,7 @@ namespace Data.Identity.DbContext
             ctx.AddRange(admin1);
             ctx.AddRange(admin1Roles);
 
-            var email2 = "user2@pedia.com";
+            var email2 = "user2@pediaapp.com";
             var admin2 = new IdentityWebUser
             {
                 Id = "administrator2",
