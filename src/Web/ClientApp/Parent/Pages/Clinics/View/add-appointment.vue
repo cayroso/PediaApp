@@ -74,6 +74,65 @@
                 </template>
             </full-calendar>
         </div>
+
+        <b-modal ref="modal"
+                 :no-close-on-esc="false"
+                 :no-close-on-backdrop="true"
+                 scrollable>
+            <template v-slot:modal-header>
+                <div class="w-100">
+                    <div class="d-flex flex-row  align-items-center justify-content-between">
+                        Book Appointment
+                    </div>
+                </div>
+            </template>
+            <template v-slot:modal-footer>
+                <button v-bind:disabled="isDirty && !formIsValid" @click="save" class="btn btn-primary">
+                    <span class="fas fa-fw fa-save"></span>
+                </button>
+                <button @click="$refs.modal.hide" class="btn btn-secondary">
+                    Close
+                </button>
+            </template>
+            <div v-if="selectionDateInfo">
+                <div class="form-group">
+                    <label for="childId">Child</label>
+                    <div>
+                        <b-form-select v-model="item.childId" :options="lookups.children" value-field="id" text-field="name" id="childId" v-bind:class="getValidClass('childId')" />
+                        <div v-if="validations.has('childId')" class="invalid-feedback">
+                            {{validations.get('childId')}}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-sm">
+                        <label for="dateStart">Start</label>
+                        <div>
+                            <div type="text" class="form-control" >
+                                {{item.dateStart|moment('calendar')}}
+                            </div>                           
+                        </div>
+                    </div>
+                    <div class="form-group col-sm">
+                        <label for="dateEnd">End</label>
+                        <div>
+                            <div type="text" class="form-control">
+                                {{item.dateEnd|moment('calendar')}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="notes">Notes</label>
+                    <div>
+                        <textarea v-model="item.notes" rows="3" class="form-control"></textarea>
+                    </div>
+                </div>
+
+                {{selectionDateInfo}}
+            </div>
+        </b-modal>
     </div>
 </template>
 <script>
@@ -127,8 +186,9 @@
                     selectMirror: true,
                     dayMaxEvents: true,
                     weekends: true,
-                    //select: this.handleDateSelect,
-                    eventClick: this.handleEventClick,
+                    select: this.onClickCalendar,
+                    //dateClick: this.onClickCalendar,
+                    //eventClick: this.onClickCalendar,
                     //eventsSet: this.handleEvents
                     /* you can update a remote database when these fire:
                     eventAdd:
@@ -147,7 +207,9 @@
                     dateStart: moment().format('YYYY-MM-DDTHH:mm'),
                     dateEnd: moment().add(2, 'hours').format('YYYY-MM-DDTHH:mm'),
                     notes: null,
-                }
+                },
+
+                selectionDateInfo: null
             }
         },
         computed: {
@@ -195,6 +257,25 @@
                     return 'is-invalid';
                 return 'is-valid';
             },
+
+            async onClickCalendar(selectionDateInfo) {
+                if (selectionDateInfo.allDay)
+                    return;
+
+                const start = moment(selectionDateInfo.start);
+                if (start.isBefore()) {
+                    alert('Cannot book appointment in the past')
+                    return;
+                }
+
+                const vm = this;
+                vm.selectionDateInfo = selectionDateInfo;
+                vm.item.dateStart = moment(selectionDateInfo.start);//.format('YYYY-MM-DDTHH:mm');
+                vm.item.dateEnd = moment(selectionDateInfo.end);//.format('YYYY-MM-DDTHH:mm');
+
+                vm.$refs.modal.show();
+            },
+
             async getAppointments() {
                 const vm = this;
 
@@ -267,14 +348,17 @@
                     payload.clinicId = vm.id;
                     payload.dateStart = moment(payload.dateStart).utc();
                     payload.dateEnd = moment(payload.dateEnd).utc();
-                    debugger
+                    
                     await vm.$util.axios.post(`/api/appointments/parent/request`, payload)
-                        .then(resp => {
+                        .then(async _ => {
                             vm.$bvToast.toast('Appointment requested.', { title: 'Request Appointment', variant: 'success', toaster: 'b-toaster-bottom-right' });
 
+                            await vm.getAppointments();
                             //setTimeout(_ => {
                             //    vm.$router.push({ name: 'childrenView', params: { id: resp.data } });
                             //}, 2000);
+
+
                         });
                 } catch (e) {
                     vm.$util.handleError(e);

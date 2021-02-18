@@ -452,12 +452,12 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
             clinic.ThrowIfNull();
 
             //  check if any appointment hit
-            var blocked = clinic.Appointments.Any(e =>
+            var blocked = clinic.Appointments.FirstOrDefault(e =>
                     (command.DateStart >= e.DateStart && command.DateStart >= e.DateEnd)
-                    || (command.DateEnd >= e.DateStart && command.DateEnd >= e.DateEnd)
+                    && (command.DateEnd >= e.DateStart && command.DateEnd >= e.DateEnd)
                     );
 
-            if (blocked)
+            if (blocked != null)
             {
                 throw new ApplicationException("Time slot not avaiable");
             }
