@@ -16,8 +16,7 @@ namespace App.CQRS.Appointments.Common.Commands.Command.Parent
         public string Notes { get; }
 
         public ParentRequestedAppointmentCommand(string correlationId, string tenantId, string userId,
-            string appointmentId,
-            string clinicId, string childId, DateTime dateStart, DateTime dateEnd, string notes)
+            string appointmentId, string clinicId, string childId, DateTime dateStart, DateTime dateEnd, string notes)
             : base(correlationId, tenantId, userId)
         {
             AppointmentId = appointmentId;

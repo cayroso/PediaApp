@@ -188,7 +188,7 @@
                     weekends: true,
                     select: this.onClickCalendar,
                     //dateClick: this.onClickCalendar,
-                    //eventClick: this.onClickCalendar,
+                    eventClick: this.onClickEvent,
                     //eventsSet: this.handleEvents
                     /* you can update a remote database when these fire:
                     eventAdd:
@@ -276,6 +276,11 @@
                 vm.$refs.modal.show();
             },
 
+            async onClickEvent(event) {
+                const vm = this;
+
+                debugger;
+            },
             async getAppointments() {
                 const vm = this;
 

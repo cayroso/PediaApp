@@ -81,21 +81,21 @@ namespace Data.migrations.app
                 });
 
             migrationBuilder.CreateTable(
-                name: "Notifications",
+                name: "Notification",
                 columns: table => new
                 {
-                    NotificationId = table.Column<string>(type: "TEXT", nullable: false),
+                    NotificationId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
                     NotificationType = table.Column<int>(type: "INTEGER", nullable: false),
                     IconClass = table.Column<string>(type: "TEXT", nullable: true),
                     Subject = table.Column<string>(type: "TEXT", nullable: true),
                     Content = table.Column<string>(type: "TEXT", nullable: true),
                     ReferenceId = table.Column<string>(type: "TEXT", nullable: true),
                     DateSent = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    ConcurrencyStamp = table.Column<string>(type: "TEXT", nullable: true)
+                    ConcurrencyStamp = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Notifications", x => x.NotificationId);
+                    table.PrimaryKey("PK_Notification", x => x.NotificationId);
                 });
 
             migrationBuilder.CreateTable(
@@ -194,30 +194,30 @@ namespace Data.migrations.app
                 });
 
             migrationBuilder.CreateTable(
-                name: "NotificationReceivers",
+                name: "NotificationReceiver",
                 columns: table => new
                 {
-                    NotificationReceiverId = table.Column<string>(type: "TEXT", nullable: false),
-                    NotificationId = table.Column<string>(type: "TEXT", nullable: true),
-                    ReceiverId = table.Column<string>(type: "TEXT", nullable: true),
+                    NotificationReceiverId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
+                    NotificationId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
+                    ReceiverId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
                     DateReceived = table.Column<DateTime>(type: "TEXT", nullable: false),
                     DateRead = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_NotificationReceivers", x => x.NotificationReceiverId);
+                    table.PrimaryKey("PK_NotificationReceiver", x => x.NotificationReceiverId);
                     table.ForeignKey(
-                        name: "FK_NotificationReceivers_Notifications_NotificationId",
+                        name: "FK_NotificationReceiver_Notification_NotificationId",
                         column: x => x.NotificationId,
-                        principalTable: "Notifications",
+                        principalTable: "Notification",
                         principalColumn: "NotificationId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_NotificationReceivers_User_ReceiverId",
+                        name: "FK_NotificationReceiver_User_ReceiverId",
                         column: x => x.ReceiverId,
                         principalTable: "User",
                         principalColumn: "UserId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -345,31 +345,6 @@ namespace Data.migrations.app
                 });
 
             migrationBuilder.CreateTable(
-                name: "ClinicParent",
-                columns: table => new
-                {
-                    ClinicParentId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    ClinicId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    ParentId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ClinicParent", x => x.ClinicParentId);
-                    table.ForeignKey(
-                        name: "FK_ClinicParent_Clinic_ClinicId",
-                        column: x => x.ClinicId,
-                        principalTable: "Clinic",
-                        principalColumn: "ClinicId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ClinicParent_Parent_ParentId",
-                        column: x => x.ParentId,
-                        principalTable: "Parent",
-                        principalColumn: "ParentId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ClinicReview",
                 columns: table => new
                 {
@@ -479,6 +454,31 @@ namespace Data.migrations.app
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Appointment_Clinic_ClinicId",
+                        column: x => x.ClinicId,
+                        principalTable: "Clinic",
+                        principalColumn: "ClinicId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ClinicChild",
+                columns: table => new
+                {
+                    ClinicChildId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
+                    ClinicId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
+                    ChildId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClinicChild", x => x.ClinicChildId);
+                    table.ForeignKey(
+                        name: "FK_ClinicChild_Child_ChildId",
+                        column: x => x.ChildId,
+                        principalTable: "Child",
+                        principalColumn: "ChildId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ClinicChild_Clinic_ClinicId",
                         column: x => x.ClinicId,
                         principalTable: "Clinic",
                         principalColumn: "ClinicId",
@@ -604,14 +604,14 @@ namespace Data.migrations.app
                 column: "ChildId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClinicParent_ClinicId",
-                table: "ClinicParent",
-                column: "ClinicId");
+                name: "IX_ClinicChild_ChildId",
+                table: "ClinicChild",
+                column: "ChildId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClinicParent_ParentId",
-                table: "ClinicParent",
-                column: "ParentId");
+                name: "IX_ClinicChild_ClinicId",
+                table: "ClinicChild",
+                column: "ClinicId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClinicReview_ClinicId",
@@ -639,13 +639,13 @@ namespace Data.migrations.app
                 column: "StaffId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_NotificationReceivers_NotificationId",
-                table: "NotificationReceivers",
+                name: "IX_NotificationReceiver_NotificationId",
+                table: "NotificationReceiver",
                 column: "NotificationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_NotificationReceivers_ReceiverId",
-                table: "NotificationReceivers",
+                name: "IX_NotificationReceiver_ReceiverId",
+                table: "NotificationReceiver",
                 column: "ReceiverId");
 
             migrationBuilder.CreateIndex(
@@ -692,7 +692,7 @@ namespace Data.migrations.app
                 name: "ChildMedicalEntry");
 
             migrationBuilder.DropTable(
-                name: "ClinicParent");
+                name: "ClinicChild");
 
             migrationBuilder.DropTable(
                 name: "ClinicReview");
@@ -701,7 +701,7 @@ namespace Data.migrations.app
                 name: "ClinicStaff");
 
             migrationBuilder.DropTable(
-                name: "NotificationReceivers");
+                name: "NotificationReceiver");
 
             migrationBuilder.DropTable(
                 name: "UserRole");
@@ -719,7 +719,7 @@ namespace Data.migrations.app
                 name: "Staff");
 
             migrationBuilder.DropTable(
-                name: "Notifications");
+                name: "Notification");
 
             migrationBuilder.DropTable(
                 name: "UserTask");

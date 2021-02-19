@@ -77,7 +77,7 @@ namespace Data.App.DbContext
 
         public DbSet<Clinic> Clinics { get; set; }
         public DbSet<ClinicStaff> ClinicStaffs { get; set; }
-        public DbSet<ClinicChild> ClinicChildren { get; set; }
+        
 
         public DbSet<FileUpload> FileUploads { get; set; }
 
@@ -86,6 +86,8 @@ namespace Data.App.DbContext
 
         public DbSet<Parent> Parents { get; set; }
         public DbSet<Child> Children { get; set; }
+        public DbSet<ParentClinic> ParentClinic { get; set; }
+
 
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
@@ -139,6 +141,8 @@ namespace Data.App.DbContext
             CreateClinics(builder);
 
             CreateFileUploads(builder);
+
+            CreateNotifications(builder);
 
             CreateParents(builder);
 
@@ -266,16 +270,7 @@ namespace Data.App.DbContext
                     .HasForeignKey(f => f.ClinicId);
             });
 
-            builder.Entity<ClinicChild>(b =>
-            {
-                b.ToTable("ClinicChild");
-                b.HasKey(e => e.ClinicChildId);
-
-                b.Property(e => e.ClinicChildId).HasMaxLength(KeyMaxLength).IsRequired();
-                b.Property(e => e.ClinicId).HasMaxLength(KeyMaxLength).IsRequired();
-                b.Property(e => e.ChildId).HasMaxLength(KeyMaxLength).IsRequired();
-            });
-
+            
             builder.Entity<ClinicReview>(b =>
             {
                 b.ToTable("ClinicReview");
@@ -367,6 +362,10 @@ namespace Data.App.DbContext
                     .WithOne(d => d.Parent)
                     .HasForeignKey(f => f.ParentId);
 
+                b.HasMany(e => e.ParentClinics)
+                    .WithOne(d => d.Parent)
+                    .HasForeignKey(f => f.ParentId);
+
 
             });
 
@@ -384,9 +383,6 @@ namespace Data.App.DbContext
                     .WithOne(d => d.Child)
                     .HasForeignKey(f => f.ChildId);
 
-                b.HasMany(e => e.Clinics)
-                    .WithOne(d => d.Child)
-                    .HasForeignKey(f => f.ChildId);
             });
 
             builder.Entity<ChildMedicalEntry>(b =>
@@ -398,6 +394,17 @@ namespace Data.App.DbContext
                 b.Property(e => e.AppointmentId).HasMaxLength(KeyMaxLength).IsRequired();
                 b.Property(e => e.ChildId).HasMaxLength(KeyMaxLength).IsRequired();
             });
+
+            builder.Entity<ParentClinic>(b =>
+            {
+                b.ToTable("ParentClinic");
+                b.HasKey(e => e.ParentClinicId);
+
+                b.Property(e => e.ParentClinicId).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.ParentId).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.ClinicId).HasMaxLength(KeyMaxLength).IsRequired();
+            });
+
         }
 
         static void CreateUser(ModelBuilder builder)

@@ -3,6 +3,7 @@ using Data.App.Models.Clinics;
 using Data.App.Models.Users;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,19 @@ namespace Data.App.Models.Parents
         public virtual User User { get; set; }
 
         public virtual ICollection<Child> Children { get; set; } = new List<Child>();
-        
+        public virtual ICollection<ParentClinic> ParentClinics { get; set; } = new List<ParentClinic>();
+
+    }
+
+    public class ParentClinic
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public string ParentClinicId { get; set; }
+
+        public string ParentId { get; set; }
+        public virtual Parent Parent { get; set; }
+
+        public string ClinicId { get; set; }
+        public virtual Clinic Clinic { get; set; }
     }
 }

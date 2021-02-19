@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.migrations.app
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20210215030824_app")]
+    [Migration("20210218131305_app")]
     partial class app
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -291,10 +291,15 @@ namespace Data.migrations.app
                     b.ToTable("Clinic");
                 });
 
-            modelBuilder.Entity("Data.App.Models.Clinics.ClinicParent", b =>
+            modelBuilder.Entity("Data.App.Models.Clinics.ClinicChild", b =>
                 {
-                    b.Property<string>("ClinicParentId")
+                    b.Property<string>("ClinicChildId")
                         .ValueGeneratedOnAdd()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ChildId")
+                        .IsRequired()
                         .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
@@ -303,18 +308,13 @@ namespace Data.migrations.app
                         .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("ParentId")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
+                    b.HasKey("ClinicChildId");
 
-                    b.HasKey("ClinicParentId");
+                    b.HasIndex("ChildId");
 
                     b.HasIndex("ClinicId");
 
-                    b.HasIndex("ParentId");
-
-                    b.ToTable("ClinicParent");
+                    b.ToTable("ClinicChild");
                 });
 
             modelBuilder.Entity("Data.App.Models.Clinics.ClinicReview", b =>
@@ -435,9 +435,12 @@ namespace Data.migrations.app
             modelBuilder.Entity("Data.App.Models.Notifications.Notification", b =>
                 {
                     b.Property<string>("NotificationId")
+                        .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ConcurrencyStamp")
+                        .IsRequired()
+                        .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Content")
@@ -460,13 +463,14 @@ namespace Data.migrations.app
 
                     b.HasKey("NotificationId");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Notification");
                 });
 
             modelBuilder.Entity("Data.App.Models.Notifications.NotificationReceiver", b =>
                 {
                     b.Property<string>("NotificationReceiverId")
                         .ValueGeneratedOnAdd()
+                        .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("DateRead")
@@ -476,9 +480,13 @@ namespace Data.migrations.app
                         .HasColumnType("TEXT");
 
                     b.Property<string>("NotificationId")
+                        .IsRequired()
+                        .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ReceiverId")
+                        .IsRequired()
+                        .HasMaxLength(36)
                         .HasColumnType("TEXT");
 
                     b.HasKey("NotificationReceiverId");
@@ -487,7 +495,7 @@ namespace Data.migrations.app
 
                     b.HasIndex("ReceiverId");
 
-                    b.ToTable("NotificationReceivers");
+                    b.ToTable("NotificationReceiver");
                 });
 
             modelBuilder.Entity("Data.App.Models.Parents.Child", b =>
@@ -839,23 +847,23 @@ namespace Data.migrations.app
                     b.Navigation("Receiver");
                 });
 
-            modelBuilder.Entity("Data.App.Models.Clinics.ClinicParent", b =>
+            modelBuilder.Entity("Data.App.Models.Clinics.ClinicChild", b =>
                 {
+                    b.HasOne("Data.App.Models.Parents.Child", "Child")
+                        .WithMany("Clinics")
+                        .HasForeignKey("ChildId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Data.App.Models.Clinics.Clinic", "Clinic")
                         .WithMany("Parents")
                         .HasForeignKey("ClinicId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Data.App.Models.Parents.Parent", "Parent")
-                        .WithMany("Clinics")
-                        .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Child");
 
                     b.Navigation("Clinic");
-
-                    b.Navigation("Parent");
                 });
 
             modelBuilder.Entity("Data.App.Models.Clinics.ClinicReview", b =>
@@ -919,11 +927,15 @@ namespace Data.migrations.app
                 {
                     b.HasOne("Data.App.Models.Notifications.Notification", "Notification")
                         .WithMany("Receivers")
-                        .HasForeignKey("NotificationId");
+                        .HasForeignKey("NotificationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Data.App.Models.Users.User", "Receiver")
                         .WithMany("NotificationReceivers")
-                        .HasForeignKey("ReceiverId");
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Notification");
 
@@ -1063,14 +1075,14 @@ namespace Data.migrations.app
 
             modelBuilder.Entity("Data.App.Models.Parents.Child", b =>
                 {
+                    b.Navigation("Clinics");
+
                     b.Navigation("MedicalEntries");
                 });
 
             modelBuilder.Entity("Data.App.Models.Parents.Parent", b =>
                 {
                     b.Navigation("Children");
-
-                    b.Navigation("Clinics");
                 });
 
             modelBuilder.Entity("Data.App.Models.Users.User", b =>

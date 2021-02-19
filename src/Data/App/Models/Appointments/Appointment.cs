@@ -17,12 +17,14 @@ namespace Data.App.Models.Appointments
         public EnumAppointmentType Type { get; set; }
         public EnumAppointmentStatus Status { get; set; }
         public string StatusReason { get; set; }
+
         public string ClinicId { get; set; }
         public virtual Clinic Clinic { get; set; }
 
         public string ChildId { get; set; }
         public virtual Child Child { get; set; }
 
+        public string ReferenceNumber { get; set; }
 
         DateTime _dateStart = DateTime.UtcNow.Truncate();
         public DateTime DateStart

@@ -51,7 +51,6 @@ namespace Data.App.Models.Parents
         public string ConcurrencyToken { get; set; } = Guid.NewGuid().ToString();
 
         public virtual ICollection<ChildMedicalEntry> MedicalEntries { get; set; } = new List<ChildMedicalEntry>();
-        public virtual ICollection<ClinicChild> Clinics { get; set; } = new List<ClinicChild>();
     }
 
     public static class ChildExtension

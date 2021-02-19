@@ -12,22 +12,16 @@ namespace Data.Enums
         
         ParentRequested,
         ClinicRequested,
-        
-        //NeedClinicConfirmation,
-        //NeedParentConfirmation,
-        
+
+        ParentCancelled,
+        ClinicCancelled,
+
         ParentRejected,
         ClinicRejected,
 
         Accepted,
-
         InProgress,
-        
         Completed,
-        
-        ParentCancelled,
-        ClinicCancelled,
-
         Archived
     }
 }

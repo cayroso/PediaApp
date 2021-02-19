@@ -453,8 +453,8 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
 
             //  check if any appointment hit
             var blocked = clinic.Appointments.FirstOrDefault(e =>
-                    (command.DateStart >= e.DateStart && command.DateStart >= e.DateEnd)
-                    && (command.DateEnd >= e.DateStart && command.DateEnd >= e.DateEnd)
+                    (command.DateStart >= e.DateStart && command.DateStart <= e.DateEnd)
+                    && (command.DateEnd >= e.DateStart && command.DateEnd <= e.DateEnd)
                     );
 
             if (blocked != null)
@@ -469,6 +469,7 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
             var data = new Appointment
             {
                 AppointmentId = command.AppointmentId,
+                ReferenceNumber = _sequentialGuidGenerator.GenerateCode(6),
                 ClinicId = command.ClinicId,
                 ChildId = command.ChildId,
                 Type = Data.Enums.EnumAppointmentType.ParentInitiated,
