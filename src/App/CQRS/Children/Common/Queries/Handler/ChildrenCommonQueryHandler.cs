@@ -63,9 +63,10 @@ namespace App.CQRS.Children.Common.Queries.Handler
         async Task<Paged<SearchChildrenByClinicQuery.Child>> IQueryHandler<SearchChildrenByClinicQuery, Paged<SearchChildrenByClinicQuery.Child>>.HandleAsync(SearchChildrenByClinicQuery query)
         {
             var sql = from c in _appDbContext.Children.AsNoTracking()
-                      join cc in _appDbContext.ClinicChildren.AsNoTracking() on c.ChildId equals cc.ChildId
+                      join pc in _appDbContext.ParentClinic.AsNoTracking() on c.ParentId equals pc.ParentId
+                      //join cc in _appDbContext.clin.AsNoTracking() on c.ChildId equals cc.ChildId
 
-                      where cc.ClinicId == query.ClinicId
+                      where pc.ClinicId == query.ClinicId
 
                       select new SearchChildrenByClinicQuery.Child
                       {

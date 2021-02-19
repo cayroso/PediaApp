@@ -52,7 +52,7 @@ export default {
 
             await vm.connectChatHub();
 
-            //await vm.connectTripHub();
+            await vm.connectAppointmentHub();
 
             vm.$bus.$on('event:open-chat', vm.onOpenChat);
             vm.$bus.$on('event:close-chat', vm.onCloseChat);
@@ -255,107 +255,57 @@ export default {
             vm.$refs.modalViewChat.close();
         },
 
-        async connectTripHub() {
+        async connectAppointmentHub() {
             const vm = this;
 
             const hub = new signalR.HubConnectionBuilder()
-                .withUrl('/tripHub')
+                .withUrl('/appointmentHub')
                 //.configureLogging(signalR.LogLevel.Debug)
                 .withAutomaticReconnect()
                 .build();
 
-            //  driver
-            hub.on('driverAssigned', function (resp) {                
-                vm.$bus.$emit('event:driver-assigned', resp);
+            hub.on('appointmentUpdated', function (resp) {
+                vm.$bus.$emit('event:notification-received');
+                vm.$bus.$emit('event:appointment-updated', resp);
             });
 
-            hub.on('driverAccepted', function (resp) {
-                vm.$bus.$emit('event:driver-accepted', resp);
+            //  parent
+            hub.on('parentRequested', function (resp) {
+                vm.$bus.$emit('event:parent-requested', resp);
+            });
+            hub.on('parentRejected', function (resp) {
+                vm.$bus.$emit('event:parent-rejected', resp);
+            });
+            hub.on('parentAccepted', function (resp) {
+                vm.$bus.$emit('event:parent-accepted', resp);
+            });
+            hub.on('parentCancelled', function (resp) {
+                vm.$bus.$emit('event:parent-cancelled', resp);
             });
 
-            hub.on('driverRejected', function (resp) {
-                vm.$bus.$emit('event:driver-rejected', resp);
+            //  clinic
+            hub.on('clinicRequested', function (resp) {
+                vm.$bus.$emit('event:clinic-requested', resp);
+            });
+            hub.on('clinicRejected', function (resp) {
+                vm.$bus.$emit('event:clinic-rejected', resp);
+            });
+            hub.on('clinicAccepted', function (resp) {
+                vm.$bus.$emit('event:clinic-accepted', resp);
+            });
+            hub.on('clinicSetInProgress', function (resp) {
+                vm.$bus.$emit('event:clinic-set-in-progress', resp);
+            });
+            hub.on('clinicCompleted', function (resp) {
+                vm.$bus.$emit('event:clinic-completed', resp);
+            });
+            hub.on('clinicCancelled', function (resp) {
+                vm.$bus.$emit('event:clinic-cancelled', resp);
+            });
+            hub.on('clinicArchived', function (resp) {
+                vm.$bus.$emit('event:clinic-archived', resp);
             });
 
-            hub.on('driverFareOffered', function (resp) {
-                vm.$bus.$emit('event:driver-fare-offered', resp);
-            });
-
-            hub.on('driverTripInProgress', function (resp) {
-                vm.$bus.$emit('event:driver-trip-inprogress', resp);
-            });
-
-            hub.on('driverTripCompleted', function (resp) {
-                vm.$bus.$emit('event:driver-trip-completed', resp);
-            });
-
-            //  rider
-            hub.on('riderTripRequested', function (resp) {
-                vm.$bus.$emit('event:rider-trip-requested', resp);
-            });
-            hub.on('riderOfferedFareAccepted', function (resp) {
-                vm.$bus.$emit('event:rider-offered-fare-accepted', resp);
-            });
-            hub.on('riderOfferedFareRejected', function (resp) {
-                vm.$bus.$emit('event:rider-offered-fare-rejected', resp);
-            });
-            hub.on('riderTripCancelled', function (resp) {
-                vm.$bus.$emit('event:rider-trip-cancelled', resp);
-            });
-            hub.on('riderTripInProgress', function (resp) {
-                vm.$bus.$emit('event:rider-trip-inprogress', resp);
-            });
-            hub.on('riderTripCompleted', function (resp) {
-                vm.$bus.$emit('event:rider-trip-completed', resp);
-            });
-            //hub.on('tripRequested', function () {
-            //    vm.$bvToast.toast(`tripRequested`, {
-            //        title: `tripRequested`,
-            //        variant: 'info',
-            //        solid: true
-            //    });
-            //});
-
-            hub.on('received', function (resp) {
-
-                const message = resp.content || "-no reason specified-";
-
-                const h = vm.$createElement;
-                // Create the message
-                let foo = [
-                    h('span', message),
-                    h('p'),
-                ];
-
-                if (resp.refLink) {
-                    //debugger
-                    foo.push(
-                        h('a', { attrs: { href: resp.refLink } }, 'Click here to View.')
-                    )
-                }
-                //debugger
-                const vNodesMsg = h(
-                    'div', foo
-                );
-
-                var route = window.location;
-                var contains = route.pathname.includes(resp.itemId);
-
-                if (!contains || (contains && resp.itemEvent !== 'Post:Comment')) {
-                    vm.$bvToast.toast([vNodesMsg], {
-                        title: `${resp.subject}`,
-                        variant: 'info',
-                        solid: true
-                    });
-                }
-
-                //  emit event
-                vm.$bus.$emit('event:notification-received', resp);
-            });
-
-            hub.on('jobUpdated', function (resp) {
-                vm.$bus.$emit('event:job-updated', resp);
-            });
 
             await hub.start().then(function () {
                 //debugger;
@@ -364,7 +314,7 @@ export default {
                 //vm.$util.handleError(err);
             });
 
-            vm.tripHub = hub;
+            vm.orderHub = hub;
         },
     }
 }

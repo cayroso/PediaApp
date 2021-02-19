@@ -76,6 +76,7 @@ namespace Data.App.DbContext
         public DbSet<ChatReceiver> ChatReceivers { get; set; }
 
         public DbSet<Clinic> Clinics { get; set; }
+        public DbSet<Staff> Staffs { get; set; }
         public DbSet<ClinicStaff> ClinicStaffs { get; set; }
         
 
@@ -257,11 +258,13 @@ namespace Data.App.DbContext
                 b.Property(e => e.ClinicId).HasMaxLength(KeyMaxLength).IsRequired();
                 b.Property(e => e.ConcurrencyToken).HasMaxLength(KeyMaxLength).IsRequired();
 
+                b.HasOne(e => e.Chat).WithOne().HasForeignKey<Clinic>(e => e.ClinicId).IsRequired();
+
                 b.HasMany(e => e.Appointments)
                     .WithOne(d => d.Clinic)
                     .HasForeignKey(f => f.ClinicId);
 
-                b.HasMany(e => e.Parents)
+                b.HasMany(e => e.ParentClinics)
                     .WithOne(d => d.Clinic)
                     .HasForeignKey(f => f.ClinicId);
 

@@ -7,6 +7,17 @@ using System.Threading.Tasks;
 
 namespace Web.Models
 {
+    public class AddAppointmentByClinicInfo
+    {        
+        [Required]
+        public string ChildId { get; set; }
+        [Required]
+        public DateTime DateStart { get; set; }
+        [Required]
+        public DateTime DateEnd { get; set; }
+        public string Notes { get; set; }
+    }
+
     public class AddAppointmentInfo
     {
         [Required]

@@ -49,6 +49,9 @@ namespace Data.migrations.app
                     b.Property<string>("Notes")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("ReferenceNumber")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("Status")
                         .HasColumnType("INTEGER");
 
@@ -287,32 +290,6 @@ namespace Data.migrations.app
                     b.HasKey("ClinicId");
 
                     b.ToTable("Clinic");
-                });
-
-            modelBuilder.Entity("Data.App.Models.Clinics.ClinicChild", b =>
-                {
-                    b.Property<string>("ClinicChildId")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ChildId")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ClinicId")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("ClinicChildId");
-
-                    b.HasIndex("ChildId");
-
-                    b.HasIndex("ClinicId");
-
-                    b.ToTable("ClinicChild");
                 });
 
             modelBuilder.Entity("Data.App.Models.Clinics.ClinicReview", b =>
@@ -594,6 +571,32 @@ namespace Data.migrations.app
                     b.ToTable("Parent");
                 });
 
+            modelBuilder.Entity("Data.App.Models.Parents.ParentClinic", b =>
+                {
+                    b.Property<string>("ParentClinicId")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ClinicId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ParentId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ParentClinicId");
+
+                    b.HasIndex("ClinicId");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("ParentClinic");
+                });
+
             modelBuilder.Entity("Data.App.Models.Users.Role", b =>
                 {
                     b.Property<string>("RoleId")
@@ -845,23 +848,15 @@ namespace Data.migrations.app
                     b.Navigation("Receiver");
                 });
 
-            modelBuilder.Entity("Data.App.Models.Clinics.ClinicChild", b =>
+            modelBuilder.Entity("Data.App.Models.Clinics.Clinic", b =>
                 {
-                    b.HasOne("Data.App.Models.Parents.Child", "Child")
-                        .WithMany("Clinics")
-                        .HasForeignKey("ChildId")
+                    b.HasOne("Data.App.Models.Chats.Chat", "Chat")
+                        .WithOne()
+                        .HasForeignKey("Data.App.Models.Clinics.Clinic", "ClinicId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Data.App.Models.Clinics.Clinic", "Clinic")
-                        .WithMany("Parents")
-                        .HasForeignKey("ClinicId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Child");
-
-                    b.Navigation("Clinic");
+                    b.Navigation("Chat");
                 });
 
             modelBuilder.Entity("Data.App.Models.Clinics.ClinicReview", b =>
@@ -987,6 +982,25 @@ namespace Data.migrations.app
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Data.App.Models.Parents.ParentClinic", b =>
+                {
+                    b.HasOne("Data.App.Models.Clinics.Clinic", "Clinic")
+                        .WithMany("ParentClinics")
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Data.App.Models.Parents.Parent", "Parent")
+                        .WithMany("ParentClinics")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Clinic");
+
+                    b.Navigation("Parent");
+                });
+
             modelBuilder.Entity("Data.App.Models.Users.User", b =>
                 {
                     b.HasOne("Data.App.Models.FileUploads.FileUpload", "Image")
@@ -1061,7 +1075,7 @@ namespace Data.migrations.app
                 {
                     b.Navigation("Appointments");
 
-                    b.Navigation("Parents");
+                    b.Navigation("ParentClinics");
 
                     b.Navigation("Staffs");
                 });
@@ -1073,14 +1087,14 @@ namespace Data.migrations.app
 
             modelBuilder.Entity("Data.App.Models.Parents.Child", b =>
                 {
-                    b.Navigation("Clinics");
-
                     b.Navigation("MedicalEntries");
                 });
 
             modelBuilder.Entity("Data.App.Models.Parents.Parent", b =>
                 {
                     b.Navigation("Children");
+
+                    b.Navigation("ParentClinics");
                 });
 
             modelBuilder.Entity("Data.App.Models.Users.User", b =>

@@ -8,64 +8,25 @@
 
         <div class="d-flex flex-column flex-sm-row justify-content-sm-between">
             <h1 class="h3 mb-sm-0">
-                <i class="fas fa-fw fa-book mr-1"></i>Add Appointment
+                <i class="fas fa-fw fa-calendar mr-1"></i>Book Appointment
             </h1>
             <div class="text-right">
                 <b-overlay :show="busy">
                     <button @click="getAppointments" class="btn btn-info">
                         <span class="fas fa-fw fa-sync"></span>
                     </button>
-                    <button v-bind:disabled="isDirty && !formIsValid" @click="save" class="btn btn-primary">
+                    <!--<button v-bind:disabled="isDirty && !formIsValid" @click="save" class="btn btn-primary">
                         <span class="fas fa-fw fa-save"></span>
-                    </button>
+                    </button>-->
                     <button @click="close" class="btn btn-secondary">
                         <span class="fas fa-fw fa-times-circle"></span>
                     </button>
                 </b-overlay>
             </div>
         </div>
-        <div class="mt-2">
-            <b-overlay :show="busy">
-                <div class="form-group">
-                    <label for="childId">Child</label>
-                    <div>
-                        <b-form-select v-model="item.childId" :options="lookups.children" value-field="id" text-field="name" id="childId" v-bind:class="getValidClass('childId')" />
-                        <div v-if="validations.has('childId')" class="invalid-feedback">
-                            {{validations.get('childId')}}
-                        </div>
-                    </div>
-                </div>
 
-                <div class="form-row">
-                    <div class="form-group col-sm">
-                        <label for="dateStart">Start</label>
-                        <div>
-                            <input v-model="item.dateStart" type="datetime-local" class="form-control" id="dateStart" v-bind:class="getValidClass('dateStart')" />
-                            <div v-if="validations.has('dateStart')" class="invalid-feedback">
-                                {{validations.get('dateStart')}}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group col-sm">
-                        <label for="dateEnd">End</label>
-                        <div>
-                            <input v-model="item.dateEnd" type="datetime-local" class="form-control" id="dateEnd" v-bind:class="getValidClass('dateEnd')" />
-                            <div v-if="validations.has('dateEnd')" class="invalid-feedback">
-                                {{validations.get('dateEnd')}}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="notes">Notes</label>
-                    <div>
-                        <textarea v-model="item.notes" rows="3" class="form-control"></textarea>
-                    </div>
-                </div>
-            </b-overlay>
-        </div>
 
-        <div class='card p-2 border-info'>
+        <div class='card p-2 border-info mt-2'>
             <full-calendar class='demo-app-calendar'
                            :options='calendarOptions'>
                 <template v-slot:eventContent='arg'>
@@ -109,9 +70,9 @@
                     <div class="form-group col-sm">
                         <label for="dateStart">Start</label>
                         <div>
-                            <div type="text" class="form-control" >
+                            <div type="text" class="form-control">
                                 {{item.dateStart|moment('calendar')}}
-                            </div>                           
+                            </div>
                         </div>
                     </div>
                     <div class="form-group col-sm">
@@ -133,6 +94,8 @@
                 {{selectionDateInfo}}
             </div>
         </b-modal>
+
+        <modal-view ref="modalView" view-mode="parent" @saved="getAppointments"></modal-view>
     </div>
 </template>
 <script>
@@ -142,17 +105,22 @@
     import interactionPlugin from '@fullcalendar/interaction'
 
     import pageMixin from '../../../../_Core/Mixins/pageMixin';
-
+    import modalView from '../../../../_Common/Modals/Appointments/view.vue';
     export default {
         mixins: [pageMixin],
         props: {
+            uid: {
+                type: String,
+                required: true
+            },
             id: {
                 type: String,
                 required: true
-            }
+            },
+
         },
         components: {
-            FullCalendar,
+            FullCalendar, modalView
         },
         data() {
             return {
@@ -167,7 +135,7 @@
                         center: 'title',
                         right: 'dayGridMonth,timeGridWeek,timeGridDay'
                     },
-                    initialView: 'dayGridMonth',
+                    initialView: 'timeGridWeek',
                     initialEvents: [
                         //{
                         //    id: 1,
@@ -276,10 +244,10 @@
                 vm.$refs.modal.show();
             },
 
-            async onClickEvent(event) {
+            async onClickEvent(info) {
                 const vm = this;
 
-                debugger;
+                vm.$refs.modalView.open(info.event.id);
             },
             async getAppointments() {
                 const vm = this;
@@ -295,12 +263,12 @@
                             //    start: new Date()
                             //})
                             vm.calendarOptions.events = resp.data.items.map(e => {
-
+                                
                                 return {
                                     id: e.appointmentId,
                                     display: 'list-item',
                                     //title: `${e.statusText}: ${e.clinic.name} - ${e.child.name}`,
-                                    title: `RESERVED`,
+                                    title: vm.uid !== e.parent.parentId ? `RESERVED` : `${e.statusText}: ${e.clinic.name} - ${e.child.name}`,
                                     allDay: false,
 
                                     start: moment(e.dateStart).format('YYYY-MM-DDTHH:mm'),
@@ -353,10 +321,12 @@
                     payload.clinicId = vm.id;
                     payload.dateStart = moment(payload.dateStart).utc();
                     payload.dateEnd = moment(payload.dateEnd).utc();
-                    
+
                     await vm.$util.axios.post(`/api/appointments/parent/request`, payload)
                         .then(async _ => {
                             vm.$bvToast.toast('Appointment requested.', { title: 'Request Appointment', variant: 'success', toaster: 'b-toaster-bottom-right' });
+
+                            vm.$refs.modal.hide();
 
                             await vm.getAppointments();
                             //setTimeout(_ => {

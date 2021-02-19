@@ -1,5 +1,7 @@
 ﻿using Common.Extensions;
 using Data.App.Models.Appointments;
+using Data.App.Models.Chats;
+using Data.App.Models.Parents;
 using Data.Enums;
 using System;
 using System.Collections.Generic;
@@ -13,6 +15,7 @@ namespace Data.App.Models.Clinics
     {
         public string ClinicId { get; set; }
 
+        public virtual Chat Chat { get; set; }
         public EnumClinicStatus ClinicStatus { get; set; }
         
         public string Name { get; set; }
@@ -34,10 +37,8 @@ namespace Data.App.Models.Clinics
         public string ConcurrencyToken { get; set; } = Guid.NewGuid().ToString();
 
         public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
-        public virtual ICollection<ClinicChild> Parents { get; set; } = new List<ClinicChild>();
+        public virtual ICollection<ParentClinic> ParentClinics { get; set; } = new List<ParentClinic>();
         public virtual ICollection<ClinicStaff> Staffs { get; set; } = new List<ClinicStaff>();
-       // public virtual ICollection<ClinicReview> Reviews { get; set; } = new List<ClinicReview>();
-        //public virtual ICollection<ClinicStaff> Staffs { get; set; } = new List<ClinicStaff>();
     }
 
     public static class ClinicExtension

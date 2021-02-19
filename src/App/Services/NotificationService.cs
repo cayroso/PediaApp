@@ -211,6 +211,23 @@ namespace App.Services
             await Task.CompletedTask;
         }
 
+        public async Task DeleteNotificationByReferenceId(string referenceId)
+        {
+            var data = await _appDbContext
+                .Notifications
+                .Where(p => p.ReferenceId == referenceId)
+                .FirstOrDefaultAsync();
+
+            if (data != null)
+            {
+                _appDbContext.Remove(data);
+
+                await _appDbContext.SaveChangesAsync();
+            }
+
+            await Task.CompletedTask;
+        }
+
         public async Task DeleteNotificationByReferenceId(string referenceId, string userId)
         {
             var data = await _appDbContext

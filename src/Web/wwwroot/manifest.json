@@ -1,6 +1,6 @@
 {
   "background_color": "papayawhip",
-  "description": "Toda App Description",
+  "description": "Pedia App Description",
   "display": "standalone",
   "icons": [
     {
@@ -12,9 +12,9 @@
       "sizes": "512x512"
     }
   ],
-  "name": "Toda App",
+  "name": "Pedia App",
   "scope": "/",
-  "short_name": "Toda App",
+  "short_name": "Pedia App",
   "start_url": "/",
   "theme_color": "#ffffff"
 }

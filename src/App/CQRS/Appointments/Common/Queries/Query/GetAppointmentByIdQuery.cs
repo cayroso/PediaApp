@@ -52,6 +52,8 @@ namespace App.CQRS.Appointments.Common.Queries.Query
                 get => _dateCreated.AsUtc();
                 set => _dateCreated = value;
             }
+
+            public string Token { get; set; }
         }
 
         public class Clinic

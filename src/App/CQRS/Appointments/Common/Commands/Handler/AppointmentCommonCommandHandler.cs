@@ -76,32 +76,21 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
 
             data.Status = Data.Enums.EnumAppointmentStatus.Accepted;
 
-            data.Timelines.Add(new AppointmentTimeline
-            {
-                AppointmentId = command.AppointmentId,
-                UserId = command.UserId,
-                Status = data.Status,
-                Notes = command.Notes,
-            });
+            data.AddTimeline(command.UserId, data.Status, command.Notes);
 
             await _appDbContext.SaveChangesAsync();
 
-            var notifyIds = new[] { data.Child.ParentId };
+            data = await GetAppointment(command.AppointmentId);
 
-            await _appointmentHubContext.Clients.Users(notifyIds).ClinicAccepted(new Response
-            {
-                AppointmentId = data.AppointmentId,
-                ClinicId = data.Clinic.ClinicId,
-                ClinicName = data.Clinic.Name,
+            var response = CreateResponse(data, $"Appointment Accepted: {data.ReferenceNumber}",
+                $"<b>{data.Clinic.Name}</b> accepted the appointment.");
 
-                ChildId = data.Child.ChildId,
-                ChildName = data.Child.FirstLastName,
+            await UpdateNotification(data, response, "fas fa-fw fa-info-circle", data.Child.ParentId);
 
-                ParentId = data.Child.Parent.ParentId,
-                ParentName = data.Child.Parent.User.FirstLastName,
-            });
+            await _appointmentHubContext.Clients.User(data.Child.ParentId).ClinicAccepted(response);
 
-            await _notificationService.AddNotification(data.AppointmentId, "fas fa-fw fa-info", "Clinic Accepted", "", EnumNotificationType.Info, notifyIds, null);
+            var allNotifyIds = (await GetStaffIds(data.ClinicId)).Append(data.Child.ParentId).ToArray();
+            await AppointmentUpdated(data, allNotifyIds);
         }
 
         async Task ICommandHandler<ClinicArchivedAppointmentCommand>.HandleAsync(ClinicArchivedAppointmentCommand command)
@@ -112,32 +101,21 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
 
             data.Status = Data.Enums.EnumAppointmentStatus.Archived;
 
-            data.Timelines.Add(new AppointmentTimeline
-            {
-                AppointmentId = command.AppointmentId,
-                UserId = command.UserId,
-                Status = data.Status,
-                Notes = command.Notes,
-            });
+            data.AddTimeline(command.UserId, data.Status, command.Notes);
 
             await _appDbContext.SaveChangesAsync();
 
-            var notifyIds = new[] { data.Child.ParentId };
+            data = await GetAppointment(command.AppointmentId);
 
-            await _appointmentHubContext.Clients.Users(notifyIds).ClinicArchived(new Response
-            {
-                AppointmentId = data.AppointmentId,
-                ClinicId = data.Clinic.ClinicId,
-                ClinicName = data.Clinic.Name,
+            var response = CreateResponse(data, $"Appointment Archived: {data.ReferenceNumber}",
+                $"<b>{data.Clinic.Name}</b> archived your appointment {data.ReferenceNumber}.");
 
-                ChildId = data.Child.ChildId,
-                ChildName = data.Child.FirstLastName,
+            await UpdateNotification(data, response, "fas fa-fw fa-info-circle", data.Child.ParentId);
 
-                ParentId = data.Child.Parent.ParentId,
-                ParentName = data.Child.Parent.User.FirstLastName,
-            });
+            await _appointmentHubContext.Clients.User(data.Child.ParentId).ClinicArchived(response);
 
-            await _notificationService.AddNotification(data.AppointmentId, "fas fa-fw fa-info", "Clinic Archived", "", EnumNotificationType.Info, notifyIds, null);
+            var allNotifyIds = (await GetStaffIds(data.ClinicId)).Append(data.Child.ParentId).ToArray();
+            await AppointmentUpdated(data, allNotifyIds);
         }
 
         async Task ICommandHandler<ClinicCancelledAppointmentCommand>.HandleAsync(ClinicCancelledAppointmentCommand command)
@@ -148,32 +126,21 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
 
             data.Status = Data.Enums.EnumAppointmentStatus.ClinicCancelled;
 
-            data.Timelines.Add(new AppointmentTimeline
-            {
-                AppointmentId = command.AppointmentId,
-                UserId = command.UserId,
-                Status = data.Status,
-                Notes = command.Notes,
-            });
+            data.AddTimeline(command.UserId, data.Status, command.Notes);
 
             await _appDbContext.SaveChangesAsync();
 
-            var notifyIds = new[] { data.Child.ParentId };
+            data = await GetAppointment(command.AppointmentId);
 
-            await _appointmentHubContext.Clients.Users(notifyIds).ClinicCancelled(new Response
-            {
-                AppointmentId = data.AppointmentId,
-                ClinicId = data.Clinic.ClinicId,
-                ClinicName = data.Clinic.Name,
+            var response = CreateResponse(data, $"Appointment Cancelled: {data.ReferenceNumber}",
+                $"<b>{data.Clinic.Name}</b> cancelled your appointment {data.ReferenceNumber}.");
 
-                ChildId = data.Child.ChildId,
-                ChildName = data.Child.FirstLastName,
+            await UpdateNotification(data, response, "fas fa-fw fa-info-circle", data.Child.ParentId);
 
-                ParentId = data.Child.Parent.ParentId,
-                ParentName = data.Child.Parent.User.FirstLastName,
-            });
+            await _appointmentHubContext.Clients.User(data.Child.ParentId).ClinicCancelled(response);
 
-            await _notificationService.AddNotification(data.AppointmentId, "fas fa-fw fa-info", "Clinic Cancelled", "", EnumNotificationType.Info, notifyIds, null);
+            var allNotifyIds = (await GetStaffIds(data.ClinicId)).Append(data.Child.ParentId).ToArray();
+            await AppointmentUpdated(data, allNotifyIds);
         }
 
         async Task ICommandHandler<ClinicCompletedAppointmentCommand>.HandleAsync(ClinicCompletedAppointmentCommand command)
@@ -184,32 +151,21 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
 
             data.Status = Data.Enums.EnumAppointmentStatus.Completed;
 
-            data.Timelines.Add(new AppointmentTimeline
-            {
-                AppointmentId = command.AppointmentId,
-                UserId = command.UserId,
-                Status = data.Status,
-                Notes = command.Notes,
-            });
+            data.AddTimeline(command.UserId, data.Status, command.Notes);
 
             await _appDbContext.SaveChangesAsync();
 
-            var notifyIds = new[] { data.Child.ParentId };
+            data = await GetAppointment(command.AppointmentId);
 
-            await _appointmentHubContext.Clients.Users(notifyIds).ClinicCompleted(new Response
-            {
-                AppointmentId = data.AppointmentId,
-                ClinicId = data.Clinic.ClinicId,
-                ClinicName = data.Clinic.Name,
+            var response = CreateResponse(data, $"Appointment Completed: {data.ReferenceNumber}",
+                $"<b>{data.Clinic.Name}</b> completed your appointment {data.ReferenceNumber}.");
 
-                ChildId = data.Child.ChildId,
-                ChildName = data.Child.FirstLastName,
+            await UpdateNotification(data, response, "fas fa-fw fa-info-circle", data.Child.ParentId);
 
-                ParentId = data.Child.Parent.ParentId,
-                ParentName = data.Child.Parent.User.FirstLastName,
-            });
+            await _appointmentHubContext.Clients.User(data.Child.ParentId).ClinicCompleted(response);
 
-            await _notificationService.AddNotification(data.AppointmentId, "fas fa-fw fa-info", "Clinic Completed", "", EnumNotificationType.Info, notifyIds, null);
+            var allNotifyIds = (await GetStaffIds(data.ClinicId)).Append(data.Child.ParentId).ToArray();
+            await AppointmentUpdated(data, allNotifyIds);
         }
 
         async Task ICommandHandler<ClinicRejectedAppointmentCommand>.HandleAsync(ClinicRejectedAppointmentCommand command)
@@ -218,44 +174,44 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
 
             data.ThrowIfNullOrAlreadyUpdated(command.Token, _sequentialGuidGenerator.NewId());
 
-            data.Status = Data.Enums.EnumAppointmentStatus.ClinicRequested;
+            data.Status = Data.Enums.EnumAppointmentStatus.ClinicRejected;
 
-            data.Timelines.Add(new AppointmentTimeline
-            {
-                AppointmentId = command.AppointmentId,
-                UserId = command.UserId,
-                Status = data.Status,
-                Notes = command.Notes,
-            });
+            data.AddTimeline(command.UserId, data.Status, command.Notes);
 
             await _appDbContext.SaveChangesAsync();
 
-            var notifyIds = new[] { data.Child.ParentId };
+            data = await GetAppointment(command.AppointmentId);
 
-            await _appointmentHubContext.Clients.Users(notifyIds).ClinicRejected(new Response
-            {
-                AppointmentId = data.AppointmentId,
-                ClinicId = data.Clinic.ClinicId,
-                ClinicName = data.Clinic.Name,
+            var response = CreateResponse(data, $"Appointment Rejected: {data.ReferenceNumber}",
+                $"<b>{data.Clinic.Name}</b> rejected your appointment {data.ReferenceNumber}.");
 
-                ChildId = data.Child.ChildId,
-                ChildName = data.Child.FirstLastName,
+            await UpdateNotification(data, response, "fas fa-fw fa-exclamation-circle", data.Child.ParentId);
 
-                ParentId = data.Child.Parent.ParentId,
-                ParentName = data.Child.Parent.User.FirstLastName,
-            });
+            await _appointmentHubContext.Clients.User(data.Child.ParentId).ClinicRejected(response);
 
-            await _notificationService.AddNotification(data.AppointmentId, "fas fa-fw fa-info", "Clinic Rejected", "", EnumNotificationType.Info, notifyIds, null);
+            var allNotifyIds = (await GetStaffIds(data.ClinicId)).Append(data.Child.ParentId).ToArray();
+            await AppointmentUpdated(data, allNotifyIds);
         }
 
         async Task ICommandHandler<ClinicRequestedAppointmentCommand>.HandleAsync(ClinicRequestedAppointmentCommand command)
         {
-            var clinic = await _appDbContext.Clinics.AsNoTracking().FirstOrDefaultAsync(e => e.ClinicId == command.ClinicId);
+            var clinic = await _appDbContext.Clinics.Include(e => e.Appointments).AsNoTracking().FirstOrDefaultAsync(e => e.ClinicId == command.ClinicId);
             clinic.ThrowIfNull();
+
+            //  check if any appointment hit
+            var blocked = clinic.Appointments.FirstOrDefault(e =>
+                    (command.DateStart > e.DateStart && command.DateStart < e.DateEnd)
+                    || (command.DateEnd > e.DateStart && command.DateEnd < e.DateEnd)
+                    || (e.DateStart == command.DateStart && e.DateEnd == command.DateEnd)
+                    );
+
+            if (blocked != null)
+            {
+                throw new ApplicationException("Time slot not avaiable.");
+            }
 
             var child = await _appDbContext.Children.Include(e => e.Parent).ThenInclude(e => e.User).AsNoTracking().FirstOrDefaultAsync(e => e.ChildId == command.ChildId);
             child.ThrowIfNull();
-
 
             var data = new Appointment
             {
@@ -269,34 +225,23 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
                 Notes = command.Notes
             };
 
-            data.Timelines.Add(new AppointmentTimeline
-            {
-                AppointmentId = command.AppointmentId,
-                UserId = command.UserId,
-                Status = data.Status,
-                Notes = command.Notes,
-            });
+            data.AddTimeline(command.UserId, data.Status, command.Notes);
 
             await _appDbContext.AddAsync(data);
 
             await _appDbContext.SaveChangesAsync();
 
-            var notifyIds = new[] { data.Child.ParentId };
+            data = await GetAppointment(command.AppointmentId);
 
-            await _appointmentHubContext.Clients.Users(notifyIds).ClinicRequested(new Response
-            {
-                AppointmentId = data.AppointmentId,
-                ClinicId = clinic.ClinicId,
-                ClinicName = clinic.Name,
+            var response = CreateResponse(data, $"Appointment Requested: {data.ReferenceNumber}",
+                $"<b>{data.Clinic.Name}</b> requested an appointment {data.ReferenceNumber}.");
 
-                ChildId = child.ChildId,
-                ChildName = child.FirstLastName,
+            await UpdateNotification(data, response, "fas fa-fw fa-info-circle", data.Child.ParentId);
 
-                ParentId = child.Parent.ParentId,
-                ParentName = child.Parent.User.FirstLastName,
-            });
+            await _appointmentHubContext.Clients.User(data.Child.ParentId).ClinicRequested(response);
 
-            await _notificationService.AddNotification(data.AppointmentId, "fas fa-fw fa-info", "Clinic Requested", "", EnumNotificationType.Info, notifyIds, null);
+            var allNotifyIds = (await GetStaffIds(data.ClinicId)).Append(data.Child.ParentId).ToArray();
+            await AppointmentUpdated(data, allNotifyIds);
         }
 
         async Task ICommandHandler<ClinicSetAppointmentInProgressCommand>.HandleAsync(ClinicSetAppointmentInProgressCommand command)
@@ -307,32 +252,21 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
 
             data.Status = Data.Enums.EnumAppointmentStatus.InProgress;
 
-            data.Timelines.Add(new AppointmentTimeline
-            {
-                AppointmentId = command.AppointmentId,
-                UserId = command.UserId,
-                Status = data.Status,
-                Notes = command.Notes,
-            });
+            data.AddTimeline(command.UserId, data.Status, command.Notes);
 
             await _appDbContext.SaveChangesAsync();
 
-            var notifyIds = new[] { data.Child.ParentId };
+            data = await GetAppointment(command.AppointmentId);
 
-            await _appointmentHubContext.Clients.Users(notifyIds).ClinicSetInProgress(new Response
-            {
-                AppointmentId = data.AppointmentId,
-                ClinicId = data.Clinic.ClinicId,
-                ClinicName = data.Clinic.Name,
+            var response = CreateResponse(data, $"Appointment In Progress: {data.ReferenceNumber}",
+                $"<b>{data.Clinic.Name}</b> set to in progress your appointment {data.ReferenceNumber}.");
 
-                ChildId = data.Child.ChildId,
-                ChildName = data.Child.FirstLastName,
+            await UpdateNotification(data, response, "fas fa-fw fa-info-circle", data.Child.ParentId);
 
-                ParentId = data.Child.Parent.ParentId,
-                ParentName = data.Child.Parent.User.FirstLastName,
-            });
+            await _appointmentHubContext.Clients.User(data.Child.ParentId).ClinicSetInProgress(response);
 
-            await _notificationService.AddNotification(data.AppointmentId, "fas fa-fw fa-info", "Clinic Set In Progress", "", EnumNotificationType.Info, notifyIds, null);
+            var allNotifyIds = (await GetStaffIds(data.ClinicId)).Append(data.Child.ParentId).ToArray();
+            await AppointmentUpdated(data, allNotifyIds);
         }
 
         #endregion
@@ -346,32 +280,23 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
 
             data.Status = Data.Enums.EnumAppointmentStatus.Accepted;
 
-            data.Timelines.Add(new AppointmentTimeline
-            {
-                AppointmentId = command.AppointmentId,
-                UserId = command.UserId,
-                Status = data.Status,
-                Notes = command.Notes,
-            });
+            data.AddTimeline(command.UserId, data.Status, command.Notes);
 
             await _appDbContext.SaveChangesAsync();
 
+            data = await GetAppointment(command.AppointmentId);
+
             var staffIds = await GetStaffIds(data.ClinicId);
 
-            await _appointmentHubContext.Clients.Users(staffIds).ParentAccepted(new Response
-            {
-                AppointmentId = data.AppointmentId,
-                ClinicId = data.Clinic.ClinicId,
-                ClinicName = data.Clinic.Name,
+            var response = CreateResponse(data, $"Appointment Accepted: {data.ReferenceNumber}",
+                $"<b>{data.Child.Parent.User.FirstLastName}</b> accepted the appointment {data.ReferenceNumber}.");
 
-                ChildId = data.Child.ChildId,
-                ChildName = data.Child.FirstLastName,
+            await UpdateNotification(data, response, "fas fa-fw fa-info-circle", staffIds);
 
-                ParentId = data.Child.Parent.ParentId,
-                ParentName = data.Child.Parent.User.FirstLastName,
-            });
+            await _appointmentHubContext.Clients.Users(staffIds).ParentAccepted(response);
 
-            await _notificationService.AddNotification(data.AppointmentId, "fas fa-fw fa-info", "Parent Accepted", "", EnumNotificationType.Info, staffIds, null);
+            var allNotifyIds = staffIds.Append(data.Child.ParentId).ToArray();
+            await AppointmentUpdated(data, allNotifyIds);
         }
 
         async Task ICommandHandler<ParentCancelledAppointmentCommand>.HandleAsync(ParentCancelledAppointmentCommand command)
@@ -382,32 +307,23 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
 
             data.Status = Data.Enums.EnumAppointmentStatus.ParentCancelled;
 
-            data.Timelines.Add(new AppointmentTimeline
-            {
-                AppointmentId = command.AppointmentId,
-                UserId = command.UserId,
-                Status = data.Status,
-                Notes = command.Notes,
-            });
+            data.AddTimeline(command.UserId, data.Status, command.Notes);
 
             await _appDbContext.SaveChangesAsync();
 
+            data = await GetAppointment(command.AppointmentId);
+
             var staffIds = await GetStaffIds(data.ClinicId);
 
-            await _appointmentHubContext.Clients.Users(staffIds).ParentCancelled(new Response
-            {
-                AppointmentId = data.AppointmentId,
-                ClinicId = data.Clinic.ClinicId,
-                ClinicName = data.Clinic.Name,
+            var response = CreateResponse(data, $"Appointment Cancelled: {data.ReferenceNumber}",
+                $"<b>{data.Child.Parent.User.FirstLastName}</b> cancelled the appointment {data.ReferenceNumber}.");
 
-                ChildId = data.Child.ChildId,
-                ChildName = data.Child.FirstLastName,
+            await UpdateNotification(data, response, "fas fa-fw fa-exclamation-circle", staffIds);
 
-                ParentId = data.Child.Parent.ParentId,
-                ParentName = data.Child.Parent.User.FirstLastName,
-            });
+            await _appointmentHubContext.Clients.Users(staffIds).ParentCancelled(response);
 
-            await _notificationService.AddNotification(data.AppointmentId, "fas fa-fw fa-info", "Parent Cancelled", "", EnumNotificationType.Info, staffIds, null);
+            var allNotifyIds = staffIds.Append(data.Child.ParentId).ToArray();
+            await AppointmentUpdated(data, allNotifyIds);
         }
 
         async Task ICommandHandler<ParentRejectedAppointmentCommand>.HandleAsync(ParentRejectedAppointmentCommand command)
@@ -418,32 +334,23 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
 
             data.Status = Data.Enums.EnumAppointmentStatus.ParentRejected;
 
-            data.Timelines.Add(new AppointmentTimeline
-            {
-                AppointmentId = command.AppointmentId,
-                UserId = command.UserId,
-                Status = data.Status,
-                Notes = command.Notes,
-            });
+            data.AddTimeline(command.UserId, data.Status, command.Notes);
 
             await _appDbContext.SaveChangesAsync();
 
+            data = await GetAppointment(command.AppointmentId);
+
             var staffIds = await GetStaffIds(data.ClinicId);
 
-            await _appointmentHubContext.Clients.Users(staffIds).ParentRejected(new Response
-            {
-                AppointmentId = data.AppointmentId,
-                ClinicId = data.Clinic.ClinicId,
-                ClinicName = data.Clinic.Name,
+            var response = CreateResponse(data, $"Appointment Rejected: {data.ReferenceNumber}",
+                $"<b>{data.Child.Parent.User.FirstLastName}</b> rejected the appointment {data.ReferenceNumber}.");
 
-                ChildId = data.Child.ChildId,
-                ChildName = data.Child.FirstLastName,
+            await UpdateNotification(data, response, "fas fa-fw fa-exclamation-circle", staffIds);
 
-                ParentId = data.Child.Parent.ParentId,
-                ParentName = data.Child.Parent.User.FirstLastName,
-            });
+            await _appointmentHubContext.Clients.Users(staffIds).ParentRejected(response);
 
-            await _notificationService.AddNotification(data.AppointmentId, "fas fa-fw fa-info", "Parent Rejected", "", EnumNotificationType.Info, staffIds, null);
+            var allNotifyIds = staffIds.Append(data.Child.ParentId).ToArray();
+            await AppointmentUpdated(data, allNotifyIds);
         }
 
         async Task ICommandHandler<ParentRequestedAppointmentCommand>.HandleAsync(ParentRequestedAppointmentCommand command)
@@ -453,15 +360,15 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
 
             //  check if any appointment hit
             var blocked = clinic.Appointments.FirstOrDefault(e =>
-                    (command.DateStart >= e.DateStart && command.DateStart <= e.DateEnd)
-                    && (command.DateEnd >= e.DateStart && command.DateEnd <= e.DateEnd)
+                    (command.DateStart > e.DateStart && command.DateStart < e.DateEnd)
+                    || (command.DateEnd > e.DateStart && command.DateEnd < e.DateEnd)
+                    || (e.DateStart == command.DateStart && e.DateEnd == command.DateEnd)
                     );
 
             if (blocked != null)
             {
-                throw new ApplicationException("Time slot not avaiable");
+                throw new ApplicationException("Time slot not avaiable.");
             }
-
 
             var child = await _appDbContext.Children.Include(e => e.Parent).ThenInclude(e => e.User).AsNoTracking().FirstOrDefaultAsync(e => e.ChildId == command.ChildId);
             child.ThrowIfNull();
@@ -479,34 +386,25 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
                 Notes = command.Notes
             };
 
-            data.Timelines.Add(new AppointmentTimeline
-            {
-                AppointmentId = command.AppointmentId,
-                UserId = command.UserId,
-                Status = data.Status,
-                Notes = command.Notes,
-            });
+            data.AddTimeline(command.UserId, data.Status, command.Notes);
 
             await _appDbContext.AddAsync(data);
 
             await _appDbContext.SaveChangesAsync();
 
+            data = await GetAppointment(command.AppointmentId);
+
             var staffIds = await GetStaffIds(data.ClinicId);
 
-            await _appointmentHubContext.Clients.Users(staffIds).ParentRequested(new Response
-            {
-                AppointmentId = data.AppointmentId,
-                ClinicId = clinic.ClinicId,
-                ClinicName = clinic.Name,
+            var response = CreateResponse(data, $"Appointment Requested: {data.ReferenceNumber}",
+                $"<b>{data.Child.Parent.User.FirstLastName}</b> requested the appointment {data.ReferenceNumber}.");
 
-                ChildId = child.ChildId,
-                ChildName = child.FirstLastName,
+            await UpdateNotification(data, response, "fas fa-fw fa-info-circle", staffIds);
 
-                ParentId = child.Parent.ParentId,
-                ParentName = child.Parent.User.FirstLastName,
-            });
+            await _appointmentHubContext.Clients.Users(staffIds).ParentRequested(response);
 
-            await _notificationService.AddNotification(data.AppointmentId, "fas fa-fw fa-info", "Parent Requested", "", EnumNotificationType.Info, staffIds, null);
+            var allNotifyIds = staffIds.Append(data.Child.ParentId).ToArray();
+            await AppointmentUpdated(data, allNotifyIds);
         }
 
         #endregion
@@ -516,9 +414,56 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
             var staffIds = await _appDbContext.ClinicStaffs
                 .Where(e => e.ClinicId == clinicId)
                 .Select(e => e.StaffId)
+                .Distinct()
                 .ToArrayAsync();
 
             return staffIds;
+        }
+
+        async Task<Appointment> GetAppointment(string id)
+        {
+            var data = await _appDbContext.Appointments
+                .Include(e => e.Clinic)
+                .Include(e => e.Child)
+                    .ThenInclude(e => e.Parent)
+                        .ThenInclude(e => e.User)
+                .AsNoTracking()
+                .FirstAsync(e => e.AppointmentId == id);
+
+            return data;
+        }
+
+        Response CreateResponse(Appointment data, string title, string content)
+        {
+            var response = new Response
+            {
+                AppointmentId = data.AppointmentId,
+                ReferenceNumber = data.ReferenceNumber,
+
+                ClinicId = data.Clinic.ClinicId,
+                ClinicName = data.Clinic.Name,
+
+                ChildId = data.Child.ChildId,
+                ChildName = data.Child.FirstLastName,
+
+                ParentId = data.Child.Parent.ParentId,
+                ParentName = data.Child.Parent.User.FirstLastName,
+                Title = title,
+                Content = content
+            };
+
+            return response;
+        }
+
+        async Task UpdateNotification(Appointment data, Response response, string classIcon, params string[] notifyIds)
+        {
+            await _notificationService.DeleteNotificationByReferenceId(data.AppointmentId);
+            await _notificationService.AddNotification(data.AppointmentId, classIcon, response.Title, response.Content, EnumNotificationType.Info, notifyIds, null);
+        }
+
+        async Task AppointmentUpdated(Appointment data, IReadOnlyList<string> notifyIds)
+        {
+            await _appointmentHubContext.Clients.Users(notifyIds).AppointmentUpdated(data.AppointmentId);
         }
     }
 }

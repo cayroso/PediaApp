@@ -53,6 +53,17 @@ namespace Data.App.Models.Appointments
 
         public virtual ICollection<AppointmentTimeline> Timelines { get; set; } = new List<AppointmentTimeline>();
         public virtual ICollection<ChildMedicalEntry> MedicalEntries { get; set; } = new List<ChildMedicalEntry>();
+
+        public void AddTimeline(string userId, EnumAppointmentStatus status, string notes)
+        {
+            Timelines.Add(new AppointmentTimeline
+            {
+                AppointmentId = AppointmentId,
+                UserId = userId,
+                Status = status,
+                Notes = notes
+            });
+        }
     }
 
     public static class AppointmentExtension

@@ -36,11 +36,18 @@ namespace Data.App.DbContext
 
         static Clinic CreateClinic()
         {
+            var clinicId = NewId();
+
             return new Clinic
             {
-                ClinicId = NewId(),
+                ClinicId = clinicId,
                 Name = "Default Clinic",
                 Address = "123 Main Street",
+                Chat = new Chat
+                {
+                    ChatId = clinicId,
+                    Title = "Chat Group"
+                }
             };
         }
 
@@ -114,6 +121,11 @@ namespace Data.App.DbContext
                     }
                 });
 
+                clinic.Chat.Receivers.Add(new ChatReceiver
+                {
+                    ChatId = clinic.Chat.ChatId,
+                    ReceiverId = u.Id,
+                });
             });
 
             appDbContext.AddRange(appUsers);

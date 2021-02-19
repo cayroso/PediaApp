@@ -22,6 +22,7 @@ using Data.Constants;
 using Data.App.DbContext;
 using Data.App.Models.Users;
 using Data.App.Models.Clinics;
+using Data.App.Models.Chats;
 
 namespace Web.Areas.Identity.Pages.Account
 {
@@ -120,7 +121,7 @@ namespace Web.Areas.Identity.Pages.Account
                     RoleId = Input.RoleId
                 });
 
-                if(Input.RoleId == ApplicationRoles.Pedia.Id)
+                if (Input.RoleId == ApplicationRoles.Pedia.Id)
                 {
                     userRoles.Add(new IdentityUserRole<string>
                     {
@@ -177,10 +178,23 @@ namespace Web.Areas.Identity.Pages.Account
                             RoleId = ApplicationRoles.Staff.Id
                         });
 
+                        var clinicId = Guid.NewGuid().ToString();
                         var clinic = new Clinic
                         {
-                            ClinicId = Guid.NewGuid().ToString(),
+                            ClinicId = clinicId,
                             Name = $"{appUser.FirstLastName} Clinic",
+                            Chat = new Chat
+                            {
+                                ChatId = clinicId,
+                                Title = "Chat Group",
+                                Receivers = new List<ChatReceiver>
+                                {
+                                    new ChatReceiver
+                                    {
+                                        ReceiverId = appUser.UserId
+                                    }
+                                }
+                            }
                         };
 
                         var staff = new Data.App.Models.Clinics.Staff

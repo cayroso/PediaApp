@@ -8,9 +8,9 @@ import accountsIndex from './Pages/Accounts/index.vue';
 
 //import contactsIndex from './Pages/Contacts/index.vue';
 
-import teamsIndex from './Pages/Teams/index.vue';
-import teamsAdd from './Pages/Teams/add.vue';
-import teamsView from './Pages/Teams/index.vue';
+import appointmentsIndex from './Pages/Appointments/index.vue';
+import appointmentsAdd from './Pages/Appointments/add.vue';
+import appointmentsView from './Pages/Appointments/index.vue';
 
 import clinicIndex from './Pages/Clinic/index.vue';
 //import usersAdd from './Pages/Users/add.vue';
@@ -32,9 +32,9 @@ const routes = [
 
     //{ path: '/contacts', name: "contacts", component: contactsIndex },
 
-    { path: '/teams', name: "teams", component: teamsIndex },
-    { path: '/teams/add', name: "teamsAdd", component: teamsAdd },
-    { path: '/teams/view/:id', name: "teamsView", component: teamsView, props: true },
+    { path: '/appointments', name: "appointmentsIndex", component: appointmentsIndex },
+    { path: '/appointments/add', name: "appointmentsAdd", component: appointmentsAdd },
+    { path: '/appointments/view/:id', name: "appointmentsView", component: appointmentsView, props: true },
 
     { path: '/clinic', name: "clinicIndex", component: clinicIndex },
     //{ path: '/users/add', name: "usersAdd", component: usersAdd },

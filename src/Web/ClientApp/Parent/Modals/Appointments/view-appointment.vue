@@ -128,6 +128,8 @@
 
                 id: null,
                 item: {
+                    parent: {},
+                    child: {},
                     clinic: {}
                 },
             }
@@ -139,6 +141,8 @@
 
                 vm.id = null;
                 vm.item = {
+                    parent: {},
+                    child: {},
                     clinic: {}
                 };
                 vm.busy = false;

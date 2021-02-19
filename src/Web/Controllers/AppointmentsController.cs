@@ -52,30 +52,10 @@ namespace Web.Controllers
             _tripHubContext = tripHubContext ?? throw new ArgumentNullException(nameof(tripHubContext));
         }
 
-        [HttpGet("clinic/search")]
-        public async Task<IActionResult> Search(string c, int p, int s, string sf, int so)
-        {
-            var query = new SearchAppointmentQuery("", TenantId, UserId, ClinicId, null, c, p, s, sf, so);
-
-            var dto = await _queryHandlerDispatcher.HandleAsync<SearchAppointmentQuery, Paged<SearchAppointmentQuery.Appointment>>(query);
-
-            return Ok(dto);
-        }
-
         [HttpGet("clinic/search/{id}")]
         public async Task<IActionResult> Search(string id, string c, int p, int s, string sf, int so)
         {
             var query = new SearchAppointmentQuery("", TenantId, UserId, id, null, c, p, s, sf, so);
-
-            var dto = await _queryHandlerDispatcher.HandleAsync<SearchAppointmentQuery, Paged<SearchAppointmentQuery.Appointment>>(query);
-
-            return Ok(dto);
-        }
-
-        [HttpGet("parent/search")]
-        public async Task<IActionResult> SearchMine(string c, int p, int s, string sf, int so)
-        {
-            var query = new SearchAppointmentQuery("", TenantId, UserId, null, UserId, c, p, s, sf, so);
 
             var dto = await _queryHandlerDispatcher.HandleAsync<SearchAppointmentQuery, Paged<SearchAppointmentQuery.Appointment>>(query);
 
@@ -105,10 +85,22 @@ namespace Web.Controllers
 
         #region Clinic
 
-        [HttpPost("clinic/request")]
-        public async Task<IActionResult> PostClinicRequest([FromBody] AddAppointmentInfo info)
+
+        [HttpGet("clinic/search")]
+        public async Task<IActionResult> Search(string c, int p, int s, string sf, int so)
         {
-            var cmd = new ClinicRequestedAppointmentCommand("", TenantId, UserId, GuidStr(), info.ClinicId, info.ChildId, info.DateStart, info.DateEnd, info.Notes);
+            var query = new SearchAppointmentQuery("", TenantId, UserId, ClinicId, null, c, p, s, sf, so);
+
+            var dto = await _queryHandlerDispatcher.HandleAsync<SearchAppointmentQuery, Paged<SearchAppointmentQuery.Appointment>>(query);
+
+            return Ok(dto);
+        }
+
+
+        [HttpPost("clinic/request")]
+        public async Task<IActionResult> PostClinicRequest([FromBody] AddAppointmentByClinicInfo info)
+        {
+            var cmd = new ClinicRequestedAppointmentCommand("", TenantId, UserId, GuidStr(), ClinicId, info.ChildId, info.DateStart, info.DateEnd, info.Notes);
 
             await _commandHandlerDispatcher.HandleAsync(cmd);
 
@@ -178,6 +170,18 @@ namespace Web.Controllers
         #endregion
 
         #region Parent
+
+        [HttpGet("parent/search")]
+        public async Task<IActionResult> SearchMine(string c, int p, int s, string sf, int so)
+        {
+            var query = new SearchAppointmentQuery("", TenantId, UserId, null, UserId, c, p, s, sf, so);
+
+            var dto = await _queryHandlerDispatcher.HandleAsync<SearchAppointmentQuery, Paged<SearchAppointmentQuery.Appointment>>(query);
+
+            return Ok(dto);
+        }
+
+
         [HttpPost("parent/request")]
         public async Task<IActionResult> PostParentRequest([FromBody] AddAppointmentInfo info)
         {

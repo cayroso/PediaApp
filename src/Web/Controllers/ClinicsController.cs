@@ -90,5 +90,65 @@ namespace Web.Controllers
 
             return Ok();
         }
+
+        [HttpGet("parents")]
+        public async Task<IActionResult> GetParents()
+        {
+            var sql = from parent in _appDbContext.Parents.AsNoTracking()
+
+                      select new
+                      {
+                          Id = parent.ParentId,
+                          Name = parent.User.FirstLastName
+                      };
+
+            var dto = await sql.ToListAsync();
+
+            return Ok(dto);
+        }
+
+        [HttpGet("parents/{id}/children")]
+        public async Task<IActionResult> GetParentChildren(string id)
+        {
+            var sql = from child in _appDbContext.Children.AsNoTracking()
+
+                      where child.ParentId == id
+
+                      select new
+                      {
+                          Id = child.ChildId,
+                          Name = child.FirstLastName
+                      };
+
+            var dto = await sql.ToListAsync();
+
+            return Ok(dto);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetStaffs(string c, int p, int s, string sf, int so)
+        {
+            //var sql = from cs in _appDbContext.ClinicStaffs.AsNoTracking()
+            //          join staff in _appDbContext.Staffs.AsNoTracking() on cs.StaffId equals staff.StaffId
+
+            //          where cs.ClinicId == ClinicId
+
+            //          select new
+            //          {
+            //              t.TeamId,
+            //              t.Name,
+            //              t.Description,
+            //              t.DateCreated,
+            //              t.DateUpdated,
+            //              Members = t.Members.Select(e => new
+            //              {
+            //                  UserId = e.MemberId,
+            //                  Name = e.Member.FirstLastName,
+            //                  UrlProfilePicture = e.Member.Image.Url
+            //              })
+            //          };
+
+            return Ok();
+        }
     }
 }

@@ -29,6 +29,12 @@ namespace App.CQRS.Appointments.Common.Queries.Handler
                       select new GetAppointmentByIdQuery.Appointment
                       {
                           AppointmentId = a.AppointmentId,
+                          Type = a.Type,
+                          Status = a.Status,
+                          StatusReason = a.StatusReason,
+                          DateStart = a.DateStart,
+                          DateEnd = a.DateEnd,
+                          DateCreated = a.DateCreated,
                           Clinic = new GetAppointmentByIdQuery.Clinic
                           {
                               ClinicId = a.Clinic.ClinicId,
@@ -57,12 +63,9 @@ namespace App.CQRS.Appointments.Common.Queries.Handler
                               PhoneNumber = a.Child.Parent.User.PhoneNumber,
                               Email = a.Child.Parent.User.Email,
                           },
-                          Type = a.Type,
-                          Status = a.Status,
-                          StatusReason = a.StatusReason,
-                          DateStart = a.DateStart,
-                          DateEnd = a.DateEnd,
-                          DateCreated = a.DateCreated,
+
+
+                          Token = a.ConcurrencyToken
                       };
 
             var dto = await sql.FirstOrDefaultAsync();

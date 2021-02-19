@@ -11,7 +11,7 @@ namespace App.Hubs
     public class Response
     {
         public string AppointmentId { get; set; }
-
+        public string ReferenceNumber { get; set; }
         public string ClinicId { get; set; }
         public string ClinicName { get; set; }
 
@@ -20,10 +20,15 @@ namespace App.Hubs
 
         public string ChildId { get; set; }
         public string ChildName { get; set; }
+
+        public string Title { get; set; }
+        public string Content { get; set; }
     }
 
     public interface IAppointmentClient
     {
+        Task AppointmentUpdated(string id);
+
         Task ParentRequested(Response resp);
         Task ParentRejected(Response resp);
         Task ParentAccepted(Response resp);

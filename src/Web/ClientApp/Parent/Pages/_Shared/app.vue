@@ -52,63 +52,7 @@
         async mounted() {
             const vm = this;
 
-            vm.$bus.$on('event:driver-assigned', async function (resp) {
-                vm.$bvToast.toast(`The system has assigned a driver to your trip request.`, {
-                    title: `Driver Assigned`,
-                    variant: 'info',
-                    solid: true
-                });
-            });
-
-            vm.$bus.$on('event:driver-accepted', async function (resp) {
-                vm.$bvToast.toast(`Driver accepted the trip request. Wait for the driver's fare offer.`, {
-                    title: `Driver Accepted Trip Request`,
-                    variant: 'info',
-                    solid: true
-                });
-            });
-
-            vm.$bus.$on('event:driver-rejected', async function (resp) {
-                vm.$bvToast.toast(`The assigned driver rejected the trip request. System will look for another available driver.`, {
-                    title: `Driver Rejected Trip Request`,
-                    variant: 'info',
-                    solid: true
-                });
-            });
-
-            vm.$bus.$on('event:driver-fare-offered', async function (resp) {
-                vm.$bvToast.toast(`The driver offered fare is ${resp.fare}.`, {
-                    title: `Driver Offered Fare`,
-                    variant: 'info',
-                    solid: true
-                });
-            });
-
-            vm.$bus.$on('event:driver-trip-inprogress', async function (resp) {
-                vm.$bvToast.toast(`The driver set the trip request to in-progress.`, {
-                    title: `Trip In-Progress`,
-                    variant: 'info',
-                    solid: true
-                });
-            });
-
-            vm.$bus.$on('event:driver-trip-completed', async function (resp) {
-                vm.$bvToast.toast(`The driver set the trip request to completed.`, {
-                    title: `Trip Completed`,
-                    variant: 'info',
-                    solid: true
-                });
-            });
-
-            //let theme = localStorage.getItem('theme') || '';
-            //if (theme) {
-            //    //debugger;
-            //    let style = document.createElement('link');
-            //    style.type = "text/css";
-            //    style.rel = "stylesheet";
-            //    style.href = theme;// 'https://bootswatch.com/4/yeti/bootstrap.min.css';
-            //    document.head.appendChild(style);
-            //}
+            vm.setupEventReceivers();
         },
         async created() {
             //const vm = this;
@@ -123,24 +67,32 @@
             //}
         },
         methods: {
-            //async getMembershipInfo() {
-            //    const vm = this;
-            //    try {
-            //        await vm.$util.axios.get(`api/organizations/${vm.organizationId}/membership-info/${vm.uid}`).
-            //            then(resp => {
-            //                const data = resp.data;
-            //                //vm.membership = data;
-            //                if (data.status === 2) {
-            //                    var isAdmin = data.roles.find(e => e.roleId === 'organizationadministrator') !== undefined;
-            //                    data.isAdmin = isAdmin;
-            //                    data.isMember = !isAdmin;
-            //                    data.isAdminOrMember = data.isAdmin || data.isMember;
-            //                }
-            //                vm.$bus.$emit('event:membership', data);
-            //            });
-            //    } catch (e) {
-            //    }
-            //},
+            displayToast(resp, variant) {
+                const vm = this;
+                let content = resp.content;
+                content = content.replace(/<b>/g, '');
+                content = content.replace(/<\/b>/g, '');
+                content = content.replace(/<br\/>/g, '');
+
+                vm.$bvToast.toast(content, {
+                    title: resp.title,
+                    variant: variant,
+                    solid: true
+                });
+            },
+
+            setupEventReceivers() {
+                const vm = this;
+
+                //  clinic
+                vm.$bus.$on('event:clinic-requested', resp => vm.displayToast(resp, 'info'));
+                vm.$bus.$on('event:clinic-rejected', resp => vm.displayToast(resp, 'danger'));
+                vm.$bus.$on('event:clinic-accepted', resp => vm.displayToast(resp, 'success'));
+                vm.$bus.$on('event:clinic-set-in-progress', resp => vm.displayToast(resp, 'info'));
+                vm.$bus.$on('event:clinic-completed', resp => vm.displayToast(resp, 'success'));
+                vm.$bus.$on('event:clinic-cancelled', resp => vm.displayToast(resp, 'warning'));
+                vm.$bus.$on('event:clinic-archived', resp => vm.displayToast(resp, 'info'));
+            },
         }
     }
 </script>
