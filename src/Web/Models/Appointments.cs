@@ -32,7 +32,8 @@ namespace Web.Models
     }
 
     public class EditAppointmentInfo
-    {
+    {        
+        public string ClinicId { get; set; }
         [Required]
         public string AppointmentId { get; set; }
         [Required]

@@ -6,13 +6,13 @@
 <template>
     <div v-cloak>
 
-        <div class="d-flex flex-column flex-sm-row justify-content-sm-between">
+        <div class="d-flex flex-row justify-content-between">
             <h1 class="h3 mb-sm-0">
                 <i class="fas fa-fw fa-calendar mr-1"></i>Appointments
             </h1>
             <div class="text-right">
                 <b-overlay :show="busy">
-                    <button @click="getAppointments" class="btn btn-info">
+                    <button @click="refresh" class="btn btn-info">
                         <span class="fas fa-fw fa-sync"></span>
                     </button>
 
@@ -24,18 +24,16 @@
         </div>
 
 
-        <div class='card p-2 border-info mt-2'>
-            <full-calendar class='demo-app-calendar'
+        <div class="mt-2">
+            <full-calendar ref="fullCalendar"                            
                            :options='calendarOptions'>
-                <template v-slot:eventContent='arg'>
-                    <b>{{ arg.timeText }}</b>
-                    <i>{{ arg.event.title }}</i>
-                </template>
+
             </full-calendar>
         </div>
 
-        <modal-add ref="modalAdd" @saved="getAppointments"></modal-add>
-        <modal-view ref="modalView" view-mode="clinic" @saved="getAppointments"></modal-view>
+        <modal-add ref="modalAdd"></modal-add>
+        <modal-view ref="modalView" :uid="uid" view-mode="clinic"></modal-view>
+
     </div>
 </template>
 <script>
@@ -62,6 +60,8 @@
         data() {
             return {
                 calendarOptions: {
+                    contentHeight: 'auto',
+                    //height: '100%',
                     plugins: [
                         dayGridPlugin,
                         timeGridPlugin,
@@ -73,21 +73,23 @@
                         //right: 'dayGridMonth,timeGridWeek,timeGridDay'
                         right: 'dayGridMonth,timeGridWeek,timeGridDay'
                     },
+                    nowIndicator: true,
+                    allDaySlot: false,
                     initialView: 'timeGridWeek',
-                    initialEvents: [
-                        //{
-                        //    id: 1,
-                        //    title: 'All-day event',
-                        //    start: new Date()
-                        //},
-                        //{
-                        //    id: 2,
-                        //    title: 'Timed event',
-                        //    start: moment().add(1, 'hours')
-                        //}
-                    ], // alternatively, use the `events` setting to fetch from a feed
-                    events: [],
-                    //editable: true,
+                    slotMinTime: '06:00:00',
+                    slotMaxTime: '20:00:00',
+                    businessHours: true,
+                    selectConstraint: 'businessHours',
+                    eventConstraint: true,
+
+                    datesSet: this.datesSet,
+                    eventOverlap: false,
+                    eventSources: [
+                        {
+                            events: this.getAppointments,
+                        }
+                    ],
+                    editable: true,
                     selectable: true,
                     selectMirror: true,
                     dayMaxEvents: true,
@@ -101,34 +103,77 @@
                     eventChange:
                     eventRemove:
                     */
-                },
+                    //eventAdd: this.eventAdded,
+                    eventChange: this.eventChanged,
 
+                },
+                clinic: {},
+                items: []
             }
         },
+        async created() {
+            const vm = this;
 
-        //watch: {
-        //    parentId() {
-        //        const vm = this;
+            var settings = JSON.parse(localStorage.getItem('calendar:settings')) || {};
 
-        //        debugger;
-        //    }
-        //},
+            vm.calendarOptions.initialView = settings.viewType;
+
+            vm.$bus.$on('event:appointment-updated', async (resp) => {
+                await vm.refresh();
+            });
+        },
         async mounted() {
             const vm = this;
 
-            await vm.getAppointments();
+            await vm.getClinicInfo();
         },
 
         methods: {
+            async refresh() {
+                const vm = this;
 
-            async onClickCalendar(selectionDateInfo) {
-                if (selectionDateInfo.allDay)
+                const fullCalendar = vm.$refs.fullCalendar;
+
+                fullCalendar.getApi().refetchEvents();
+            },
+            async datesSet(dateInfo) {
+                var setting = {
+                    start: dateInfo.start,
+                    end: dateInfo.end,
+                    viewType: dateInfo.view.type
+                }
+                localStorage.setItem('calendar:settings', JSON.stringify(setting));
+            },
+            async eventChanged(info) {
+                const vm = this;
+                const item = info.event.extendedProps.item;
+
+                if (item.status > 2) {
+                    info.revert();
+                    return;
+                }
+
+                const payload = {
+                    appointmentId: item.appointmentId,
+                    token: item.token,
+                    dateStart: moment(info.event.start),
+                    dateEnd: moment(info.event.end)
+                }
+
+                try {
+                    await vm.$util.axios.put(`/api/appointments/`, payload);
+                } catch (e) {
+                    vm.$util.handleError(e);
+                }
+            },
+
+            async onClickCalendar(selectInfo) {
+                if (selectInfo.allDay)
                     return;
 
-                const start = moment(selectionDateInfo.start);
-                const end = moment(selectionDateInfo.end);
+                const start = moment(selectInfo.start);
+                const end = moment(selectInfo.end);
                 if (start.isBefore()) {
-                    //alert('Cannot book appointment in the past')
                     return;
                 }
 
@@ -190,35 +235,55 @@
                 return bg;
             },
 
-            async getAppointments() {
+            async getClinicInfo() {
+                const vm = this;
+
+                await vm.$util.axios.get(`/api/clinics/my-clinic`)
+                    .then(resp => vm.clinic = resp.data);
+
+                vm.calendarOptions.businessHours = vm.clinic.businessHours;
+                vm.calendarOptions.eventConstraint = vm.clinic.businessHours;
+            },
+
+            async getAppointments(fetchInfo) {
                 const vm = this;
 
                 try {
-                    await vm.$util.axios.get(`/api/appointments/clinic/search/?c=&p=1&s=100&sf=&so=-1`)
+                    const query = [
+                        '?c=',
+                        '&p=', 1,
+                        '&s=', 100,
+                        '&sf=',
+                        '&so=', -1,
+                        '&ds=', moment(fetchInfo.start).valueOf(),
+                        '&de=', moment(fetchInfo.end).valueOf(),
+                    ].join('');
+
+                    return await vm.$util.axios.get(`/api/appointments/clinic/search/${query}`)
                         .then(resp => {
+                            vm.items = resp.data.items;
 
-                            //vm.calendarOptions.events.push({
-
-                            //    id: 1,
-                            //    title: 'All-day event',
-                            //    start: new Date()
-                            //})
-                            vm.calendarOptions.events = resp.data.items.map(e => {
-
+                            //vm.calendarOptions.events
+                            const items = resp.data.items.map(e => {
                                 return {
                                     id: e.appointmentId,
-                                    display: 'list-item',
-                                    title: `${e.statusText}: ${e.child.name}`,
-                                    //title: `RESERVED`,
-                                    allDay: false,
-
+                                    title: `${e.referenceNumber}`,
+                                    description: `${e.statusText}: ${e.parent.name} - ${e.child.name}`,
                                     start: moment(e.dateStart).format('YYYY-MM-DDTHH:mm'),
                                     end: moment(e.dateEnd).format('YYYY-MM-DDTHH:mm'),
 
-                                    backgroundColor: vm.getEventBg(e)
+                                    color: 'red',
+                                    color: vm.getEventBg(e),
+
+                                    item: e,
+                                    eventDidMount: function () {
+                                        debugger;
+                                    }
                                 };
                             });
-                        })
+
+                            return items;
+                        });
                 } catch (e) {
                     vm.$util.handleError(e);
                 }

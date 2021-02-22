@@ -4,7 +4,7 @@
         <div class="row align-items-center">
             <div class="col-sm">
                 <h1 class="h3 mb-sm-0">
-                    <i class="fas fa-fw fa-address-book mr-1"></i>Children
+                    <i class="fas fa-fw fa-calendar mr-1"></i>Appointments
                 </h1>
             </div>
             <div class="col-sm-auto">
@@ -15,7 +15,7 @@
                         </router-link>
                     </div>
 
-                    <!--<div v-if="filter.visible" class="mr-1">
+                    <div v-if="filter.visible" class="mr-1">
                         <button @click="resetDates" class="btn btn-primary">
                             <i class="fas fa-sync mr-1"></i>
                         </button>
@@ -24,7 +24,7 @@
                         <button @click="filter.visible = !filter.visible" class="btn btn-secondary">
                             <span class="fa fas fa-fw fa-filter"></span>
                         </button>
-                    </div>-->
+                    </div>
                     <div class="flex-grow-1">
                         <div class="input-group">
                             <input v-model="filter.query.criteria" @keyup.enter="search(1)" type="text" class="form-control" placeholder="Enter criteria..." aria-label="Enter criteria..." aria-describedby="button-addon2">
@@ -40,65 +40,33 @@
         </div>
 
         <b-collapse v-model="filter.visible">
-            <!--<div class="card p-2 mt-2 bg-secondary">
+            <div class="card p-2 mt-2 bg-secondary">
                 <div class="row">
-                    <div class="col-6 col-sm-4 col-md-3">
-                        <div class="form-group">
-                            <label class="col-form-label">Patients</label>
-                            <b-select v-model="filter.query.patientId" :options="lookups.patients" :value-field="`id`" :text-field="`name`">
-                                <template v-slot:first>
-                                    <option :value="null">All</option>
-                                </template>
-                            </b-select>
-                        </div>
-                    </div>
-                    <div class="col-6 col-sm-4 col-md-3">
-                        <div class="form-group">
-                            <label class="col-form-label">Caregivers</label>
-                            <b-form-select v-model="filter.query.caregiverId" :options="lookups.caregivers" :value-field="`id`" :text-field="`name`">
-                                <template v-slot:first>
-                                    <option :value="null">All</option>
-                                </template>
-                            </b-form-select>
-                        </div>
-                    </div>
-                    <div class="col-6 col-sm-4 col-md-3">
-                        <div class="form-group">
-                            <label class="col-form-label ">Job Status</label>
-                            <b-form-select v-model="filter.query.jobStatus" :options="lookups.jobStatuses" :value-field="`id`" :text-field="`name`" :class="`text-capitalize`">
-                                <template v-slot:first>
-                                    <option :value="`0`">All</option>
-                                </template>
-
-                            </b-form-select>
-                        </div>
-                    </div>
-
-                    <div class="w-100 d-block d-sm-none d-md-block"></div>
 
                     <div class="col-6 col-sm-4 col-md-3">
                         <div class="form-group">
-                            <label for="createdForm" class="col-form-label">Created From</label>
-
-                            <b-form-datepicker id="dateStart"
+                            <label for="createdForm" class="col-form-label">From</label>
+                            <input v-model="filter.query.dateStart" type="date" class="form-control" />
+                            <!--<b-form-datepicker id="dateStart"
                                                v-model="filter.query.dateStart"
                                                right
-                                               :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"></b-form-datepicker>
+                                               :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"></b-form-datepicker>-->
 
                         </div>
                     </div>
                     <div class="col-6 col-sm-4 col-md-3">
                         <div class="form-group">
-                            <label for="createdForm" class="col-form-label">Created To</label>
-                            <b-form-datepicker id="dateEnd"
-                                               v-model="filter.query.dateEnd"
-                                               right
-                                               :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"></b-form-datepicker>
+                            <label for="createdForm" class="col-form-label">To</label>
+                            <input v-model="filter.query.dateEnd" type="date"  class="form-control"/>
+                            <!--<b-form-datepicker id="dateEnd"
+                            v-model="filter.query.dateEnd"
+                            right
+                            :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"></b-form-datepicker>-->
 
                         </div>
                     </div>
                 </div>
-            </div>-->
+            </div>
         </b-collapse>
 
         <b-overlay :show="busy">
@@ -191,7 +159,7 @@
         </b-overlay>
 
 
-<m-pagination :filter="filter" :search="search" :showPerPage="true" class="mt-2"></m-pagination>
+        <m-pagination :filter="filter" :search="search" :showPerPage="true" class="mt-2"></m-pagination>
     </div>
 </template>
 <script>
@@ -212,12 +180,12 @@
             return {
                 baseUrl: `/api/appointments/parent/search`,
                 filter: {
-                    cacheKey: `filter-${this.uid}/children/parent/search`,
-                    //query: {
-                    //    orderStatus: 0,
-                    //    dateStart: moment().startOf('week').format('YYYY-MM-DD'),
-                    //    dateEnd: moment().endOf('week').format('YYYY-MM-DD')
-                    //}
+                    cacheKey: `filter-${this.uid}/appointments/parent/search`,
+                    query: {
+                        //    orderStatus: 0,
+                        dateStart: moment().startOf('week').format('YYYY-MM-DD'),
+                        dateEnd: moment().endOf('week').format('YYYY-MM-DD')
+                    }
                 },
             };
         },
@@ -242,7 +210,66 @@
         },
 
         methods: {
+            resetDates() {
+                const vm = this;
 
+                vm.filter.query.dateStart = moment().startOf('week').format('YYYY-MM-DD');
+                vm.filter.query.dateEnd = moment().endOf('week').format('YYYY-MM-DD');
+            },
+            initializeFilter(cache) {
+                const filter = this.filter;
+                const urlParams = new URLSearchParams(window.location.search);
+
+                filter.query.criteria = urlParams.get('c') || cache.criteria || filter.query.criteria;
+                filter.query.pageIndex = parseInt(urlParams.get('p'), 10) || cache.pageIndex || filter.query.pageIndex;
+                filter.query.pageSize = parseInt(urlParams.get('s'), 10) || cache.pageSize || filter.query.pageSize;
+                filter.query.sortField = urlParams.get('sf') || cache.sortField || filter.query.sortField;
+                filter.query.sortOrder = parseInt(urlParams.get('so'), 10) || cache.sortOrder || filter.query.sortOrder;
+                filter.visible = cache.visible || filter.visible;
+
+                const dateStart = parseInt(urlParams.get('ds'), 10) || cache.sortOrder || filter.query.dateStart;
+                const dateEnd = parseInt(urlParams.get('de'), 10) || cache.dateEnd || filter.query.dateEnd;
+
+                filter.query.dateStart = moment(dateStart).format('YYYY-MM-DD');
+                filter.query.dateEnd = moment(dateEnd).format('YYYY-MM-DD');
+
+
+            },
+            getQuery() {
+
+                const vm = this;
+                const filter = vm.filter;
+
+                if (vm.busy)
+                    return;
+
+                const query = [
+                    '?c=', encodeURIComponent(filter.query.criteria),
+                    '&p=', filter.query.pageIndex,
+                    '&s=', filter.query.pageSize,
+                    '&sf=', filter.query.sortField,
+                    '&so=', filter.query.sortOrder,
+                    '&ds=', moment(filter.query.dateStart).valueOf(),
+                    '&de=', moment(filter.query.dateEnd).valueOf(),
+                ].join('');
+
+                return query;
+            },
+            saveQuery() {
+                const vm = this;
+                const filter = vm.filter;
+
+                localStorage.setItem(filter.cacheKey, JSON.stringify({
+                    criteria: filter.query.criteria,
+                    pageIndex: filter.query.pageIndex,
+                    pageSize: filter.query.pageSize,
+                    sortField: filter.query.sortField,
+                    sortOrder: filter.query.sortOrder,
+                    dateStart: moment(filter.query.dateStart).valueOf(),
+                    dateEnd: moment(filter.query.dateEnd).valueOf(),
+                    visible: filter.visible
+                }));
+            },
         }
     }
 </script>

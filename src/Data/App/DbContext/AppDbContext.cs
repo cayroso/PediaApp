@@ -78,7 +78,8 @@ namespace Data.App.DbContext
         public DbSet<Clinic> Clinics { get; set; }
         public DbSet<Staff> Staffs { get; set; }
         public DbSet<ClinicStaff> ClinicStaffs { get; set; }
-        
+        public DbSet<ClinicBusinessHour> ClinicBusinessHours { get; set; }
+
 
         public DbSet<FileUpload> FileUploads { get; set; }
 
@@ -132,6 +133,8 @@ namespace Data.App.DbContext
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.HasDefaultSchema("App");
 
             CreateAppointments(builder);
 
@@ -260,6 +263,10 @@ namespace Data.App.DbContext
 
                 b.HasOne(e => e.Chat).WithOne().HasForeignKey<Clinic>(e => e.ClinicId).IsRequired();
 
+                b.HasMany(e => e.BusinessHours)
+                    .WithOne(d => d.Clinic)
+                    .HasForeignKey(f => f.ClinicId);
+
                 b.HasMany(e => e.Appointments)
                     .WithOne(d => d.Clinic)
                     .HasForeignKey(f => f.ClinicId);
@@ -273,7 +280,19 @@ namespace Data.App.DbContext
                     .HasForeignKey(f => f.ClinicId);
             });
 
-            
+            builder.Entity<ClinicBusinessHour>(b =>
+            {
+                b.ToTable("ClinicBusinessHour");
+                b.HasKey(e => e.ClinicBusinessHourId);
+
+                b.Property(e => e.ClinicBusinessHourId).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.ClinicId).HasMaxLength(KeyMaxLength).IsRequired();
+
+                b.Property(e => e.DaysOfWeek).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.StartTime).HasMaxLength(KeyMaxLength).IsRequired();
+                b.Property(e => e.EndTime).HasMaxLength(KeyMaxLength).IsRequired();
+            });
+
             builder.Entity<ClinicReview>(b =>
             {
                 b.ToTable("ClinicReview");
@@ -384,7 +403,8 @@ namespace Data.App.DbContext
 
                 b.HasMany(e => e.MedicalEntries)
                     .WithOne(d => d.Child)
-                    .HasForeignKey(f => f.ChildId);
+                    .HasForeignKey(f => f.ChildId)
+                    .OnDelete(DeleteBehavior.Restrict);
 
             });
 
@@ -446,6 +466,10 @@ namespace Data.App.DbContext
                     .WithOne(d => d.Receiver)
                     .HasForeignKey(d => d.ReceiverId);
 
+                b.HasMany(e => e.AppointmentTimelines)
+                    .WithOne(d => d.User)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.Restrict);
                 //b.HasMany(a => a.GivenFeedbacks)
                 //    .WithOne(j => j.GivenBy)
                 //    .HasForeignKey(j => j.GivenById)

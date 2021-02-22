@@ -1,4 +1,5 @@
-﻿using Data.App.Models.FileUploads;
+﻿using Data.App.Models.Appointments;
+using Data.App.Models.FileUploads;
 using Data.App.Models.Notifications;
 using System;
 using System.Collections.Generic;
@@ -33,6 +34,8 @@ namespace Data.App.Models.Users
         public virtual ICollection<UserTask> UserTasks { get; set; } = new List<UserTask>();
 
         public virtual ICollection<NotificationReceiver> NotificationReceivers { get; set; } = new List<NotificationReceiver>();
+
+        public virtual ICollection<AppointmentTimeline> AppointmentTimelines { get; set; } = new List<AppointmentTimeline>();
 
         public void CalculateRating(double newRating)
         {

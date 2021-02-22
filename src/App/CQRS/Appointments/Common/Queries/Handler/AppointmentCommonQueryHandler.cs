@@ -29,6 +29,7 @@ namespace App.CQRS.Appointments.Common.Queries.Handler
                       select new GetAppointmentByIdQuery.Appointment
                       {
                           AppointmentId = a.AppointmentId,
+                          ReferenceNumber = a.ReferenceNumber,
                           Type = a.Type,
                           Status = a.Status,
                           StatusReason = a.StatusReason,
@@ -42,8 +43,14 @@ namespace App.CQRS.Appointments.Common.Queries.Handler
                               PhoneNumber = a.Clinic.PhoneNumber,
                               MobileNumber = a.Clinic.MobileNumber,
                               Email = a.Clinic.Email,
-                              OpeningHours = a.Clinic.OpeningHours,
-                              Address = a.Clinic.Address
+                              Address = a.Clinic.Address,
+                              BusinessHours = a.Clinic.BusinessHours.Select(e => new GetAppointmentByIdQuery.BusinessHour
+                              {
+                                  DaysOfWeek = e.DaysOfWeek,
+                                  StartTime = e.StartTime,
+                                  EndTime = e.EndTime
+                              })
+
                           },
                           Child = new GetAppointmentByIdQuery.Child
                           {
@@ -79,9 +86,18 @@ namespace App.CQRS.Appointments.Common.Queries.Handler
 
                       where a.ClinicId == query.ClinicId || a.Child.ParentId == query.ParentId
 
+                      where a.DateStart >= query.DateStart && a.DateEnd <= query.DateEnd
+
                       select new SearchAppointmentQuery.Appointment
                       {
                           AppointmentId = a.AppointmentId,
+                          ReferenceNumber = a.ReferenceNumber,
+                          Type = a.Type,
+                          Status = a.Status,
+                          StatusReason = a.StatusReason,
+                          DateStart = a.DateStart,
+                          DateEnd = a.DateEnd,
+                          DateCreated = a.DateCreated,
                           Clinic = new SearchAppointmentQuery.Clinic
                           {
                               ClinicId = a.Clinic.ClinicId,
@@ -101,12 +117,7 @@ namespace App.CQRS.Appointments.Common.Queries.Handler
                               PhoneNumber = a.Child.Parent.User.PhoneNumber,
                               Email = a.Child.Parent.User.Email,
                           },
-                          Type = a.Type,
-                          Status = a.Status,
-                          StatusReason = a.StatusReason,
-                          DateStart = a.DateStart,
-                          DateEnd = a.DateEnd,
-                          DateCreated = a.DateCreated,
+                          Token = a.ConcurrencyToken
                       };
 
             var dto = await sql.ToPagedItemsAsync(query.PageIndex, query.PageSize);

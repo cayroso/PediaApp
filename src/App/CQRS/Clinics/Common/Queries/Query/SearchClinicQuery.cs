@@ -18,11 +18,15 @@ namespace App.CQRS.Clinics.Common.Queries.Query
         public class Clinic
         {
             public string ClinicId { get; set; }
-            public EnumClinicStatus ClinicStatus { get; set; }
-            public string ClinicStatusText => ClinicStatus.ToString();
-            public string Name { get; set; }
-            public string OpeningHours { get; set; }
+            public string Name { get; set; }            
             public string Address { get; set; }
+            public IEnumerable<BusinessHour> BusinessHours { get; set; }
+        }
+        public class BusinessHour
+        {
+            public string DaysOfWeek { get; set; }
+            public string StartTime { get; set; }
+            public string EndTime { get; set; }
         }
     }
 }

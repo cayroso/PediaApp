@@ -1,18 +1,106 @@
-﻿<template>
+﻿<style scoped>
+    label {
+        font-size: small;
+        font-weight: bold;
+    }
+</style>
+<template>
     <div v-cloak>
-        View Clinic
+        <div class="row align-items-center">
+            <div class="col">
+                <h1 class="h3 mb-sm-0">
+                    <i class="fas fa-fw fa-clinic-medical mr-1"></i>View Clinic
+                </h1>
+            </div>
+            <div class="col-auto">
+                <div>
+                    <router-link :to="{name: 'clinicsAddAppointment', params:{id: id}}" class="btn btn-primary">
+                        <i class="fas fa-fw fa-calendar"></i> Book Appointment
+                    </router-link>
+                    <button @click="get" class="btn btn-primary">
+                        <span class="fas fa-fw fa-sync"></span>
+                    </button>
+                    <button @click="close" class="btn btn-secondary">
+                        <span class="fas fa-fw fa-times-circle"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
 
-        <router-link :to="{name: 'clinicsAddAppointment', params:{id: id}}">
-            Book Appointment
-        </router-link>
+        <div class="mt-2">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <div class="form-control-plaintext">
+                    {{item.name}}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md">
+                    <label for="name">Phone Number</label>
+                    <div class="form-control-plaintext">
+                        {{item.phoneNumber}}
+                    </div>
+                </div>
+
+                <div class="form-group col-md">
+                    <label for="name">Mobile Number</label>
+                    <div class="form-control-plaintext">
+                        {{item.mobileNumber}}
+                    </div>
+                </div>
+                <div class="form-group col-md">
+                    <label for="name">Email</label>
+                    <div class="form-control-plaintext">
+                        {{item.email}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="name">Open Hours</label>
+                    <div class="form-control-plaintext">
+                        <ol class="list-unstyled">
+                            <li v-for="br in businessHours">
+                                {{br}}
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="form-group col-md">
+                    <label for="name">Address</label>
+                    <div class="form-control-plaintext">
+                        {{item.address}}
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+        <div style="height:500px;">
+            <g-map ref="gmap" map-name="local-map"
+                   :fixed="false"
+                   :show-location="true"
+                   :cx="0"
+                   :cy="0"
+                   :draggable="false"
+                   @onMapReady="onMapReady">
+            </g-map>
+        </div>
     </div>
 </template>
 <script>
     import pageMixin from '../../../../_Core/Mixins/pageMixin';
-
+    import gMap from './_map.vue';
     export default {
         mixins: [pageMixin],
-
+        components: {
+            gMap
+        },
         props: {
             uid: String,
             id: {
@@ -28,7 +116,12 @@
         },
 
         computed: {
+            businessHours() {
+                const vm = this;
+                const item = vm.item;
 
+                return vm.getBusinessHours(item.businessHours);
+            }
         },
 
         async created() {
@@ -38,11 +131,30 @@
 
         async mounted() {
             const vm = this;
-
+            //await vm.get();
         },
 
         methods: {
+            async onMapReady() {
+                const vm = this;
 
+                await vm.get();
+
+                const gmap = vm.$refs.gmap;
+                const items = [vm.item];
+                gmap.initMap(items);
+            },
+            async get() {
+                const vm = this;
+
+                try {
+                    await vm.$util.axios.get(`/api/clinics/${vm.id}`)
+                        .then(resp => vm.item = resp.data);
+
+                } catch (e) {
+                    vm.$util.handleError(e);
+                }
+            }
         }
     }
 </script>

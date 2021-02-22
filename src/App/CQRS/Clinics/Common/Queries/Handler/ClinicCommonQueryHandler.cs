@@ -30,14 +30,19 @@ namespace App.CQRS.Clinics.Common.Queries.Handler
                       {
                           ClinicId = c.ClinicId,
                           Name = c.Name,
-                          ClinicStatus = c.ClinicStatus,
                           PhoneNumber = c.PhoneNumber,
                           Email = c.Email,
                           MobileNumber = c.MobileNumber,
-                          OpeningHours = c.OpeningHours,
                           Address = c.Address,
                           GeoX = c.GeoX,
                           GeoY = c.GeoY,
+                          BusinessHours = c.BusinessHours.Select(e => new GetClinicByIdQuery.BusinessHour
+                          {
+                              ClinicBusinessHourId = e.ClinicBusinessHourId,
+                              DaysOfWeek = e.DaysOfWeek,
+                              StartTime = e.StartTime,
+                              EndTime = e.EndTime,
+                          }),
                           Token = c.ConcurrencyToken
                       };
 
@@ -54,9 +59,13 @@ namespace App.CQRS.Clinics.Common.Queries.Handler
                       {
                           ClinicId = c.ClinicId,
                           Name = c.Name,
-                          ClinicStatus = c.ClinicStatus,
-                          OpeningHours = c.OpeningHours,
                           Address = c.Address,
+                          BusinessHours = c.BusinessHours.Select(e => new SearchClinicQuery.BusinessHour
+                          {
+                              DaysOfWeek = e.DaysOfWeek,
+                              StartTime = e.StartTime,
+                              EndTime = e.EndTime
+                          })
                       };
 
             var dto = await sql.ToPagedItemsAsync(query.PageIndex, query.PageSize);

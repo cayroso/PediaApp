@@ -8,6 +8,7 @@ using Data.App.Models.Appointments;
 using Data.App.Models.Clinics;
 using Data.App.Models.Notifications;
 using Data.App.Models.Parents;
+using Data.Enums;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -25,14 +26,17 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
         ICommandHandler<ClinicCompletedAppointmentCommand>,
         ICommandHandler<ClinicRejectedAppointmentCommand>,
         ICommandHandler<ClinicRequestedAppointmentCommand>,
+        ICommandHandler<ClinicResubmittedAppointmentCommand>,
         ICommandHandler<ClinicSetAppointmentInProgressCommand>,
 
         ICommandHandler<ParentAcceptedAppointmentCommand>,
         ICommandHandler<ParentCancelledAppointmentCommand>,
         ICommandHandler<ParentRejectedAppointmentCommand>,
         ICommandHandler<ParentRequestedAppointmentCommand>,
+        ICommandHandler<ParentResubmittedAppointmentCommand>,
 
-        ICommandHandler<EditAppointmentCommand>
+        ICommandHandler<EditAppointmentCommand>,
+        ICommandHandler<DeleteAppointmentCommand>
     {
         readonly AppDbContext _appDbContext;
         readonly ISequentialGuidGenerator _sequentialGuidGenerator;
@@ -55,12 +59,64 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
 
         async Task ICommandHandler<EditAppointmentCommand>.HandleAsync(EditAppointmentCommand command)
         {
-            var data = await _appDbContext.Appointments.FirstOrDefaultAsync(e => e.AppointmentId == command.AppointmentId);
+            var data = await GetAppointment(command.AppointmentId);
 
             data.ThrowIfNullOrAlreadyUpdated(command.Token, _sequentialGuidGenerator.NewId());
 
+            var clinic = await _appDbContext.Clinics.Include(e => e.Appointments).FirstOrDefaultAsync(e => e.ClinicId == command.ClinicId);
+            clinic.ThrowIfNull();
+
+            var blocked = FindBlocking(clinic.Appointments, command.AppointmentId, command.DateStart, command.DateEnd);
+
+            if (blocked != null)
+            {
+                throw new ApplicationException("Time already reserved.");
+            }
+
             data.DateStart = command.DateStart;
             data.DateEnd = command.DateEnd;
+
+            await _appDbContext.SaveChangesAsync();
+
+            var allNotifyIds = (await GetStaffIds(data.ClinicId)).Append(data.Child.ParentId).ToArray();
+            await AppointmentUpdated(data, allNotifyIds);
+        }
+
+        async Task ICommandHandler<DeleteAppointmentCommand>.HandleAsync(DeleteAppointmentCommand command)
+        {
+            //var data = await _appDbContext.Appointments.FirstOrDefaultAsync(e => e.AppointmentId == command.AppointmentId);
+            var data = await GetAppointment(command.AppointmentId);
+
+            data.ThrowIfNullOrAlreadyUpdated(command.Token, _sequentialGuidGenerator.NewId());
+
+            var parentDeleted = data.Child.ParentId == command.UserId;
+            var staffIds = await GetStaffIds(data.ClinicId);
+
+            if (parentDeleted)
+            {
+                var response = CreateResponse(data, $"Appointment Deleted: {data.ReferenceNumber}",
+                    $"<b>{data.Child.Parent.User.FirstLastName}</b> deleted his/her appointment {data.ReferenceNumber}.");
+
+                await UpdateNotification(data, response, "fas fa-fw fa-exclamation-circle", staffIds);
+
+                await _appointmentHubContext.Clients.Users(staffIds).ParentDeleted(response);
+            }
+            else
+            {
+                var response = CreateResponse(data, $"Appointment Deleted: {data.ReferenceNumber}",
+                    $"<b>{data.Clinic.Name}</b> deleted the appointment {data.ReferenceNumber}.");
+
+                await UpdateNotification(data, response, "fas fa-fw fa-exclamation-circle", data.Child.ParentId);
+
+                await _appointmentHubContext.Clients.User(data.Child.ParentId).ClinicDeleted(response);
+            }
+
+            var allNotifyIds = staffIds.Append(data.Child.ParentId).ToArray();
+            await AppointmentUpdated(data, allNotifyIds);
+
+
+            //  remove then save
+            _appDbContext.Remove(data);
 
             await _appDbContext.SaveChangesAsync();
         }
@@ -199,11 +255,7 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
             clinic.ThrowIfNull();
 
             //  check if any appointment hit
-            var blocked = clinic.Appointments.FirstOrDefault(e =>
-                    (command.DateStart > e.DateStart && command.DateStart < e.DateEnd)
-                    || (command.DateEnd > e.DateStart && command.DateEnd < e.DateEnd)
-                    || (e.DateStart == command.DateStart && e.DateEnd == command.DateEnd)
-                    );
+            var blocked = FindBlocking(clinic.Appointments, command.AppointmentId, command.DateStart, command.DateEnd);
 
             if (blocked != null)
             {
@@ -216,6 +268,7 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
             var data = new Appointment
             {
                 AppointmentId = command.AppointmentId,
+                ReferenceNumber = _sequentialGuidGenerator.GenerateCode(6),
                 ClinicId = command.ClinicId,
                 ChildId = command.ChildId,
                 Type = Data.Enums.EnumAppointmentType.ClinicInitiated,
@@ -239,6 +292,31 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
             await UpdateNotification(data, response, "fas fa-fw fa-info-circle", data.Child.ParentId);
 
             await _appointmentHubContext.Clients.User(data.Child.ParentId).ClinicRequested(response);
+
+            var allNotifyIds = (await GetStaffIds(data.ClinicId)).Append(data.Child.ParentId).ToArray();
+            await AppointmentUpdated(data, allNotifyIds);
+        }
+
+        async Task ICommandHandler<ClinicResubmittedAppointmentCommand>.HandleAsync(ClinicResubmittedAppointmentCommand command)
+        {
+            var data = await _appDbContext.Appointments.FirstOrDefaultAsync(e => e.AppointmentId == command.AppointmentId);
+
+            data.ThrowIfNullOrAlreadyUpdated(command.Token, _sequentialGuidGenerator.NewId());
+
+            data.Status = Data.Enums.EnumAppointmentStatus.ClinicRequested;
+
+            data.AddTimeline(command.UserId, data.Status, command.Notes);
+
+            await _appDbContext.SaveChangesAsync();
+
+            data = await GetAppointment(command.AppointmentId);
+
+            var response = CreateResponse(data, $"Appointment Resubmitted: {data.ReferenceNumber}",
+                $"<b>{data.Clinic.Name}</b> is resubmitting the rejected appointment {data.ReferenceNumber}.");
+
+            await UpdateNotification(data, response, "fas fa-fw fa-info-circle", data.Child.ParentId);
+
+            await _appointmentHubContext.Clients.User(data.Child.ParentId).ClinicResubmitted(response);
 
             var allNotifyIds = (await GetStaffIds(data.ClinicId)).Append(data.Child.ParentId).ToArray();
             await AppointmentUpdated(data, allNotifyIds);
@@ -359,11 +437,7 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
             clinic.ThrowIfNull();
 
             //  check if any appointment hit
-            var blocked = clinic.Appointments.FirstOrDefault(e =>
-                    (command.DateStart > e.DateStart && command.DateStart < e.DateEnd)
-                    || (command.DateEnd > e.DateStart && command.DateEnd < e.DateEnd)
-                    || (e.DateStart == command.DateStart && e.DateEnd == command.DateEnd)
-                    );
+            var blocked = FindBlocking(clinic.Appointments, command.AppointmentId, command.DateStart, command.DateEnd);
 
             if (blocked != null)
             {
@@ -407,6 +481,32 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
             await AppointmentUpdated(data, allNotifyIds);
         }
 
+        async Task ICommandHandler<ParentResubmittedAppointmentCommand>.HandleAsync(ParentResubmittedAppointmentCommand command)
+        {
+            var data = await _appDbContext.Appointments.FirstOrDefaultAsync(e => e.AppointmentId == command.AppointmentId);
+
+            data.ThrowIfNullOrAlreadyUpdated(command.Token, _sequentialGuidGenerator.NewId());
+
+            data.Status = Data.Enums.EnumAppointmentStatus.ParentRequested;
+
+            data.AddTimeline(command.UserId, data.Status, command.Notes);
+
+            await _appDbContext.SaveChangesAsync();
+
+            data = await GetAppointment(command.AppointmentId);
+
+            var staffIds = await GetStaffIds(data.ClinicId);
+
+            var response = CreateResponse(data, $"Appointment Resubmitted: {data.ReferenceNumber}",
+                $"<b>{data.Child.Parent.User.FirstLastName}</b> is requesting the rejected appointment {data.ReferenceNumber}.");
+
+            await UpdateNotification(data, response, "fas fa-fw fa-info-circle", staffIds);
+
+            await _appointmentHubContext.Clients.Users(staffIds).ParentResubmitted(response);
+
+            var allNotifyIds = staffIds.Append(data.Child.ParentId).ToArray();
+            await AppointmentUpdated(data, allNotifyIds);
+        }
         #endregion
 
         async Task<string[]> GetStaffIds(string clinicId)
@@ -427,7 +527,7 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
                 .Include(e => e.Child)
                     .ThenInclude(e => e.Parent)
                         .ThenInclude(e => e.User)
-                .AsNoTracking()
+                //.AsNoTracking()
                 .FirstAsync(e => e.AppointmentId == id);
 
             return data;
@@ -465,5 +565,30 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
         {
             await _appointmentHubContext.Clients.Users(notifyIds).AppointmentUpdated(data.AppointmentId);
         }
+
+        Appointment FindBlocking(IEnumerable<Appointment> appointments, string appointmentId, DateTime dateStart, DateTime dateEnd)
+        {
+            var excludeStatus = new List<EnumAppointmentStatus>
+            {
+                EnumAppointmentStatus.ParentCancelled,
+                EnumAppointmentStatus.ClinicCancelled,
+                EnumAppointmentStatus.ParentRejected,
+                EnumAppointmentStatus.ClinicRejected,
+                EnumAppointmentStatus.Archived,
+            };
+
+            //  check if any appointment hit
+            var blocked = appointments
+                    .Where(e => !excludeStatus.Contains(e.Status) && e.AppointmentId != appointmentId)
+                    .FirstOrDefault(e =>
+                    dateStart < e.DateEnd && e.DateStart < dateEnd
+                    //(dateStart > e.DateStart && dateStart < e.DateEnd)
+                    //|| (dateEnd > e.DateStart && dateEnd < e.DateEnd)
+                    //|| (e.DateStart == dateStart && e.DateEnd == dateEnd)
+                    );
+
+            return blocked;
+        }
+
     }
 }

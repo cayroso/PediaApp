@@ -29,11 +29,9 @@ namespace App.CQRS.Clinics.Common.Commands.Handler
             clinic.ThrowIfNullOrAlreadyUpdated(command.Token, _sequentialGuidGenerator.NewId());
 
             clinic.Name = command.Name;
-            clinic.ClinicStatus = command.ClinicStatus;
             clinic.PhoneNumber = command.PhoneNumber;
             clinic.MobileNumber = command.MobileNumber;
-            clinic.Email = command.Email;
-            clinic.OpeningHours = command.OpeningHours;
+            clinic.Email = command.Email;            
             clinic.Address = command.Address;
             clinic.GeoX = command.GeoX;
             clinic.GeoY = command.GeoY;

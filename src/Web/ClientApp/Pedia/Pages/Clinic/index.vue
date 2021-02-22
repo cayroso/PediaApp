@@ -9,11 +9,15 @@
         <div class="row align-items-center">
             <div class="col">
                 <h1 class="h3 mb-sm-0">
-                    <i class="fas fa-fw fa-clinic-medical mr-1"></i>Pharmacy Information
+                    <i class="fas fa-fw fa-clinic-medical mr-1"></i>Clinic Information
                 </h1>
             </div>
             <div class="col-auto">
                 <div>
+                    <button @click="openModalAddBusinessHour" class="btn btn-primary">
+                        <span class="fas fa-fw fa-clock"></span> Add Business Hour
+                    </button>
+
                     <button @click="get" class="btn btn-primary">
                         <span class="fas fa-fw fa-sync"></span>
                     </button>
@@ -68,21 +72,35 @@
             </div>
 
             <div class="form-row">
-                <div class="form-group col-md-4">
-                    <label for="clinicStatus">Status</label>
-                    <div>
-                        <b-form-select v-model="item.clinicStatus" :options="lookups.statuses" value-field="id" text-field="name" id="clinicStatus" class="form-control" v-bind:class="getValidClass('clinicStatus')" />
-                        <div v-if="validations.has('clinicStatus')" class="invalid-feedback">
-                            {{validations.get('clinicStatus')}}
-                        </div>
-                    </div>
-                </div>
                 <div class="form-group col-md">
-                    <label for="openingHours">Opening Hours</label>
+                    <div class="d-flex flex-row justify-content-between align-items-baseline">
+                        <label>Business Hours</label>
+                        <button @click="openModalAddBusinessHour(-1)" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-fw fa-plus-circle"></i>
+                        </button>
+                    </div>
                     <div>
-                        <input v-model="item.openingHours" type="text" id="openingHours" class="form-control" v-bind:class="getValidClass('openingHours')" />
-                        <div v-if="validations.has('openingHours')" class="invalid-feedback">
-                            {{validations.get('openingHours')}}
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm">
+                                <tbody>
+                                    <tr v-for="(br,index) in clinicBusinessHours">
+                                        <td>
+                                            {{index+1}}
+                                        </td>
+                                        <td>
+                                            {{br}}
+                                        </td>
+                                        <td>
+                                            <button @click="openModalAddBusinessHour(index)" class="btn btn-sm btn-outline-info">
+                                                <i class="fas fa-fw fa-edit"></i>
+                                            </button>
+                                            <button @click="deleteBusinessHour(index)" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-fw fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -110,16 +128,24 @@
                    @onAddress="onAddress">
             </g-map>
         </div>
+
+        <modalAddBusinessHour ref="modalAddBusinessHour"
+                              :item="item"
+                              :businessHours="clinicBusinessHours"
+                              @saved="get">
+
+        </modalAddBusinessHour>
     </div>
 </template>
 <script>
     import pageMixin from '../../../_Core/Mixins/pageMixin';
+    import modalAddBusinessHour from './_add-business-hour.vue';
     import gMap from './_map.vue';
 
     export default {
         mixins: [pageMixin],
         components: {
-            gMap
+            modalAddBusinessHour, gMap
         },
         props: {
             uid: String,
@@ -129,13 +155,7 @@
             return {
                 isDirty: false,
                 validations: new Map(),
-                lookups: {
-                    statuses: [
-                        { id: 1, name: 'Open' },
-                        { id: 2, name: 'Closed' },
-                        { id: 3, name: 'Holiday Closed' }
-                    ]
-                },
+
                 item: {
                     geoX: 0,
                     geoY: 0
@@ -154,14 +174,8 @@
 
                 const validations = new Map();
 
-                if (!item.clinicStatus) {
-                    validations.set('clinicStatus', 'Status is required.');
-                }
                 if (!item.name) {
                     validations.set('name', 'Name is required.');
-                }
-                if (!item.openingHours) {
-                    validations.set('openingHours', 'Opening Hours is required.');
                 }
 
                 vm.isDirty = true;
@@ -169,6 +183,12 @@
 
                 return validations.size == 0;
             },
+            clinicBusinessHours() {
+                const vm = this;
+
+                return vm.getBusinessHours(vm.item.businessHours);
+
+            }
         },
 
         async created() {
@@ -212,6 +232,8 @@
 
                 await vm.$util.axios.get(`/api/clinics/my-clinic`)
                     .then(resp => vm.item = resp.data);
+
+                //vm.openModalAddBusinessHour();
             },
             async save() {
                 const vm = this;
@@ -239,6 +261,30 @@
                     vm.$util.handleError(e);
                 } finally {
                     vm.busy = false
+                }
+            },
+
+            openModalAddBusinessHour(index) {
+                const vm = this;
+
+                let br = null;
+
+                if (index > -1) {
+                    br = vm.item.businessHours[index];
+                }
+                vm.$refs.modalAddBusinessHour.open(br);
+            },
+
+            async deleteBusinessHour(index) {
+                const vm = this;
+                const br = vm.item.businessHours[index];
+                debugger;
+                try {
+                    await vm.$util.axios.delete(`/api/clinics/business-hour/${br.clinicBusinessHourId}`)
+
+                    await vm.get();
+                } catch (e) {
+                    vm.$util.handleError(e);
                 }
             }
         }

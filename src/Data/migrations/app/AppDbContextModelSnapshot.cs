@@ -14,6 +14,7 @@ namespace Data.migrations.app
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("App")
                 .HasAnnotation("ProductVersion", "5.0.2");
 
             modelBuilder.Entity("Data.App.Models.Appointments.Appointment", b =>
@@ -255,9 +256,6 @@ namespace Data.migrations.app
                     b.Property<string>("Address")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ClinicStatus")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("ConcurrencyToken")
                         .IsRequired()
                         .HasMaxLength(36)
@@ -281,15 +279,46 @@ namespace Data.migrations.app
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("OpeningHours")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("TEXT");
 
                     b.HasKey("ClinicId");
 
                     b.ToTable("Clinic");
+                });
+
+            modelBuilder.Entity("Data.App.Models.Clinics.ClinicBusinessHour", b =>
+                {
+                    b.Property<string>("ClinicBusinessHourId")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ClinicId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DaysOfWeek")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("EndTime")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("StartTime")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ClinicBusinessHourId");
+
+                    b.HasIndex("ClinicId");
+
+                    b.ToTable("ClinicBusinessHour");
                 });
 
             modelBuilder.Entity("Data.App.Models.Clinics.ClinicReview", b =>
@@ -802,9 +831,9 @@ namespace Data.migrations.app
                         .IsRequired();
 
                     b.HasOne("Data.App.Models.Users.User", "User")
-                        .WithMany()
+                        .WithMany("AppointmentTimelines")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Appointment");
@@ -857,6 +886,17 @@ namespace Data.migrations.app
                         .IsRequired();
 
                     b.Navigation("Chat");
+                });
+
+            modelBuilder.Entity("Data.App.Models.Clinics.ClinicBusinessHour", b =>
+                {
+                    b.HasOne("Data.App.Models.Clinics.Clinic", "Clinic")
+                        .WithMany("BusinessHours")
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Clinic");
                 });
 
             modelBuilder.Entity("Data.App.Models.Clinics.ClinicReview", b =>
@@ -963,7 +1003,7 @@ namespace Data.migrations.app
                     b.HasOne("Data.App.Models.Parents.Child", "Child")
                         .WithMany("MedicalEntries")
                         .HasForeignKey("ChildId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Appointment");
@@ -1075,6 +1115,8 @@ namespace Data.migrations.app
                 {
                     b.Navigation("Appointments");
 
+                    b.Navigation("BusinessHours");
+
                     b.Navigation("ParentClinics");
 
                     b.Navigation("Staffs");
@@ -1099,6 +1141,8 @@ namespace Data.migrations.app
 
             modelBuilder.Entity("Data.App.Models.Users.User", b =>
                 {
+                    b.Navigation("AppointmentTimelines");
+
                     b.Navigation("NotificationReceivers");
 
                     b.Navigation("UserRoles");

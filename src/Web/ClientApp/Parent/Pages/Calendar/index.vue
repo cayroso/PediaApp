@@ -1,17 +1,32 @@
 ﻿
 <template>
     <div v-cloak>
-        <div class='demo-app-main'>
-            <full-calendar class='demo-app-calendar'
+        <div class="row align-items-center">
+            <div class="col">
+                <h1 class="h3 mb-sm-0">
+                    <i class="fas fa-fw fa-calendar-alt mr-1"></i>Calendar
+                </h1>
+            </div>
+            <div class="col-auto">
+                <div>
+                    <button @click="refresh" class="btn btn-primary">
+                        <span class="fas fa-fw fa-sync"></span>
+                    </button>
+                    <button @click="close" class="btn btn-secondary">
+                        <span class="fas fa-fw fa-times-circle"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class='mt-2'>
+            <full-calendar ref="fullCalendar"
                            :options='calendarOptions'>
-                <template v-slot:eventContent='arg'>
-                    <b>{{ arg.timeText }}</b>
-                    <i>{{ arg.event.title }}</i>
-                </template>
             </full-calendar>
         </div>
-        <view-appointment ref="viewAppointment"></view-appointment>
 
+        <view-appointment ref="viewAppointment"></view-appointment>
+        
     </div>
 </template>
 <script>
@@ -36,6 +51,7 @@
         data() {
             return {
                 calendarOptions: {
+                    contentHeight: 'auto',
                     plugins: [
                         dayGridPlugin,
                         timeGridPlugin,
@@ -44,37 +60,42 @@
                     headerToolbar: {
                         left: 'prev,next today',
                         center: 'title',
+                        //right: 'dayGridMonth,timeGridWeek,timeGridDay'
                         right: 'dayGridMonth,timeGridWeek,timeGridDay'
                     },
-                    initialView: 'dayGridMonth',
-                    initialEvents: [
-                        //{
-                        //    id: 1,
-                        //    title: 'All-day event',
-                        //    start: new Date()
-                        //},
-                        //{
-                        //    id: 2,
-                        //    title: 'Timed event',
-                        //    start: moment().add(1, 'hours')
-                        //}
-                    ], // alternatively, use the `events` setting to fetch from a feed
-                    events: [],
+                    nowIndicator: true,
+                    allDaySlot: false,
+                    initialView: 'timeGridWeek',
+                    slotMinTime: '07:00:00',
+                    slotMaxTime: '20:00:00',
+                    businessHours: false,
+                    //selectConstraint: 'businessHours',
+                    //eventConstraint: true,
+
+                    //datesSet: this.datesSet,
+                    eventOverlap: false,
+                    eventSources: [
+                        {
+                            events: this.getAppointments,
+                        }
+                    ],
                     //editable: true,
-                    selectable: true,
+                    //selectable: true,
                     selectMirror: true,
                     dayMaxEvents: true,
                     weekends: true,
-                    //select: this.handleDateSelect,
-                    eventClick: this.handleEventClick,
+                    //select: this.onClickCalendar,
+                    //dateClick: this.onClickCalendar,
+                    eventClick: this.onClickEvent,
                     //eventsSet: this.handleEvents
                     /* you can update a remote database when these fire:
                     eventAdd:
                     eventChange:
                     eventRemove:
                     */
-                },
-                currentEvents: []
+                    //eventAdd: this.eventAdded,
+                    //eventChange: this.eventChanged
+                }
             }
         },
 
@@ -85,75 +106,126 @@
         async created() {
             const vm = this;
 
+            var settings = JSON.parse(localStorage.getItem('calendar:settings')) || {};
+
+            vm.calendarOptions.initialView = settings.viewType;
+
+            vm.$bus.$on('event:appointment-updated', async (resp) => {                
+                await vm.refresh();
+            });
         },
 
         async mounted() {
             const vm = this;
 
-            await vm.getAppointments();
+            //await vm.getAppointments();
         },
 
         methods: {
-            handleWeekendsToggle() {
-                this.calendarOptions.weekends = !this.calendarOptions.weekends // update a property
-            },
-            handleDateSelect(selectInfo) {
-                let title = prompt('Please enter a new title for your event')
-                let calendarApi = selectInfo.view.calendar
-                calendarApi.unselect() // clear date selection
-                if (title) {
-                    calendarApi.addEvent({
-                        id: createEventId(),
-                        title,
-                        start: selectInfo.startStr,
-                        end: selectInfo.endStr,
-                        allDay: selectInfo.allDay
-                    })
-                }
-            },
-            async handleEventClick(clickInfo) {
-                //if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-                //    clickInfo.event.remove()
-                //}
-                const id = clickInfo.event.id;
+            async refresh() {
                 const vm = this;
-                
-                await vm.getAppointment(id);
+
+                const fullCalendar = vm.$refs.fullCalendar;
+
+                fullCalendar.getApi().refetchEvents();
             },
-            handleEvents(events) {
-                this.currentEvents = events
+            datesSet(dateInfo) {
+                var setting = {
+                    start: dateInfo.start,
+                    end: dateInfo.end,
+                    viewType: dateInfo.view.type
+                }
+                localStorage.setItem('calendar:settings', JSON.stringify(setting));
+            },
+            async onClickEvent(info) {
+                const vm = this;
+
+                vm.$refs.viewAppointment.open(info.event.id);
             },
 
-            async getAppointments() {
+            getEventBg(item) {
+                let bg = '';
+
+                switch (item.status) {
+
+                    // ParentRequested,
+                    // ClinicRequested,
+                    case 1:
+                    case 2:
+                        bg = 'magenta';
+                        break;
+
+                    // ParentCancelled,
+                    // ClinicCancelled,
+                    case 3:
+                    case 4:
+                        bg = 'silver';
+                        break;
+
+                    // ParentRejected,
+                    // ClinicRejected,
+                    case 5:
+                    case 6:
+                        bg = 'red';
+                        break;
+
+                    //Accepted,
+                    case 7:
+                        bg = 'blue';
+                        break;
+                    // InProgress,
+                    case 8:
+                        bg = 'green';
+                        break;
+                    // Completed,
+                    case 9:
+                        bg = 'bluegreen';
+                        break;
+                    //Archived
+                }
+
+                return bg;
+            },
+            async getAppointments(fetchInfo) {
                 const vm = this;
 
                 try {
-                    await vm.$util.axios.get(`/api/appointments/parent/search/?c=&p=1&s=100&sf=&so=-1`)
+                    const query = [
+                        '?c=',
+                        '&p=', 1,
+                        '&s=', 100,
+                        '&sf=',
+                        '&so=', -1,
+                        '&ds=', moment(fetchInfo.start).valueOf(),
+                        '&de=', moment(fetchInfo.end).valueOf(),
+
+                    ].join('');
+
+                    return await vm.$util.axios.get(`/api/appointments/parent/search/${query}`)
                         .then(resp => {
 
-                            //vm.calendarOptions.events.push({
-
-                            //    id: 1,
-                            //    title: 'All-day event',
-                            //    start: new Date()
-                            //})
-                            vm.calendarOptions.events = resp.data.items.map(e => {
-                                
+                            const items = resp.data.items.map(e => {
                                 return {
                                     id: e.appointmentId,
-                                    display: 'list-item',
-                                    //title: `${e.statusText}: ${e.clinic.name} - ${e.child.name}`,
-                                    title: `${e.child.name}`,
+                                    //display: 'list-item',
+                                    title: `${e.statusText}: ${e.clinic.name} - ${e.child.name}`,
                                     allDay: false,
-                                    
+                                    //editable: vm.uid === e.parent.parentId,
                                     start: moment(e.dateStart).format('YYYY-MM-DDTHH:mm'),
                                     end: moment(e.dateEnd).format('YYYY-MM-DDTHH:mm'),
+
+                                    backgroundColor: vm.getEventBg(e),
+
+                                    item: e
                                 };
                             });
-                        })
+
+                            return items;
+                        });
                 } catch (e) {
                     vm.$util.handleError(e);
                 }
+
             },
 
             async getAppointment(id) {

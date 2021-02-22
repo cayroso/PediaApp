@@ -19,12 +19,17 @@
             </div>
         </template>
         <template v-slot:modal-footer>
-
-            <button v-if="canCancel" @click="cancelAppointment" class="btn btn-warning">
-                Cancel
-            </button>
-
+            <!--{{item.type}}/{{item.status}}
+            {{item.parent.parentId}}={{uid}}-->
             <template v-if="viewMode==='clinic'">
+                <button v-if="canDelete" @click="deleteAppointment" class="btn btn-danger">
+                    Delete
+                </button>
+
+                <button v-if="canCancel" @click="cancelAppointment" class="btn btn-warning">
+                    Cancel
+                </button>
+
                 <button v-if="canAcceptReject" @click="acceptAppointment" class="btn btn-success">
                     Accept
                 </button>
@@ -40,11 +45,32 @@
                     Completed
                 </button>
             </template>
+
+            <template v-if="viewMode==='parent'">
+                <button v-if="canDelete" @click="deleteAppointment" class="btn btn-danger">
+                    Delete
+                </button>
+
+                <button v-if="canCancel" @click="cancelAppointment" class="btn btn-warning">
+                    Cancel
+                </button>
+
+
+                <button v-if="canAcceptReject" @click="acceptAppointment" class="btn btn-success">
+                    Accept
+                </button>
+                <button v-if="canAcceptReject" @click="rejectAppointment" class="btn btn-warning">
+                    Reject
+                </button>
+
+            </template>
+
             <button @click="close" class="btn btn-secondary ml-auto">
                 Close
             </button>
         </template>
-        <div>
+        <div v-if="item">
+
             <div class="form-row">
                 <div class="form-group col-md">
                     <label>Type</label>
@@ -77,11 +103,24 @@
                 </div>
             </div>
             <template v-if="viewMode==='parent'">
-                <div class="form-group">
-                    <label>Clinic</label>
-                    <div class="form-control-plaintext">                        
-                        {{item.clinic.name}}
+                <div class="form-row">
+                    <div class="form-group col-md">
+                        <label>Clinic</label>
+                        <div class="form-control-plaintext">
+                            {{item.clinic.name}}
+                        </div>
                     </div>
+                    <div class="form-group col-md">
+                        <label>Business Hours</label>
+                        <div class="form-control-plaintext">
+                            <ul class="list-unstyled">
+                                <li v-for="br in clinicBusinessHours">
+                                    {{br}}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
                 </div>
             </template>
             <template v-if="viewMode==='clinic'">
@@ -135,8 +174,15 @@
     </b-modal>
 </template>
 <script>
+    import pageMixin from '../../../_Core/Mixins/pageMixin';
+
     export default {
+        mixins: [pageMixin],
         props: {
+            uid: {
+                type: String,
+                required: true,
+            },
             viewMode: {
                 type: String,
                 required: true
@@ -149,7 +195,11 @@
                 busy: false,
                 id: null,
                 item: {
-                    clinic: {},
+                    dateStart: null,
+                    dateEnd: null,
+                    clinic: {
+                        businessHours: []
+                    },
                     parent: {},
                     child: {}
                 },
@@ -157,29 +207,60 @@
             }
         },
         computed: {
+            canDelete() {
+                const vm = this;
+                const item = vm.item;
+
+                //  clinic (clinicrequested, cliniccancelled, parentrejected)
+                if (item.type === 1 && vm.viewMode === 'clinic') {
+                    return [2, 4, 5,].includes(item.status);
+                }
+
+                //  parent (parentrequested, parentcancelled, clinicrejected)
+                if (item.type === 2 && vm.viewMode === 'parent') {
+                    if (item.parent.parentId === vm.uid)
+                        return [1, 3, 6].includes(item.status);
+                }
+
+                return false;
+            },
+
             canCancel() {
                 const vm = this;
                 const item = vm.item;
 
                 //  clinic
-                if (item.type === 1) {                                        
-                    return item.status === 1 || item.status === 2;
+                if (item.type === 1 && vm.viewMode === 'clinic') {
+                    return [1, 2].includes(item.status);
                 }
 
                 //  parent
-                if (item.type === 2) {
-                    if (item.parent.parentId !== vm.uid)
-                        return false;
-                    return item.status === 1 || item.status === 2;
+                if (item.type === 2 && vm.viewMode === 'parent') {
+                    if (item.parent.parentId === vm.uid)
+                        return [1, 2].includes(item.status);
                 }
-                
+
+                return false;
             },
 
             canAcceptReject() {
                 const vm = this;
                 const item = vm.item;
 
-                return item.type === 2 && item.status < 7;
+                //  parent initilated and viewed by clinic
+                if (item.type === 2 && vm.viewMode === 'clinic') {
+                    return [1, 2].includes(item.status);
+                    //return item.status === 1 || item.status === 2;
+                }
+
+                //  clinic initiated and viewed by parent
+                if (item.type === 1 && vm.viewMode === 'parent' && item.parent.parentId === vm.uid) {
+                    return [1, 2].includes(item.status);
+                    //return item.status === 1 || item.status === 2;
+                }
+
+                return false;
+                //return item.type === 2 && item.status < 7;
             },
 
             canSetInProgress() {
@@ -195,13 +276,49 @@
 
                 return item.status === 8;
             },
+
+            clinicBusinessHours() {
+                const vm = this;
+
+                return vm.getBusinessHours(vm.item.clinic.businessHours);
+
+                //const vm = this;
+                //const clinic = vm.item.clinic;
+                //const businessHours = clinic.businessHours;
+
+                //const output = [];
+
+                //const weekDays = [
+                //    "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
+                //]
+
+                //businessHours.forEach(br => {
+                //    var daysOfWeek = br.daysOfWeek.split(',');
+
+                //    const wds = daysOfWeek.map(dw => {
+                //        var wd = weekDays[dw];
+
+                //        return wd;
+
+                //    })
+
+                //    var xx = `${wds.join('-')} ${moment(br.startTime, 'HH:mm').format('h:mm A')}-${moment(br.endTime, 'HH:mm').format('h:mm A')}`;
+                //    output.push(xx);
+
+                //    //output.push(daysOfWeek);
+                //})
+
+                //return output;
+            },
         },
         methods: {
             reset() {
                 const vm = this;
 
                 vm.item = {
-                    clinic: {},
+                    clinic: {
+                        businessHours: []
+                    },
                     parent: {},
                     child: {}
                 }
@@ -242,6 +359,17 @@
                 }
             },
 
+            async deleteAppointment() {
+                const vm = this;
+                const item = vm.item;
+
+                await vm.$util.axios.delete(`/api/appointments/${item.appointmentId}/${item.token}`)
+                    .then(_ => {
+                        vm.$emit('saved');
+                        vm.close();
+                    })
+            },
+
             async cancelAppointment() {
                 const vm = this;
                 const item = vm.item;
@@ -257,8 +385,8 @@
                     token: item.token,
                     notes: notes
                 };
-                debugger
-                await vm.$util.axios.put(`/api/appointments/clinic/cancel`, payload)
+
+                await vm.$util.axios.put(`/api/appointments/${vm.viewMode}/cancel`, payload)
                     .then(_ => {
                         vm.$emit('saved');
                         vm.close();
@@ -275,7 +403,7 @@
                     //notes: notes
                 };
                 debugger
-                await vm.$util.axios.put(`/api/appointments/clinic/accept`, payload)
+                await vm.$util.axios.put(`/api/appointments/${vm.viewMode}/accept`, payload)
                     .then(_ => {
                         vm.$emit('saved');
                         vm.close();
@@ -298,7 +426,7 @@
                     notes: notes
                 };
 
-                await vm.$util.axios.put(`/api/appointments/clinic/reject`, payload)
+                await vm.$util.axios.put(`/api/appointments/${vm.viewMode}/reject`, payload)
                     .then(_ => {
                         vm.$emit('saved');
                         vm.close();
@@ -314,7 +442,7 @@
                     token: item.token,
                 };
 
-                await vm.$util.axios.put(`/api/appointments/clinic/inprogress`, payload)
+                await vm.$util.axios.put(`/api/appointments/${vm.viewMode}/inprogress`, payload)
                     .then(_ => {
                         vm.$emit('saved');
                         vm.close();
@@ -330,7 +458,7 @@
                     token: item.token,
                 };
 
-                await vm.$util.axios.put(`/api/appointments/clinic/complete`, payload)
+                await vm.$util.axios.put(`/api/appointments/${vm.viewMode}/complete`, payload)
                     .then(_ => {
                         vm.$emit('saved');
                         vm.close();

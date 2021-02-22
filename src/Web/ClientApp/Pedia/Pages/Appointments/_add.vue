@@ -21,21 +21,23 @@
             </button>
         </template>
         <div>
-            <div class="form-group">
-                <label for="parentId">Parent</label>
-                <div>
-                    <b-form-select v-model="item.parentId" :options="lookups.parents" @change="getParentChildren(item.parentId)" value-field="id" text-field="name" id="parentId" v-bind:class="getValidClass('parentId')" />
-                    <div v-if="validations.has('parentId')" class="invalid-feedback">
-                        {{validations.get('parentId')}}
+            <div class="form-row">
+                <div class="form-group col-md">
+                    <label for="parentId">Parent</label>
+                    <div>
+                        <b-form-select v-model="item.parentId" :options="lookups.parents" @change="getParentChildren(item.parentId)" value-field="id" text-field="name" id="parentId" v-bind:class="getValidClass('parentId')" />
+                        <div v-if="validations.has('parentId')" class="invalid-feedback">
+                            {{validations.get('parentId')}}
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <label for="childId">Child</label>
-                <div>
-                    <b-form-select v-model="item.childId" :options="lookups.children" value-field="id" text-field="name" id="childId" v-bind:class="getValidClass('childId')" />
-                    <div v-if="validations.has('childId')" class="invalid-feedback">
-                        {{validations.get('childId')}}
+                <div class="form-group col-md">
+                    <label for="childId">Child</label>
+                    <div>
+                        <b-form-select v-model="item.childId" :options="lookups.children" value-field="id" text-field="name" id="childId" v-bind:class="getValidClass('childId')" />
+                        <div v-if="validations.has('childId')" class="invalid-feedback">
+                            {{validations.get('childId')}}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -172,7 +174,15 @@
                 const vm = this;
 
                 await vm.$util.axios.get(`/api/clinics/parents/${vm.item.parentId}/children`)
-                    .then(resp => vm.lookups.children = resp.data);
+                    .then(resp => {
+                        vm.lookups.children = resp.data;
+
+                        if (vm.lookups.children.length === 1) {
+                            vm.item.childId = vm.lookups.children[0].id;
+                        }
+                    });
+
+                
             },
 
             async save() {

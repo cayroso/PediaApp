@@ -5,6 +5,7 @@ using App.Hubs;
 using App.Services;
 using Data.App.DbContext;
 using Data.App.Models.Chats;
+using Data.App.Models.Clinics;
 using Data.Common;
 using Data.Constants;
 using Data.Identity.DbContext;
@@ -82,9 +83,8 @@ namespace Web.Controllers
         [HttpPut]
         public async Task<IActionResult> Edit([FromBody] EditClinicInfo info)
         {
-            var cmd = new EditClinicCommand("", TenantId, UserId, info.ClinicId, info.Token, info.ClinicStatus,
-                info.Name, info.PhoneNumber, info.MobileNumber, info.Email, info.OpeningHours,
-                info.Address, info.GeoX, info.GeoY);
+            var cmd = new EditClinicCommand("", TenantId, UserId, info.ClinicId, info.Token,
+                info.Name, info.PhoneNumber, info.MobileNumber, info.Email, info.Address, info.GeoX, info.GeoY);
 
             await _commandHandlerDispatcher.HandleAsync(cmd);
 
@@ -125,30 +125,79 @@ namespace Web.Controllers
             return Ok(dto);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetStaffs(string c, int p, int s, string sf, int so)
+
+        [HttpPost("business-hour")]
+        public async Task<IActionResult> AddBusinessHours([FromBody] AddBusinessHourInfo info)
         {
-            //var sql = from cs in _appDbContext.ClinicStaffs.AsNoTracking()
-            //          join staff in _appDbContext.Staffs.AsNoTracking() on cs.StaffId equals staff.StaffId
+            var data = new ClinicBusinessHour
+            {
+                ClinicId = info.ClinicId,
+                DaysOfWeek = info.DaysOfWeek,
+                StartTime = info.StartTime.ToString("HH:mm"),
+                EndTime = info.EndTime.ToString("HH:mm"),
+            };
 
-            //          where cs.ClinicId == ClinicId
+            await _appDbContext.AddAsync(data);
 
-            //          select new
-            //          {
-            //              t.TeamId,
-            //              t.Name,
-            //              t.Description,
-            //              t.DateCreated,
-            //              t.DateUpdated,
-            //              Members = t.Members.Select(e => new
-            //              {
-            //                  UserId = e.MemberId,
-            //                  Name = e.Member.FirstLastName,
-            //                  UrlProfilePicture = e.Member.Image.Url
-            //              })
-            //          };
+            await _appDbContext.SaveChangesAsync();
+
+            return Ok(data.ClinicBusinessHourId);
+        }
+
+        [HttpPut("business-hour")]
+        public async Task<IActionResult> EditBusinessHours([FromBody] EditBusinessHourInfo info)
+        {
+            var data = await _appDbContext.ClinicBusinessHours.FirstOrDefaultAsync(e => e.ClinicBusinessHourId == info.ClinicBusinessHourId);
+
+            if (data == null)
+                return NotFound();
+
+            data.DaysOfWeek = info.DaysOfWeek;
+            data.StartTime = info.StartTime.ToString("HH:mm");
+            data.EndTime = info.EndTime.ToString("HH:mm");
+
+            await _appDbContext.SaveChangesAsync();
 
             return Ok();
+        }
+
+        [HttpDelete("business-hour/{id}")]
+        public async Task<IActionResult> DeleteBusinessHours(string id)
+        {
+            var data = await _appDbContext.ClinicBusinessHours.FirstOrDefaultAsync(e => e.ClinicBusinessHourId == id);
+
+            if (data == null)
+                return NotFound();
+
+            _appDbContext.Remove(data);
+
+            await _appDbContext.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        public class AddBusinessHourInfo
+        {
+            [Required]
+            public string ClinicId { get; set; }
+            [Required]
+            public string DaysOfWeek { get; set; }
+            [Required]
+            public DateTime StartTime { get; set; }
+            [Required]
+            public DateTime EndTime { get; set; }
+        }
+
+        public class EditBusinessHourInfo
+        {
+            [Required]
+            public string ClinicBusinessHourId { get; set; }
+            [Required]
+            public string DaysOfWeek { get; set; }
+            [Required]
+            public DateTime StartTime { get; set; }
+            [Required]
+            public DateTime EndTime { get; set; }
         }
     }
 }

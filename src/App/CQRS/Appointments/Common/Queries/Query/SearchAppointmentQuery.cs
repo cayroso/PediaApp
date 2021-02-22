@@ -12,18 +12,23 @@ namespace App.CQRS.Appointments.Common.Queries.Query
     {
         public string ClinicId { get;  }
         public string ParentId { get;  }
+        public DateTime DateStart { get;  }
+        public DateTime DateEnd { get; }
         public SearchAppointmentQuery(string correlationId, string tenantId, string userId,
-            string clinicId, string parentId,
+            string clinicId, string parentId, DateTime dateStart, DateTime dateEnd,
             string criteria, int pageIndex, int pageSize, string sortField, int sortOrder)
             : base(correlationId, tenantId, userId, criteria, pageIndex, pageSize, sortField, sortOrder)
         {
             ClinicId = clinicId;
             ParentId = parentId;
+            DateStart = dateStart.Truncate().AsUtc();
+            DateEnd = dateEnd.Truncate().AsUtc();
         }
 
         public class Appointment
         {
             public string AppointmentId { get; set; }
+            public string ReferenceNumber { get; set; }
             public Clinic Clinic { get; set; }
             public Child Child { get; set; }
             public Parent Parent { get; set; }
@@ -53,6 +58,8 @@ namespace App.CQRS.Appointments.Common.Queries.Query
                 get => _dateCreated.AsUtc();
                 set => _dateCreated = value;
             }
+
+            public string Token { get; set; }
         }
 
         public class Clinic

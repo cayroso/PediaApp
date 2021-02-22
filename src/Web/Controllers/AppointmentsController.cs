@@ -7,6 +7,7 @@ using App.CQRS.Clinics.Common.Commands.Command;
 using App.CQRS.Clinics.Common.Queries.Query;
 using App.Hubs;
 using App.Services;
+using Common.Extensions;
 using Data.App.DbContext;
 using Data.App.Models.Chats;
 using Data.Common;
@@ -53,9 +54,10 @@ namespace Web.Controllers
         }
 
         [HttpGet("clinic/search/{id}")]
-        public async Task<IActionResult> Search(string id, string c, int p, int s, string sf, int so)
+        public async Task<IActionResult> Search(string id, long ds, long de, string c, int p, int s, string sf, int so)
         {
-            var query = new SearchAppointmentQuery("", TenantId, UserId, id, null, c, p, s, sf, so);
+
+            var query = new SearchAppointmentQuery("", TenantId, UserId, id, null, ds.ToUtcDate(), de.ToUtcDate(), c, p, s, sf, so);
 
             var dto = await _queryHandlerDispatcher.HandleAsync<SearchAppointmentQuery, Paged<SearchAppointmentQuery.Appointment>>(query);
 
@@ -76,7 +78,22 @@ namespace Web.Controllers
         [HttpPut]
         public async Task<IActionResult> Put([FromBody] EditAppointmentInfo info)
         {
-            var cmd = new EditAppointmentCommand("", TenantId, UserId, info.AppointmentId, info.Token, info.DateStart, info.DateEnd);
+            if (string.IsNullOrWhiteSpace(ClinicId) && string.IsNullOrWhiteSpace(info.ClinicId))
+            {
+                return BadRequest("Clinic is required.");
+            }
+
+            var cmd = new EditAppointmentCommand("", TenantId, UserId, string.IsNullOrWhiteSpace(ClinicId) ? info.ClinicId : ClinicId, info.AppointmentId, info.Token, info.DateStart, info.DateEnd);
+
+            await _commandHandlerDispatcher.HandleAsync(cmd);
+
+            return Ok(cmd.AppointmentId);
+        }
+
+        [HttpDelete("{id}/{token}")]
+        public async Task<IActionResult> Delete(string id, string token)
+        {
+            var cmd = new DeleteAppointmentCommand("", TenantId, UserId, id, token);
 
             await _commandHandlerDispatcher.HandleAsync(cmd);
 
@@ -87,9 +104,9 @@ namespace Web.Controllers
 
 
         [HttpGet("clinic/search")]
-        public async Task<IActionResult> Search(string c, int p, int s, string sf, int so)
+        public async Task<IActionResult> Search(long ds, long de, string c, int p, int s, string sf, int so)
         {
-            var query = new SearchAppointmentQuery("", TenantId, UserId, ClinicId, null, c, p, s, sf, so);
+            var query = new SearchAppointmentQuery("", TenantId, UserId, ClinicId, null, ds.ToUtcDate(), de.ToUtcDate(), c, p, s, sf, so);
 
             var dto = await _queryHandlerDispatcher.HandleAsync<SearchAppointmentQuery, Paged<SearchAppointmentQuery.Appointment>>(query);
 
@@ -101,6 +118,16 @@ namespace Web.Controllers
         public async Task<IActionResult> PostClinicRequest([FromBody] AddAppointmentByClinicInfo info)
         {
             var cmd = new ClinicRequestedAppointmentCommand("", TenantId, UserId, GuidStr(), ClinicId, info.ChildId, info.DateStart, info.DateEnd, info.Notes);
+
+            await _commandHandlerDispatcher.HandleAsync(cmd);
+
+            return Ok(cmd.AppointmentId);
+        }
+
+        [HttpPut("clinic/resubmit")]
+        public async Task<IActionResult> PutClinicResubmitted([FromBody] EditAppointmentStatusInfo info)
+        {
+            var cmd = new ClinicResubmittedAppointmentCommand("", TenantId, UserId, info.AppointmentId, info.Token, info.Notes);
 
             await _commandHandlerDispatcher.HandleAsync(cmd);
 
@@ -172,9 +199,9 @@ namespace Web.Controllers
         #region Parent
 
         [HttpGet("parent/search")]
-        public async Task<IActionResult> SearchMine(string c, int p, int s, string sf, int so)
+        public async Task<IActionResult> SearchMine(long ds, long de, string c, int p, int s, string sf, int so)
         {
-            var query = new SearchAppointmentQuery("", TenantId, UserId, null, UserId, c, p, s, sf, so);
+            var query = new SearchAppointmentQuery("", TenantId, UserId, null, UserId, ds.ToUtcDate(), de.ToUtcDate(), c, p, s, sf, so);
 
             var dto = await _queryHandlerDispatcher.HandleAsync<SearchAppointmentQuery, Paged<SearchAppointmentQuery.Appointment>>(query);
 
@@ -186,6 +213,16 @@ namespace Web.Controllers
         public async Task<IActionResult> PostParentRequest([FromBody] AddAppointmentInfo info)
         {
             var cmd = new ParentRequestedAppointmentCommand("", TenantId, UserId, GuidStr(), info.ClinicId, info.ChildId, info.DateStart, info.DateEnd, info.Notes);
+
+            await _commandHandlerDispatcher.HandleAsync(cmd);
+
+            return Ok(cmd.AppointmentId);
+        }
+
+        [HttpPut("parent/resubmit")]
+        public async Task<IActionResult> PutParentResubmit([FromBody] EditAppointmentStatusInfo info)
+        {
+            var cmd = new ParentResubmittedAppointmentCommand("", TenantId, UserId, info.AppointmentId, info.Token, info.Notes);
 
             await _commandHandlerDispatcher.HandleAsync(cmd);
 

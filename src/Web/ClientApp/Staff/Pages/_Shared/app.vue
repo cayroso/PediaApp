@@ -1,7 +1,7 @@
 ﻿<template>
-    <div v-cloak>
+    <div class="vh-100" v-cloak>
         <app-bar :uid="uid" :appName="appName" :urlProfilePicture="urlProfilePicture" :menus="menus"></app-bar>
-        <main class="container-lg main mb-5 mb-md-0 pb-5 pb-sm-0">
+        <main class="container-lg main">
             <router-view :uid="uid"></router-view>
         </main>
         <bottom-nav :menus="menus"></bottom-nav>

@@ -25,6 +25,7 @@ export default {
                     ms: 3
                 }
             },
+            bottomNavHeightStyle: null,
 
             messageIds: []
         };
@@ -47,6 +48,8 @@ export default {
     async mounted() {
         const vm = this;
 
+        vm.getBottomNavHeight();
+
         if (vm.uid) {
             //await vm.connectNotificationHub();
 
@@ -61,6 +64,16 @@ export default {
         }
     },
     methods: {
+        getBottomNavHeight() {
+            const vm = this;
+            const bottomNav = vm.$refs.bottomNav;
+            let bottomNavHeight = bottomNav.$el.clientHeight;
+
+            if (bottomNavHeight > 0) {
+                vm.bottomNavHeightStyle = `padding-bottom:${bottomNavHeight + 10}px;`;
+            }
+        },
+
         scrollIntoView() {
             const topElem = document.getElementById('top');
             if (topElem) {
@@ -99,6 +112,7 @@ export default {
                 history.back();
             }
         },
+        
 
         async connectNotificationHub() {
             const vm = this;
@@ -264,6 +278,8 @@ export default {
                 .withAutomaticReconnect()
                 .build();
 
+
+
             hub.on('appointmentUpdated', function (resp) {
                 vm.$bus.$emit('event:notification-received');
                 vm.$bus.$emit('event:appointment-updated', resp);
@@ -281,6 +297,9 @@ export default {
             });
             hub.on('parentCancelled', function (resp) {
                 vm.$bus.$emit('event:parent-cancelled', resp);
+            });
+            hub.on('parentDeleted', function (resp) {
+                vm.$bus.$emit('event:parent-deleted', resp);
             });
 
             //  clinic
@@ -304,6 +323,9 @@ export default {
             });
             hub.on('clinicArchived', function (resp) {
                 vm.$bus.$emit('event:clinic-archived', resp);
+            });
+            hub.on('clinicDeleted', function (resp) {
+                vm.$bus.$emit('event:clinic-deleted', resp);
             });
 
 

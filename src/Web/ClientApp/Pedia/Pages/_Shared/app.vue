@@ -1,11 +1,11 @@
 ﻿<template>
     <div v-cloak>
         <app-bar :uid="uid" :appName="appName" :urlProfilePicture="urlProfilePicture" :menus="menus"></app-bar>
-        <main class="container-lg main mb-5 mb-md-0 pb-5 pb-sm-0">
+        <main class="container-lg main" :style="bottomNavHeightStyle">
             <router-view :uid="uid"></router-view>
         </main>
-        <bottom-nav :menus="menus"></bottom-nav>
 
+        <bottom-nav ref="bottomNav" :menus="menus"></bottom-nav>
         <modal-view-chat ref="modalViewChat" :uid="uid"></modal-view-chat>
     </div>
 </template>
@@ -39,16 +39,19 @@
         data() {
             return {
                 menus: [
-                    { to: '/', label: 'Home', icon: 'fas fa-fw fa-home' },
+                    { to: '/', label: 'Dashboard', icon: 'fas fa-fw fa-tachometer-alt' },
                     { to: '/appointments', label: 'Appointments', icon: 'fas fa-fw fa-calendar' },
-                    { to: '/clinic', label: 'Clinics', icon: 'fas fa-fw fa-clinic-medical' },
-                    //{ to: '/contacts', label: 'Contacts', icon: 'fas fa-fw fa-id-card' },
+                    { to: '/parents', label: 'Parents', icon: 'fas fa-fw fa-user' },
+                    { to: '/clinic', label: 'Clinic', icon: 'fas fa-fw fa-clinic-medical' },
+                    { to: '/staffs', label: 'Staffs', icon: 'fas fa-fw fa-users' },
 
-                ]
+                ],
+                bottomNavHeightStyle: null
             }
         },
         async mounted() {
             const vm = this;
+
             vm.setupEventReceivers();
         },
         async created() {
@@ -64,6 +67,7 @@
             //}
         },
         methods: {
+
             displayToast(resp, variant) {
                 const vm = this;
                 let content = resp.content;
@@ -84,9 +88,10 @@
                 //  parent
                 vm.$bus.$on('event:parent-requested', resp => vm.displayToast(resp, 'info'));
                 vm.$bus.$on('event:parent-rejected', resp => vm.displayToast(resp, 'danger'));
-                vm.$bus.$on('event:parent-accepted', resp => vm.displayToast(resp, 'success'));                
+                vm.$bus.$on('event:parent-accepted', resp => vm.displayToast(resp, 'success'));
                 vm.$bus.$on('event:parent-cancelled', resp => vm.displayToast(resp, 'warning'));
-                
+                vm.$bus.$on('event:parent-deleted', resp => vm.displayToast(resp, 'danger'));
+
             },
         }
     }

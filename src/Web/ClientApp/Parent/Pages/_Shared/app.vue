@@ -1,10 +1,12 @@
 ﻿<template>
     <div v-cloak>
         <app-bar :uid="uid" :appName="appName" :urlProfilePicture="urlProfilePicture" :menus="menus"></app-bar>
-        <main class="container-lg main mb-5 mb-md-0 pb-5 pb-sm-0">
+
+        <main class="container-lg main" v-bind:style="bottomNavHeightStyle">
             <router-view :uid="uid"></router-view>
         </main>
-        <bottom-nav :menus="menus"></bottom-nav>
+
+        <bottom-nav ref="bottomNav" :menus="menus"></bottom-nav>
 
         <modal-view-chat ref="modalViewChat" :uid="uid"></modal-view-chat>
     </div>
@@ -45,13 +47,17 @@
                     { to: '/clinics', label: 'Clinics', icon: 'fas fa-fw fa-clinic-medical' },
                     { to: '/appointments', label: 'Appointments', icon: 'fas fa-fw fa-calendar' },
                     { to: '/children', label: 'Children', icon: 'fas fa-fw fa-address-book' },
-                    { to: '/calendar', label: 'Calendar', icon: 'fas fa-fw fa-calendar' },
+                    { to: '/calendar', label: 'Calendar', icon: 'fas fa-fw fa-calendar-alt' },
                 ]
             }
+        },
+        computed: {
+
         },
         async mounted() {
             const vm = this;
 
+            vm.getBottomNavHeight();
             vm.setupEventReceivers();
         },
         async created() {
@@ -67,6 +73,8 @@
             //}
         },
         methods: {
+            
+
             displayToast(resp, variant) {
                 const vm = this;
                 let content = resp.content;
@@ -92,6 +100,7 @@
                 vm.$bus.$on('event:clinic-completed', resp => vm.displayToast(resp, 'success'));
                 vm.$bus.$on('event:clinic-cancelled', resp => vm.displayToast(resp, 'warning'));
                 vm.$bus.$on('event:clinic-archived', resp => vm.displayToast(resp, 'info'));
+                vm.$bus.$on('event:clinic-deleted', resp => vm.displayToast(resp, 'danger'));
             },
         }
     }

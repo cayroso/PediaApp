@@ -30,17 +30,21 @@ namespace App.Hubs
         Task AppointmentUpdated(string id);
 
         Task ParentRequested(Response resp);
+        Task ParentResubmitted(Response resp);
         Task ParentRejected(Response resp);
         Task ParentAccepted(Response resp);
         Task ParentCancelled(Response resp);
+        Task ParentDeleted(Response resp);
 
         Task ClinicRequested(Response resp);
+        Task ClinicResubmitted(Response resp);
         Task ClinicRejected(Response resp);
         Task ClinicAccepted(Response resp);
         Task ClinicSetInProgress(Response resp);
         Task ClinicCompleted(Response resp);
         Task ClinicCancelled(Response resp);
         Task ClinicArchived(Response resp);
+        Task ClinicDeleted(Response resp);
     }
 
     [Authorize]

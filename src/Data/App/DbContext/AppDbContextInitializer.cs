@@ -47,6 +47,15 @@ namespace Data.App.DbContext
                 {
                     ChatId = clinicId,
                     Title = "Chat Group"
+                },
+                BusinessHours = new List<ClinicBusinessHour>
+                {
+                    new ClinicBusinessHour
+                    {
+                        DaysOfWeek="1,2,3,4,5,6",
+                        StartTime = "09:00",
+                        EndTime = "18:00"
+                    }
                 }
             };
         }

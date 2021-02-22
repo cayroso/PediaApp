@@ -48,19 +48,11 @@
     <link rel="stylesheet" href="@theme" />
     }*@
 
-    <link rel="stylesheet" href="~/css/site.css" />
+    @*<link rel="stylesheet" href="~/css/site.css" />*@
 </head>
 <body id="top">
     <div id="app">
         @RenderBody()
-        @*<app inline-template>
-                <div style="padding-top:60px">
-                    <app-bar email="@email" app-name="@appName"></app-bar>
-                    <main class="container-lg main">
-                        @RenderBody()
-                    </main>
-                </div>
-            </app>*@
     </div>
 
     <partial name="_LogoutModal" />

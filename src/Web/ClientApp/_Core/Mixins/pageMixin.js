@@ -1,5 +1,7 @@
 ﻿'use strict';
 
+import { isArray } from "jquery";
+
 const mixin = {
     data() {
         return {
@@ -87,6 +89,39 @@ const mixin = {
             vm.toggles[key] = !vm.toggles[key];
 
             localStorage.setItem(vm.togglesKey, JSON.stringify(vm.toggles));
+        },
+
+        getBusinessHours(businessHours) {
+            //const vm = this;
+            //const clinic = vm.item.clinic;
+            //const businessHours = clinic.businessHours;
+
+            if (!isArray(businessHours) || businessHours.length === 0)
+                return '';
+
+            const output = [];
+
+            const weekDays = [
+                "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
+            ]
+
+            businessHours.forEach(br => {
+                var daysOfWeek = br.daysOfWeek.split(',');
+
+                const wds = daysOfWeek.map(dw => {
+                    var wd = weekDays[dw];
+
+                    return wd;
+
+                })
+
+                var xx = `${wds.join('-')} ${moment(br.startTime, 'HH:mm').format('h:mm A')}-${moment(br.endTime, 'HH:mm').format('h:mm A')}`;
+                output.push(xx);
+
+                //output.push(daysOfWeek);
+            })
+
+            return output;
         },
     }
 };

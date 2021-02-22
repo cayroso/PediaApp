@@ -58,7 +58,6 @@ export default {
 
             return query;
         },
-
         saveQuery() {
             const vm = this;
             const filter = vm.filter;

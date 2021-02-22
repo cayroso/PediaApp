@@ -38,18 +38,6 @@ namespace Data.Identity.DbContext
 
         static void CreateAdministrator(IdentityWebContext ctx)
         {
-            //var tenant = new Tenant
-            //{
-            //    TenantId = "administrator",
-            //    Name = "Administrator",
-            //    Host = "Administrators Host",
-            //    DatabaseConnectionString = @"Data Source=App_Data\TenantDB-DV.db;",
-            //    PhoneNumber = "+639198262335",
-            //    Email = "caydev2010@gmail.com",
-            //    Address = "",
-
-            //};
-
             var email1 = "user1@pediaapp.com";
             var token1 = Guid.NewGuid().ToString();
             var admin1 = new IdentityWebUser
@@ -74,8 +62,9 @@ namespace Data.Identity.DbContext
                 ConcurrencyStamp = token1,
                 UserInformation = new Models.Users.UserInformation
                 {
-                    FirstName = "User",
-                    LastName = "One",
+                    FirstName = "Kerina",
+                    MiddleName = "_",
+                    LastName = "Talandipa",
                     ConcurrencyToken = token1,
                     Theme = "https://bootswatch.com/4/slate/bootstrap.min.css"
                 }
@@ -113,8 +102,9 @@ namespace Data.Identity.DbContext
                 ConcurrencyStamp = token1,
                 UserInformation = new Models.Users.UserInformation
                 {
-                    FirstName = "User",
-                    LastName = "Two",
+                    FirstName = "Pening",
+                    MiddleName = "_",
+                    LastName = "Garcia",
                     ConcurrencyToken = token1,
                     Theme = "https://bootswatch.com/4/sketchy/bootstrap.min.css"
                 }
@@ -127,6 +117,45 @@ namespace Data.Identity.DbContext
 
             ctx.AddRange(admin2);
             ctx.AddRange(admin2Roles);
+
+            var email3 = "user3@pediaapp.com";
+            var user3 = new IdentityWebUser
+            {
+                Id = "administrator3",
+                UserName = email3,
+                NormalizedUserName = email3.ToUpper(),
+
+                Email = email3,
+                NormalizedEmail = email3.ToUpper(),
+                EmailConfirmed = true,
+                PhoneNumber = "+639198262335",
+                PhoneNumberConfirmed = true,
+
+                LockoutEnabled = false,
+                LockoutEnd = null,
+                PasswordHash = "AQAAAAEAACcQAAAAEKGIieH17t5bYXa5tUfxRwN9UIEwApTKbQBRaUtIHplIUG2OfYxvBS8uvKy5E2Stsg==",
+                SecurityStamp = "6SADCY3NMMLOHA2S26ZJCEWGHWSQUYRM",
+                TwoFactorEnabled = false,
+                AccessFailedCount = 0,
+                //TenantId = tenant.TenantId,
+                ConcurrencyStamp = token1,
+                UserInformation = new Models.Users.UserInformation
+                {
+                    FirstName = "Tina",
+                    MiddleName = "_",
+                    LastName = "Moran",
+                    ConcurrencyToken = token1,
+                    Theme = "https://bootswatch.com/4/sketchy/bootstrap.min.css"
+                }
+            };
+            var user3Role = new IdentityUserRole<string>
+            {
+                UserId = user3.Id,
+                RoleId = ApplicationRoles.Parent.Id
+            };
+
+            ctx.AddRange(user3);
+            ctx.AddRange(user3Role);
         }
 
     }

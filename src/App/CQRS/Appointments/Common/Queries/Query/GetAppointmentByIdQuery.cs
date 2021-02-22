@@ -22,6 +22,7 @@ namespace App.CQRS.Appointments.Common.Queries.Query
         public class Appointment
         {
             public string AppointmentId { get; set; }
+            public string ReferenceNumber { get; set; }
             public Clinic Clinic { get; set; }
             public Child Child { get; set; }
             public Parent Parent { get; set; }
@@ -65,6 +66,14 @@ namespace App.CQRS.Appointments.Common.Queries.Query
             public string Email { get; set; }
             public string OpeningHours { get; set; }
             public string Address { get; set; }
+
+            public IEnumerable<BusinessHour> BusinessHours { get; set; }
+        }
+        public class BusinessHour
+        {
+            public string DaysOfWeek { get; set; }            
+            public string StartTime { get; set; }
+            public string EndTime { get; set; }
         }
         public class Child
         {
