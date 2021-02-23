@@ -177,7 +177,8 @@
                     notes: null,
                 },
 
-                selectionDateInfo: null
+                selectionDateInfo: null,
+                initialLoadAppointment: true,
             }
         },
         computed: {
@@ -214,9 +215,7 @@
 
             vm.calendarOptions.initialView = settings.viewType;
 
-            vm.$bus.$on('event:appointment-updated', async (resp) => {
-                await vm.refresh();
-            });
+            
         },
 
         async mounted() {
@@ -224,6 +223,10 @@
 
             await vm.getClinicInfo();
             await vm.getChildren();
+
+            vm.$bus.$on('event:appointment-updated', async (resp) => {
+                await vm.refresh();
+            });
         },
 
         methods: {
@@ -255,7 +258,7 @@
             async eventChanged(info) {
                 const vm = this;
                 const item = info.event.extendedProps.item;
-                
+
                 if (item.status > 2) {
                     info.revert();
                     return;
@@ -268,25 +271,28 @@
                     dateStart: moment(info.event.start),
                     dateEnd: moment(info.event.end)
                 }
-                
+
                 try {
                     await vm.$util.axios.put(`/api/appointments/`, payload);
+                    vm.$bvToast.toast('Appointment updated.', { title: 'Edit Appointment Date', variant: 'success', toaster: 'b-toaster-bottom-right' });
+
                 } catch (e) {
                     vm.$util.handleError(e);
                     info.revert();
                 }
             },
-            async onClickCalendar(selectionDateInfo) {
+            async onClickCalendar(selectionDateInfo) {                
                 if (selectionDateInfo.allDay)
                     return;
 
+                const vm = this;
+
                 const start = moment(selectionDateInfo.start);
                 if (start.isBefore()) {
-                    alert('Cannot book appointment in the past')
+                    vm.$bvToast.toast('Cannot book appointment in the past, move on let go..', { title: 'Book Appointment', variant: 'warning'});
                     return;
                 }
 
-                const vm = this;
                 vm.selectionDateInfo = selectionDateInfo;
                 vm.item.dateStart = moment(selectionDateInfo.start);//.format('YYYY-MM-DDTHH:mm');
                 vm.item.dateEnd = moment(selectionDateInfo.end);//.format('YYYY-MM-DDTHH:mm');
@@ -363,7 +369,7 @@
                         '&p=', 1,
                         '&s=', 100,
                         '&sf=',
-                        '&so=', -1,                        
+                        '&so=', -1,
                         '&ds=', moment(fetchInfo.start).valueOf(),
                         '&de=', moment(fetchInfo.end).valueOf(),
 
@@ -388,6 +394,14 @@
                                     item: e
                                 };
                             });
+
+                            const urlParams = new URLSearchParams(window.location.search);
+                            const appointmentId = urlParams.get('appointmentId');
+
+                            if (vm.initialLoadAppointment && appointmentId) {
+                                vm.initialLoadAppointment = false;
+                                vm.$refs.modalView.open(appointmentId);
+                            }
 
                             return items;
                         });

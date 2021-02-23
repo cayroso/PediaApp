@@ -65,6 +65,9 @@
 
             </template>
 
+            <router-link :to="{name: 'childrenView', params:{id: item.child.childId}, query:{appointmentId: item.appointmentId}}" class="btn btn-secondary ml-auto">
+                View
+            </router-link>
             <button @click="close" class="btn btn-secondary ml-auto">
                 Close
             </button>

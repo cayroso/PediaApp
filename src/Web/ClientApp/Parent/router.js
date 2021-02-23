@@ -30,7 +30,7 @@ const NotFound = {
 };
 
 const routes = [
-    { path: '/', name: "index", component: index },
+    { path: '/', name: "index", component: calendarIndex },
 
     { path: '/accounts', name: "accounts", component: accountsIndex },
 
@@ -46,7 +46,7 @@ const routes = [
     { path: '/clinics/view/:id', name: "clinicsView", component: clinicsView, props: true },
     { path: '/clinics/view/:id/add-appointment', name: "clinicsAddAppointment", component: clinicsAddAppointment, props: true },
 
-    { path: '/calendar', name: "calendarIndex", component: calendarIndex },
+    //{ path: '/calendar', name: "calendarIndex", component: calendarIndex },
 
 
     { path: '*', component: NotFound },

@@ -1,5 +1,5 @@
 ﻿<style scoped>
-    label{
+    label {
         font-size: small;
         font-weight: bold;
     }
@@ -12,7 +12,7 @@
         <template v-slot:modal-header>
             <div class="d-sm-flex align-items-center justify-content-between">
                 <h1 class="h5 m-0">
-                    View Appointment 
+                    View Appointment
                     <span v-if="moment(item.dateStart).isBefore() && item.status<6">
                         Overdue
                     </span>
@@ -28,45 +28,62 @@
             </button>
         </template>
         <div>
-            <div class="form-group">
-                <label>Clinic</label>
-                <div class="form-control-plaintext">
-                    {{item.clinic.name}}
+            <div class="form-row">
+                <div class="form-group col-md">
+                    <label>Type</label>
+                    <div class="form-control-plaintext">
+                        {{item.typeText}}
+                    </div>
+                </div>
+                <div class="form-group col-md">
+                    <label>Status</label>
+                    <div class="form-control-plaintext">
+                        {{item.statusText}}
+                        <div class="mt-2 small mr-2">
+                            {{item.statusReason}}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md">
+                    <label>Date</label>
+                    <div class="form-control-plaintext">
+                        {{item.dateStart|moment('calendar')}}
+                        to
+                        {{item.dateEnd|moment('calendar')}}
+                    </div>
                 </div>
             </div>
+            <hr />
             <div class="form-row">
-                <div class="form-group col-sm">
-                    <label>Phone Number</label>
+                <div class="form-group col-md">
+                    <label>Clinic</label>
                     <div class="form-control-plaintext">
-                        {{item.clinic.phoneNumber}}
+                        {{item.clinic.name}}
+                        <div>
+                            <router-link :to="{name: 'clinicsView', params:{id:item.clinic.clinicId}, query:{appointmentid: item.appointmentId}}">
+                             <i class="fas fa-fw fa-clinic-medical"></i> View Clinic
+                            </router-link>
+                        </div>
+                        <div>
+                            <router-link :to="{name: 'clinicsAddAppointment', params:{id:item.clinic.clinicId}, query:{appointmentId: item.appointmentId}}">
+                               <i class="fas fa-fw fa-calendar-alt"></i> View Appointment
+                            </router-link>
+                        </div>
+                        
+                        
                     </div>
                 </div>
-                <div class="form-group col-sm">
-                    <label>Mobile Number</label>
+                <div class="form-group col-md">
+                    <label>Business Hours</label>
                     <div class="form-control-plaintext">
-                        {{item.clinic.mobileNumber}}
+                        <ul class="list-unstyled">
+                            <li v-for="br in clinicBusinessHours">
+                                {{br}}
+                            </li>
+                        </ul>
                     </div>
                 </div>
-                <div class="form-group col-sm">
-                    <label>Email</label>
-                    <div class="form-control-plaintext">
-                        {{item.clinic.email}}
-                    </div>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group col-sm-4">
-                    <label>Opening Hours</label>
-                    <div class="form-control-plaintext">
-                        {{item.clinic.openingHours}}
-                    </div>
-                </div>
-                <div class="form-group col-sm">
-                    <label>Address</label>
-                    <div class="form-control-plaintext">
-                        {{item.clinic.address}}
-                    </div>
-                </div>
+
             </div>
             <hr />
             <div class="form-row">
@@ -89,38 +106,20 @@
                     </div>
                 </div>
             </div>
-            <hr />
-            <div class="form-row">
-                <div class="form-group col-sm-6">
-                    <label>Appointment Type</label>
-                    <div class="form-control-plaintext">
-                        {{item.typeText}}
-                    </div>
-                </div>
-                <div class="form-group col-sm-6">
-                    <label>Status</label>
-                    <div class="form-control-plaintext">
-                        {{item.statusText}}
-                    </div>
-                </div>
-                <div class="form-group col-sm-6">
-                    <label>Status</label>
-                    <div class="form-control-plaintext">
-                        {{item.dateStart|moment('calendar')}}
-                    </div>
-                </div>
-                <div class="form-group col-sm-6">
-                    <label>Status</label>
-                    <div class="form-control-plaintext">
-                        {{item.dateEnd|moment('calendar')}}
-                    </div>
-                </div>
-            </div>
         </div>
     </b-modal>
 </template>
 <script>
+    import pageMixin from '../../../_Core/Mixins/pageMixin';
     export default {
+        mixins: [pageMixin],
+        computed: {
+            clinicBusinessHours() {
+                const vm = this;
+
+                return vm.getBusinessHours(vm.item.clinic.businessHours);
+            }
+        },
         data() {
             return {
                 moment: moment,
@@ -130,7 +129,9 @@
                 item: {
                     parent: {},
                     child: {},
-                    clinic: {}
+                    clinic: {
+                        businessHours: []
+                    }
                 },
             }
         },

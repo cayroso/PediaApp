@@ -43,7 +43,7 @@
                     { to: '/appointments', label: 'Appointments', icon: 'fas fa-fw fa-calendar' },
                     { to: '/parents', label: 'Parents', icon: 'fas fa-fw fa-user' },
                     { to: '/clinic', label: 'Clinic', icon: 'fas fa-fw fa-clinic-medical' },
-                    { to: '/staffs', label: 'Staffs', icon: 'fas fa-fw fa-users' },
+                    //{ to: '/staffs', label: 'Staffs', icon: 'fas fa-fw fa-users' },
 
                 ],
                 bottomNavHeightStyle: null

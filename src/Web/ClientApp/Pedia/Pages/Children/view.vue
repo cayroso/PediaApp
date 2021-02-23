@@ -21,7 +21,9 @@
         <div class="">
             <div class="card mt-2">
                 <div class="card-header">
-                    Child Information
+                    <h5 class="mb-0">
+                        Child Information
+                    </h5>
                 </div>
                 <div class="card-body">
                     <div class="form-row">
@@ -50,22 +52,38 @@
 
             <div class="card mt-2">
                 <div class="card-header">
-                    Medical Entries
+                    <div class="d-flex flex-row justify-content-between align-items-center">
+                        <h5 class="mb-0">Medical Entries</h5>
+                        <div>
+                            <button @click="openModalAddMedicalEntry" class="btn  btn-primary">
+                                <i class="fas fa-fw fa-plus-circle"></i> Add Entry
+                            </button>
+                        </div>
+                    </div>
+                    
                 </div>
                 <div class="card-body">
+                    <div>
+                        
+                    </div>
                     {{item.medicalEntries}}
                 </div>
             </div>
         </div>
         {{item}}
+
+        <modal-add-medical-entry ref="modalAddMedicalEntry"></modal-add-medical-entry>
     </div>
 </template>
 <script>
     import pageMixin from '../../../_Core/Mixins/pageMixin';
+    import modalAddMedicalEntry from './_modalAddMedicalEntry.vue';
 
     export default {
         mixins: [pageMixin],
-
+        components: {
+            modalAddMedicalEntry
+        },
         props: {
             uid: String,
             id: { required: true }
@@ -101,7 +119,15 @@
                 } catch (e) {
                     vm.$util.handleError(e);
                 }
-            }
+            },
+            openModalAddMedicalEntry() {
+                const vm = this;
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const appointmentId = urlParams.get('appointmentId');
+                
+                vm.$refs.modalAddMedicalEntry.open(vm.id, appointmentId);
+            },
         }
     }
 </script>

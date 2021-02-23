@@ -45,9 +45,9 @@
                 menus: [
                     { to: '/', label: 'Home', icon: 'fas fa-fw fa-home' },
                     { to: '/clinics', label: 'Clinics', icon: 'fas fa-fw fa-clinic-medical' },
-                    { to: '/appointments', label: 'Appointments', icon: 'fas fa-fw fa-calendar' },
+                    //{ to: '/appointments', label: 'Appointments', icon: 'fas fa-fw fa-calendar' },
                     { to: '/children', label: 'Children', icon: 'fas fa-fw fa-address-book' },
-                    { to: '/calendar', label: 'Calendar', icon: 'fas fa-fw fa-calendar-alt' },
+                    //{ to: '/calendar', label: 'Calendar', icon: 'fas fa-fw fa-calendar-alt' },
                 ]
             }
         },

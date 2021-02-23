@@ -162,6 +162,8 @@
 
                 try {
                     await vm.$util.axios.put(`/api/appointments/`, payload);
+                    vm.$bvToast.toast('Appointment updated.', { title: 'Edit Appointment Date', variant: 'success', toaster: 'b-toaster-bottom-right' });
+
                 } catch (e) {
                     vm.$util.handleError(e);
                     info.revert();
@@ -172,13 +174,13 @@
                 if (selectInfo.allDay)
                     return;
 
+                const vm = this;
                 const start = moment(selectInfo.start);
                 const end = moment(selectInfo.end);
                 if (start.isBefore()) {
+                    vm.$bvToast.toast('Cannot book appointment in the past, move on let go..', { title: 'Book Appointment', variant: 'warning' });
                     return;
                 }
-
-                const vm = this;
 
                 vm.$refs.modalAdd.open({
                     dateStart: (start).format('YYYY-MM-DDTHH:mm'),
