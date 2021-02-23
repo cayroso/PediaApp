@@ -13,10 +13,26 @@
                 </h1>
             </div>
             <div class="col-auto">
-                <div>
+                <div class="">
+                    <button @click="grantAccess(item.allowed)" class="btn btn-outline-primary">
+                        <span v-if="item.allowed">
+                            <i class="fas fa-fw fa-times-circle text-success mr-1 d-none"></i>Deny Access
+                        </span>
+                        <span v-else>
+                            <i class="fas fa-fw fa-check-circle text-warning mr-1 d-none"></i>Grant Access
+                        </span>
+
+
+                    </button>
+
+                    <button @click="showMap = !showMap" class="btn btn-info">
+                        <i v-if="showMap">Hide Map</i>
+                        <i v-else>Show map</i>
+                    </button>
                     <router-link :to="{name: 'clinicsAddAppointment', params:{id: id}}" class="btn btn-primary">
                         <i class="fas fa-fw fa-calendar"></i> Book Appointment
                     </router-link>
+
                     <button @click="get" class="btn btn-primary">
                         <span class="fas fa-fw fa-sync"></span>
                     </button>
@@ -81,7 +97,7 @@
 
         </div>
 
-        <div style="height:500px;">
+        <div v-if="showMap" style="height:500px;">
             <g-map ref="gmap" map-name="local-map"
                    :fixed="false"
                    :show-location="true"
@@ -111,6 +127,7 @@
 
         data() {
             return {
+                showMap: false,
                 item: {}
             };
         },
@@ -131,14 +148,14 @@
 
         async mounted() {
             const vm = this;
-            //await vm.get();
+            await vm.get();
         },
 
         methods: {
             async onMapReady() {
                 const vm = this;
 
-                await vm.get();
+                //await vm.get();
 
                 const gmap = vm.$refs.gmap;
                 const items = [vm.item];
@@ -151,6 +168,28 @@
                     await vm.$util.axios.get(`/api/clinics/${vm.id}`)
                         .then(resp => vm.item = resp.data);
 
+                } catch (e) {
+                    vm.$util.handleError(e);
+                }
+            },
+
+            async grantAccess(allowed) {
+                const vm = this;
+
+                try {
+                    const payload = {
+                        clinicId: vm.id,
+                        parentId: vm.uid,
+                    };
+
+                    let api = `/api/clinics/grant-access`;
+
+                    if (allowed)
+                        api = `/api/clinics/deny-access`;
+
+                    await vm.$util.axios.post(api, payload)
+
+                    await vm.get();
                 } catch (e) {
                     vm.$util.handleError(e);
                 }

@@ -6,6 +6,7 @@ using App.Services;
 using Data.App.DbContext;
 using Data.App.Models.Chats;
 using Data.App.Models.Clinics;
+using Data.App.Models.Parents;
 using Data.Common;
 using Data.Constants;
 using Data.Identity.DbContext;
@@ -96,6 +97,7 @@ namespace Web.Controllers
         {
             var sql = from parent in _appDbContext.Parents.AsNoTracking()
 
+                      where parent.ParentClinics.Any(e => e.ClinicId == ClinicId)
                       select new
                       {
                           Id = parent.ParentId,
@@ -176,6 +178,42 @@ namespace Web.Controllers
             return Ok();
         }
 
+        [HttpPost("grant-access")]
+        public async Task<IActionResult> GrantAccess([FromBody] GrantDenyAccessInfo info)
+        {
+            var exist = await _appDbContext.ParentClinic.FirstOrDefaultAsync(e => e.ParentId == info.ParentId && e.ClinicId == info.ClinicId);
+
+            if (exist == null)
+            {
+                var data = new ParentClinic
+                {
+                    ParentId = info.ParentId,
+                    ClinicId = info.ClinicId,
+                };
+
+                await _appDbContext.AddAsync(data);
+
+                await _appDbContext.SaveChangesAsync();
+            }
+
+            return Ok();
+        }
+
+        [HttpPost("deny-access")]
+        public async Task<IActionResult> DenyAccess([FromBody] GrantDenyAccessInfo info)
+        {
+            var exist = await _appDbContext.ParentClinic.FirstOrDefaultAsync(e => e.ParentId == info.ParentId && e.ClinicId == info.ClinicId);
+
+            if (exist != null)
+            {
+                _appDbContext.Remove(exist);
+
+                await _appDbContext.SaveChangesAsync();
+            }
+
+            return Ok();
+        }
+
         public class AddBusinessHourInfo
         {
             [Required]
@@ -198,6 +236,14 @@ namespace Web.Controllers
             public DateTime StartTime { get; set; }
             [Required]
             public DateTime EndTime { get; set; }
+        }
+
+        public class GrantDenyAccessInfo
+        {
+            [Required]
+            public string ClinicId { get; set; }
+            [Required]
+            public string ParentId { get; set; }
         }
     }
 }

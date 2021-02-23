@@ -254,7 +254,7 @@
                 if (vm.marker && vm.marker.setMap)
                     vm.marker.setMap(null);
 
-                var iconBase = 'http://maps.google.com/mapfiles/kml/pal3/';
+                var iconBase = 'https://maps.google.com/mapfiles/kml/pal3/';
                 vm.marker = new google.maps.Marker({
                     draggable: vm.draggable,
                     //animation: google.maps.Animation.BOUNCE,
@@ -291,7 +291,7 @@
 
                     markers = [];
 
-                    var iconBase = 'http://maps.google.com/mapfiles/kml/pal2/';
+                    var iconBase = 'https://maps.google.com/mapfiles/kml/pal2/';
                     items.forEach(item => {
 
                         var marker = new google.maps.Marker({

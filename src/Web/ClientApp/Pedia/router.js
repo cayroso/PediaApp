@@ -10,8 +10,11 @@ import appointmentsIndex from './Pages/Appointments/index.vue';
 import appointmentsAdd from './Pages/Appointments/add.vue';
 import appointmentsView from './Pages/Appointments/index.vue';
 
+import childrenIndex from './Pages/Children/index.vue';
+import childrenView from './Pages/Children/view.vue';
+
 import parentsIndex from './Pages/Parents/index.vue';
-import parentsView from './Pages/Parents/index.vue';
+import parentsView from './Pages/Parents/view.vue';
 
 import staffsIndex from './Pages/Staffs/index.vue';
 import staffsAdd from './Pages/Staffs/add.vue';
@@ -33,6 +36,9 @@ const routes = [
     { path: '/appointments', name: "appointmentsIndex", component: appointmentsIndex },
     { path: '/appointments/add', name: "appointmentsAdd", component: appointmentsAdd },
     { path: '/appointments/view/:id', name: "appointmentsView", component: appointmentsView, props: true },
+
+    { path: '/children', name: "childrenIndex", component: childrenIndex },
+    { path: '/children/view/:id', name: "childrenView", component: childrenView, props: true },
 
     { path: '/parents', name: "parentsIndex", component: parentsIndex },
     { path: '/parents/view/:id', name: "parentsView", component: parentsView, props: true },

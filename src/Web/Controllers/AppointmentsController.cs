@@ -56,7 +56,6 @@ namespace Web.Controllers
         [HttpGet("clinic/search/{id}")]
         public async Task<IActionResult> Search(string id, long ds, long de, string c, int p, int s, string sf, int so)
         {
-
             var query = new SearchAppointmentQuery("", TenantId, UserId, id, null, ds.ToUtcDate(), de.ToUtcDate(), c, p, s, sf, so);
 
             var dto = await _queryHandlerDispatcher.HandleAsync<SearchAppointmentQuery, Paged<SearchAppointmentQuery.Appointment>>(query);

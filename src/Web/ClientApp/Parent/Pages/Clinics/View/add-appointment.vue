@@ -12,7 +12,7 @@
             </h1>
             <div class="text-right">
                 <b-overlay :show="busy">
-                    <button @click="getAppointments" class="btn btn-info">
+                    <button @click="refresh" class="btn btn-info">
                         <span class="fas fa-fw fa-sync"></span>
                     </button>
                     <!--<button v-bind:disabled="isDirty && !formIsValid" @click="save" class="btn btn-primary">
@@ -273,6 +273,7 @@
                     await vm.$util.axios.put(`/api/appointments/`, payload);
                 } catch (e) {
                     vm.$util.handleError(e);
+                    info.revert();
                 }
             },
             async onClickCalendar(selectionDateInfo) {
@@ -354,7 +355,6 @@
             },
 
             async getAppointments(fetchInfo) {
-                
                 const vm = this;
 
                 try {

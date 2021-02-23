@@ -72,8 +72,8 @@
                     <template #header>
                         <th class="text-center">#</th>
                         <th>Name</th>
-                        <th>Status</th>
-                        <th>Open Hours</th>
+                        <th>Allowed Access</th>
+                        <th>Business Hours</th>
                         <th>Address</th>
                     </template>
                     <template slot="table" slot-scope="row">
@@ -84,10 +84,15 @@
                             </router-link>
                         </td>
                         <td>
-                            {{row.item.clinicStatusText}}
+                            <i v-if="row.item.allowed" class="fas fa-fw fa-check-circle text-success"></i>
+                            <i v-else class="fas fa-fw fa-times-circle text-danger"></i>
                         </td>
                         <td>
-                            {{row.item.openingHours}}
+                            <ul>
+                                <li v-for="br in getBusinessHours(row.item.businessHours)">
+                                    {{br}}
+                                </li>
+                            </ul>
                         </td>
                         <td>
                             {{row.item.address}}
