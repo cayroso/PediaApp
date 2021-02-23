@@ -164,6 +164,7 @@
                     await vm.$util.axios.put(`/api/appointments/`, payload);
                 } catch (e) {
                     vm.$util.handleError(e);
+                    info.revert();
                 }
             },
 

@@ -22,6 +22,8 @@ namespace App.CQRS.Clinics.Common.Queries.Query
         {
             public string ClinicId { get; set; }
             public string Name { get; set; }
+            public bool Allowed { get; set; }
+
             public string PhoneNumber { get; set; }
             public string MobileNumber { get; set; }
             public string Email { get; set; }            

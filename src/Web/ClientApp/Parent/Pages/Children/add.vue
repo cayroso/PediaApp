@@ -170,7 +170,7 @@
 
                             setTimeout(_ => {
                                 vm.$router.push({ name: 'childrenView', params: { id: resp.data } });
-                            }, 2000);
+                            }, 1000);
                         });
                 } catch (e) {
                     vm.$util.handleError(e);

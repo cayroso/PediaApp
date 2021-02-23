@@ -22,13 +22,14 @@ namespace App.CQRS.Clinics.Common.Queries.Handler
 
         async Task<GetClinicByIdQuery.Clinic> IQueryHandler<GetClinicByIdQuery, GetClinicByIdQuery.Clinic>.HandleAsync(GetClinicByIdQuery query)
         {
-            var sql = from c in _appDbContext.Clinics.AsNoTracking()
+            var sql = from c in _appDbContext.Clinics.Include(e => e.ParentClinics).AsNoTracking()
 
                       where c.ClinicId == query.ClinicId
 
                       select new GetClinicByIdQuery.Clinic
                       {
                           ClinicId = c.ClinicId,
+                          Allowed = c.ParentClinics.Any(e => e.ParentId == query.UserId),
                           Name = c.Name,
                           PhoneNumber = c.PhoneNumber,
                           Email = c.Email,
@@ -53,11 +54,12 @@ namespace App.CQRS.Clinics.Common.Queries.Handler
 
         async Task<Paged<SearchClinicQuery.Clinic>> IQueryHandler<SearchClinicQuery, Paged<SearchClinicQuery.Clinic>>.HandleAsync(SearchClinicQuery query)
         {
-            var sql = from c in _appDbContext.Clinics.AsNoTracking()
+            var sql = from c in _appDbContext.Clinics.Include(e => e.ParentClinics).AsNoTracking()
 
                       select new SearchClinicQuery.Clinic
                       {
                           ClinicId = c.ClinicId,
+                          Allowed = c.ParentClinics.Any(e => e.ParentId == query.UserId),
                           Name = c.Name,
                           Address = c.Address,
                           BusinessHours = c.BusinessHours.Select(e => new SearchClinicQuery.BusinessHour

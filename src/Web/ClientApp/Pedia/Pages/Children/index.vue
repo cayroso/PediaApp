@@ -4,7 +4,7 @@
         <div class="row align-items-center">
             <div class="col-sm">
                 <h1 class="h3 mb-sm-0">
-                    <i class="fas fa-fw fa-user mr-1"></i>Parents
+                    <i class="fas fa-fw fa-user mr-1"></i>Children
                 </h1>
             </div>
             <div class="col-sm-auto">
