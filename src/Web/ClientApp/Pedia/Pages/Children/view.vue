@@ -62,27 +62,59 @@
                     </div>
                     
                 </div>
-                <div class="card-body">
-                    <div>
-                        
-                    </div>
-                    {{item.medicalEntries}}
+                <div class="table-responsive mb-0">
+                    <table class="table table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Age</th>
+                                <th>Height</th>
+                                <th>Weight</th>
+                                <th>Date</th>
+                                <th>Return</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(me,index) in item.medicalEntries">
+                                <td>{{index+1}}</td>
+                                <td>{{me.age}}</td>
+                                <td>{{me.height}}</td>
+                                <td>{{me.weight}}</td>
+                                <td>{{me.dateCreated|moment('calendar')}}</td>
+                                <td>{{me.dateReturn|moment('calendar')}}</td>
+                                <td>
+                                    <button @click="openModalViewMedicalEntry(me)" class="btn btn-sm btn-outline-info">
+                                        <i class="fas fa-fw fa-eye"></i>
+                                    </button>
+                                    <button @click="openModalEditMedicalEntry(me)" class="btn btn-sm btn-outline-info">
+                                        <i class="fas fa-fw fa-edit"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-        {{item}}
 
-        <modal-add-medical-entry ref="modalAddMedicalEntry"></modal-add-medical-entry>
+        <modal-add-medical-entry ref="modalAddMedicalEntry" @saved="get"></modal-add-medical-entry>
+        <modal-view-medical-entry ref="modalViewMedicalEntry"></modal-view-medical-entry>
+        <modal-edit-medical-entry ref="modalEditMedicalEntry" @saved="get"></modal-edit-medical-entry>
     </div>
 </template>
 <script>
     import pageMixin from '../../../_Core/Mixins/pageMixin';
     import modalAddMedicalEntry from './_modalAddMedicalEntry.vue';
+    import modalViewMedicalEntry from './_modalViewMedicalEntry.vue';
+    import modalEditMedicalEntry from './_modalEditMedicalEntry.vue';
 
     export default {
         mixins: [pageMixin],
         components: {
-            modalAddMedicalEntry
+            modalAddMedicalEntry,
+            modalViewMedicalEntry,
+            modalEditMedicalEntry
         },
         props: {
             uid: String,
@@ -125,8 +157,18 @@
 
                 const urlParams = new URLSearchParams(window.location.search);
                 const appointmentId = urlParams.get('appointmentId');
-                
+
                 vm.$refs.modalAddMedicalEntry.open(vm.id, appointmentId);
+            },
+            openModalViewMedicalEntry(entry) {
+                const vm = this;
+                
+                vm.$refs.modalViewMedicalEntry.open(entry.childMedicalEntryId);
+            },
+            openModalEditMedicalEntry(entry) {
+                const vm = this;
+
+                vm.$refs.modalEditMedicalEntry.open(entry.childMedicalEntryId);
             },
         }
     }

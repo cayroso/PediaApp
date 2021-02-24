@@ -1,5 +1,5 @@
 ﻿<style scoped>
-    label{
+    label {
         font-size: small;
         font-weight: bold;
     }
@@ -13,7 +13,7 @@
             <div class="w-100">
                 <div class="d-flex flex-row  align-items-center justify-content-between">
                     <h5 class="m-0">
-                        Add Medical Entry
+                        Edit Medical Entry
                     </h5>
                 </div>
             </div>
@@ -32,9 +32,6 @@
                 <div class="d-flex flex-row justify-content-between align-items-center">
                     <div>
                         <input v-model="item.age" id="age" type="number" min="0" class="form-control" v-bind:class="getValidClass('age')" />
-                    </div>
-                    <div>
-                        {{child.dateOfBirth|moment('calendar')}}
                     </div>
                     <div v-if="validations.has('age')" class="invalid-feedback">
                         {{validations.get('age')}}
@@ -96,7 +93,6 @@
                     </div>
                 </div>
 
-                {{validations.length}}
             </div>
         </div>
 
@@ -111,12 +107,8 @@
                 validations: new Map(),
                 moment: moment,
 
-                childId: null,
-                appointmentId: null,
+                id: null,
                 item: {},
-                child: {
-                    age: 0,
-                }
             }
         },
         computed: {
@@ -165,21 +157,15 @@
                 vm.busy = false;
                 vm.isDirty = false;
                 vm.validations.clear();
-                vm.childId = null;
-                vm.appointmentId = null;
-                vm.item = {
-                    dateCreated: moment().format('YYYY-MM-DD'),
-                    dateReturn: moment().add(1, 'months').format('YYYY-MM-DD')
-
-                }
+                vm.id = null;
+                vm.item = {};
             },
-            async open(id, appointmentId) {
+            async open(id) {
                 const vm = this;
 
                 vm.reset();
 
-                vm.childId = id;
-                vm.appointmentId = appointmentId;
+                vm.id = id;
 
                 await vm.get();
 
@@ -197,17 +183,14 @@
 
                 if (vm.busy)
                     return;
-
+                
                 try {
-                    await vm.$util.axios.get(`/api/children/${vm.childId}`)
+                    await vm.$util.axios.get(`/api/children/medical-entry/${vm.id}`)
                         .then(resp => {
-                            vm.child = resp.data;
+                            vm.item = resp.data;
 
-                            vm.item.age = moment().diff(vm.child.dateOfBirth, 'years');
-                            //vm.item.taskItems.forEach(ti => {
-                            //    ti.dateCompleted = moment(ti.dateCompleted);
-                            //});
-
+                            vm.item.dateCreated = moment(vm.item.dateCreated).format('YYYY-MM-DD');
+                            vm.item.dateReturn = moment(vm.item.dateReturn).format('YYYY-MM-DD');
                         })
                 } catch (e) {
                     vm.$util.handleError(e);
@@ -231,12 +214,11 @@
                     const item = vm.item;
 
                     const payload = vm.$util.clone(item);
-                    payload.childId = vm.childId;
-                    payload.appointmentId = vm.appointmentId;
+                    payload.childMedicalEntryId = vm.id;                    
                     
-                    await vm.$util.axios.post(`/api/children/medical-entry`, payload)
+                    await vm.$util.axios.put(`/api/children/medical-entry`, payload)
                         .then(resp => {
-                            vm.$bvToast.toast('Child medical entry created.', { title: 'Add Medical Entry', variant: 'success', toaster: 'b-toaster-bottom-right' });
+                            vm.$bvToast.toast('Child medical entry updated.', { title: 'Edit Medical Entry', variant: 'success', toaster: 'b-toaster-bottom-right' });
 
                             vm.$emit('saved');
                             vm.close();

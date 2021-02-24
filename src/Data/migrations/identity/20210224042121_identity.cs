@@ -15,10 +15,10 @@ namespace Data.migrations.identity
                 schema: "Identity",
                 columns: table => new
                 {
-                    RoleId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    NormalizedName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "TEXT", nullable: true)
+                    RoleId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -30,15 +30,15 @@ namespace Data.migrations.identity
                 schema: "Identity",
                 columns: table => new
                 {
-                    TenantId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    Host = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    DatabaseConnectionString = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: true),
-                    PhoneNumber = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    Address = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: false),
-                    GeoX = table.Column<double>(type: "REAL", nullable: false),
-                    GeoY = table.Column<double>(type: "REAL", nullable: false)
+                    TenantId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    Host = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    DatabaseConnectionString = table.Column<string>(type: "nvarchar(2048)", maxLength: 2048, nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(2048)", maxLength: 2048, nullable: false),
+                    GeoX = table.Column<double>(type: "float", nullable: false),
+                    GeoY = table.Column<double>(type: "float", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -50,11 +50,11 @@ namespace Data.migrations.identity
                 schema: "Identity",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    RoleId = table.Column<string>(type: "TEXT", nullable: false),
-                    ClaimType = table.Column<string>(type: "TEXT", nullable: true),
-                    ClaimValue = table.Column<string>(type: "TEXT", nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RoleId = table.Column<string>(type: "nvarchar(36)", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -73,22 +73,22 @@ namespace Data.migrations.identity
                 schema: "Identity",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    TenantId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: true),
-                    UserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    NormalizedUserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    NormalizedEmail = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "INTEGER", nullable: false),
-                    PasswordHash = table.Column<string>(type: "TEXT", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "TEXT", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "TEXT", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "TEXT", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "INTEGER", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "INTEGER", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "TEXT", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "INTEGER", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "INTEGER", nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    TenantId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -107,12 +107,12 @@ namespace Data.migrations.identity
                 schema: "Identity",
                 columns: table => new
                 {
-                    FeedbackId = table.Column<string>(type: "TEXT", nullable: false),
-                    UserId = table.Column<string>(type: "TEXT", nullable: true),
-                    FeedbackCategory = table.Column<int>(type: "INTEGER", nullable: false),
-                    Rating = table.Column<int>(type: "INTEGER", nullable: false),
-                    Comment = table.Column<string>(type: "TEXT", nullable: true),
-                    DateCreated = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    FeedbackId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(36)", nullable: true),
+                    FeedbackCategory = table.Column<int>(type: "int", nullable: false),
+                    Rating = table.Column<int>(type: "int", nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -131,10 +131,10 @@ namespace Data.migrations.identity
                 schema: "Identity",
                 columns: table => new
                 {
-                    LoginAuditId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    UserId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    RemoteIpAddress = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    LoginDate = table.Column<DateTime>(type: "TEXT", maxLength: 36, nullable: false)
+                    LoginAuditId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    RemoteIpAddress = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    LoginDate = table.Column<DateTime>(type: "datetime2", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -153,13 +153,13 @@ namespace Data.migrations.identity
                 schema: "Identity",
                 columns: table => new
                 {
-                    UserAddressId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    UserId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    Default = table.Column<bool>(type: "INTEGER", nullable: false),
-                    Address = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: false),
-                    GeoX = table.Column<double>(type: "REAL", nullable: false),
-                    GeoY = table.Column<double>(type: "REAL", nullable: false),
-                    ConcurrencyToken = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false)
+                    UserAddressId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    Default = table.Column<bool>(type: "bit", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(2048)", maxLength: 2048, nullable: false),
+                    GeoX = table.Column<double>(type: "float", nullable: false),
+                    GeoY = table.Column<double>(type: "float", nullable: false),
+                    ConcurrencyToken = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -178,11 +178,11 @@ namespace Data.migrations.identity
                 schema: "Identity",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    UserId = table.Column<string>(type: "TEXT", nullable: false),
-                    ClaimType = table.Column<string>(type: "TEXT", nullable: true),
-                    ClaimValue = table.Column<string>(type: "TEXT", nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(36)", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -201,13 +201,13 @@ namespace Data.migrations.identity
                 schema: "Identity",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    ImageId = table.Column<string>(type: "TEXT", nullable: true),
-                    FirstName = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: false),
-                    MiddleName = table.Column<string>(type: "TEXT", nullable: true),
-                    LastName = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: false),
-                    Theme = table.Column<string>(type: "TEXT", nullable: true),
-                    ConcurrencyToken = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    ImageId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FirstName = table.Column<string>(type: "nvarchar(2048)", maxLength: 2048, nullable: false),
+                    MiddleName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(2048)", maxLength: 2048, nullable: false),
+                    Theme = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyToken = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -226,10 +226,10 @@ namespace Data.migrations.identity
                 schema: "Identity",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
-                    ProviderKey = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
-                    ProviderDisplayName = table.Column<string>(type: "TEXT", nullable: true),
-                    UserId = table.Column<string>(type: "TEXT", nullable: false)
+                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(36)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -248,8 +248,8 @@ namespace Data.migrations.identity
                 schema: "Identity",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    RoleId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    RoleId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -275,10 +275,10 @@ namespace Data.migrations.identity
                 schema: "Identity",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "TEXT", nullable: false),
-                    LoginProvider = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
-                    Value = table.Column<string>(type: "TEXT", nullable: true)
+                    UserId = table.Column<string>(type: "nvarchar(36)", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -316,7 +316,8 @@ namespace Data.migrations.identity
                 schema: "Identity",
                 table: "Role",
                 column: "NormalizedName",
-                unique: true);
+                unique: true,
+                filter: "[NormalizedName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoleClaim_RoleId",
@@ -355,7 +356,8 @@ namespace Data.migrations.identity
                 schema: "Identity",
                 table: "User",
                 column: "NormalizedUserName",
-                unique: true);
+                unique: true,
+                filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserAddress_UserId",

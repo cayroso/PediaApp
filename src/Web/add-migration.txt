@@ -1,0 +1,2 @@
+﻿add-migration identity -context identitywebcontext -outputdir migrations\identity
+add-migration app -context appdbcontext -outputdir migrations\app

@@ -15,15 +15,15 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    Date = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Year = table.Column<int>(type: "INTEGER", nullable: false),
-                    Month = table.Column<int>(type: "INTEGER", nullable: false),
-                    Day = table.Column<int>(type: "INTEGER", nullable: false),
-                    Quarter = table.Column<int>(type: "INTEGER", nullable: false),
-                    MonthName = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    DayOfYear = table.Column<int>(type: "INTEGER", nullable: false),
-                    DayOfWeek = table.Column<int>(type: "INTEGER", nullable: false),
-                    DayName = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false)
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Year = table.Column<int>(type: "int", nullable: false),
+                    Month = table.Column<int>(type: "int", nullable: false),
+                    Day = table.Column<int>(type: "int", nullable: false),
+                    Quarter = table.Column<int>(type: "int", nullable: false),
+                    MonthName = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    DayOfYear = table.Column<int>(type: "int", nullable: false),
+                    DayOfWeek = table.Column<int>(type: "int", nullable: false),
+                    DayName = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -35,10 +35,10 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    ChatId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    LastChatMessageId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: true),
-                    Title = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    ConcurrencyStamp = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false)
+                    ChatId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    LastChatMessageId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -50,14 +50,14 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    FileUploadId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    Url = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: true),
-                    FileName = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: true),
-                    ContentDisposition = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: true),
-                    ContentType = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: true),
-                    Content = table.Column<byte[]>(type: "BLOB", nullable: true),
-                    Length = table.Column<long>(type: "INTEGER", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    FileUploadId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(2048)", maxLength: 2048, nullable: true),
+                    FileName = table.Column<string>(type: "nvarchar(2048)", maxLength: 2048, nullable: true),
+                    ContentDisposition = table.Column<string>(type: "nvarchar(2048)", maxLength: 2048, nullable: true),
+                    ContentType = table.Column<string>(type: "nvarchar(2048)", maxLength: 2048, nullable: true),
+                    Content = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
+                    Length = table.Column<long>(type: "bigint", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -69,14 +69,14 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    NotificationId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    NotificationType = table.Column<int>(type: "INTEGER", nullable: false),
-                    IconClass = table.Column<string>(type: "TEXT", nullable: true),
-                    Subject = table.Column<string>(type: "TEXT", nullable: true),
-                    Content = table.Column<string>(type: "TEXT", nullable: true),
-                    ReferenceId = table.Column<string>(type: "TEXT", nullable: true),
-                    DateSent = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    ConcurrencyStamp = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false)
+                    NotificationId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    NotificationType = table.Column<int>(type: "int", nullable: false),
+                    IconClass = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Subject = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ReferenceId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateSent = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -88,8 +88,8 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    RoleId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false)
+                    RoleId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -101,16 +101,16 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    ClinicId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "TEXT", nullable: true),
-                    MobileNumber = table.Column<string>(type: "TEXT", nullable: true),
-                    Email = table.Column<string>(type: "TEXT", nullable: true),
-                    Address = table.Column<string>(type: "TEXT", nullable: true),
-                    GeoX = table.Column<double>(type: "REAL", nullable: false),
-                    GeoY = table.Column<double>(type: "REAL", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    ConcurrencyToken = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false)
+                    ClinicId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MobileNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    GeoX = table.Column<double>(type: "float", nullable: false),
+                    GeoY = table.Column<double>(type: "float", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ConcurrencyToken = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -129,16 +129,16 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    ImageId = table.Column<string>(type: "TEXT", nullable: true),
-                    FirstName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    MiddleName = table.Column<string>(type: "TEXT", nullable: true),
-                    LastName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    Email = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    PhoneNumber = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    OverallRating = table.Column<double>(type: "REAL", nullable: false),
-                    TotalRating = table.Column<double>(type: "REAL", nullable: false),
-                    ConcurrencyToken = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    ImageId = table.Column<string>(type: "nvarchar(36)", nullable: true),
+                    FirstName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    MiddleName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    OverallRating = table.Column<double>(type: "float", nullable: false),
+                    TotalRating = table.Column<double>(type: "float", nullable: false),
+                    ConcurrencyToken = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -157,11 +157,11 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    ClinicBusinessHourId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    ClinicId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    DaysOfWeek = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    StartTime = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    EndTime = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false)
+                    ClinicBusinessHourId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    ClinicId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    DaysOfWeek = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    StartTime = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    EndTime = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -180,13 +180,13 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    ChatMessageId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    ChatId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    SenderId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: true),
-                    Content = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: false),
-                    ChatMessageType = table.Column<int>(type: "INTEGER", nullable: false),
-                    DateSent = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    ConcurrencyStamp = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false)
+                    ChatMessageId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    ChatId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    SenderId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: true),
+                    Content = table.Column<string>(type: "nvarchar(2048)", maxLength: 2048, nullable: false),
+                    ChatMessageType = table.Column<int>(type: "int", nullable: false),
+                    DateSent = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -212,12 +212,12 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    ChatReceiverId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    ChatId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    ReceiverId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    LastChatMessageId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: true),
-                    IsRemoved = table.Column<bool>(type: "INTEGER", nullable: false),
-                    ConcurrencyStamp = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false)
+                    ChatReceiverId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    ChatId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    ReceiverId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    LastChatMessageId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: true),
+                    IsRemoved = table.Column<bool>(type: "bit", nullable: false),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -243,11 +243,11 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    NotificationReceiverId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    NotificationId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    ReceiverId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    DateReceived = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    DateRead = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    NotificationReceiverId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    NotificationId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    ReceiverId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    DateReceived = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateRead = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -273,7 +273,7 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    ParentId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false)
+                    ParentId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -292,7 +292,7 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    StaffId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false)
+                    StaffId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -311,8 +311,8 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    RoleId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    RoleId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -338,18 +338,18 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    UserTaskId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    Type = table.Column<int>(type: "INTEGER", nullable: false),
-                    Status = table.Column<int>(type: "INTEGER", nullable: false),
-                    RoleId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    UserId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: true),
-                    Title = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    Description = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: true),
-                    DateCreated = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    DateAssigned = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    DateCompleted = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    DateActualCompleted = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    ConcurrencyToken = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false)
+                    UserTaskId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    RoleId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(2048)", maxLength: 2048, nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateAssigned = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateCompleted = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateActualCompleted = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ConcurrencyToken = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -375,16 +375,16 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    ChildId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    ParentId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    ImageId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: true),
-                    Gender = table.Column<int>(type: "INTEGER", nullable: false),
-                    FirstName = table.Column<string>(type: "TEXT", nullable: true),
-                    MiddleName = table.Column<string>(type: "TEXT", nullable: true),
-                    LastName = table.Column<string>(type: "TEXT", nullable: true),
-                    DateOfBirth = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    ConcurrencyToken = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false)
+                    ChildId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    ParentId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    ImageId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: true),
+                    Gender = table.Column<int>(type: "int", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MiddleName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ConcurrencyToken = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -410,12 +410,12 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    ClinicReviewId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    ClinicId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    ParentId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    Rating = table.Column<int>(type: "INTEGER", nullable: false),
-                    Comment = table.Column<string>(type: "TEXT", nullable: true),
-                    DateCreated = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    ClinicReviewId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    ClinicId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    ParentId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    Rating = table.Column<int>(type: "int", nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -441,9 +441,9 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    ParentClinicId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    ParentId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    ClinicId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false)
+                    ParentClinicId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    ParentId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    ClinicId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -469,10 +469,10 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    ClinicStaffId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    ClinicId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    StaffId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    RoleId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false)
+                    ClinicStaffId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    ClinicId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    StaffId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    RoleId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -505,13 +505,13 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    UserTaskItemId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    UserTaskId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    Number = table.Column<int>(type: "INTEGER", nullable: false),
-                    Title = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: false),
-                    IsDone = table.Column<bool>(type: "INTEGER", nullable: false),
-                    DateCompleted = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    ConcurrencyToken = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false)
+                    UserTaskItemId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    UserTaskId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    Number = table.Column<int>(type: "int", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(2048)", maxLength: 2048, nullable: false),
+                    IsDone = table.Column<bool>(type: "bit", nullable: false),
+                    DateCompleted = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ConcurrencyToken = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -530,18 +530,18 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    AppointmentId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    Type = table.Column<int>(type: "INTEGER", nullable: false),
-                    Status = table.Column<int>(type: "INTEGER", nullable: false),
-                    StatusReason = table.Column<string>(type: "TEXT", nullable: true),
-                    ClinicId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    ChildId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    ReferenceNumber = table.Column<string>(type: "TEXT", nullable: true),
-                    DateStart = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    DateEnd = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Notes = table.Column<string>(type: "TEXT", nullable: true),
-                    DateCreated = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    ConcurrencyToken = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false)
+                    AppointmentId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    StatusReason = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClinicId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    ChildId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    ReferenceNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateStart = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ConcurrencyToken = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -567,12 +567,12 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    AppointmentTimelineId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    UserId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    AppointmentId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    Status = table.Column<int>(type: "INTEGER", nullable: false),
-                    Notes = table.Column<string>(type: "TEXT", nullable: true),
-                    DateTimeline = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    AppointmentTimelineId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    AppointmentId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateTimeline = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -598,14 +598,18 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    ChildMedicalEntryId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    AppointmentId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    ChildId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    Age = table.Column<double>(type: "REAL", nullable: false),
-                    Height = table.Column<double>(type: "REAL", nullable: false),
-                    Weight = table.Column<double>(type: "REAL", nullable: false),
-                    Summary = table.Column<string>(type: "TEXT", nullable: true),
-                    DateCreated = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    ChildMedicalEntryId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    AppointmentId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    ChildId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    Age = table.Column<double>(type: "float", nullable: false),
+                    Weight = table.Column<double>(type: "float", nullable: false),
+                    Height = table.Column<double>(type: "float", nullable: false),
+                    HeadCircumference = table.Column<double>(type: "float", nullable: false),
+                    ChestCircumference = table.Column<double>(type: "float", nullable: false),
+                    Summary = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateReturn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ConcurrencyToken = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
