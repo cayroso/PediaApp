@@ -87,6 +87,7 @@ namespace Web.Areas.Pedia.Controllers
                             .ThenInclude(e => e.User)
                     .AsNoTracking()
                     .Where(e => e.DateStart >= DateTime.UtcNow && e.Status == Data.Enums.EnumAppointmentStatus.Accepted)
+                    .OrderBy(e => e.DateStart).ThenBy(e => e.DateEnd)
                     .ToListAsync();
 
             var dto = new

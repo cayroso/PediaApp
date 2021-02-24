@@ -72,7 +72,7 @@
                     //selectConstraint: 'businessHours',
                     //eventConstraint: true,
 
-                    //datesSet: this.datesSet,
+                    datesSet: this.datesSet,
                     eventOverlap: false,
                     eventSources: [
                         {

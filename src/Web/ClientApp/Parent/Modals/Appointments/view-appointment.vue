@@ -20,9 +20,7 @@
             </div>
         </template>
         <template v-slot:modal-footer>
-            <button @click="save(false)" class="btn btn-primary">
-                Save
-            </button>
+            
             <button @click="close" class="btn btn-secondary">
                 Close
             </button>
