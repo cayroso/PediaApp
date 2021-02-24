@@ -45,16 +45,52 @@ namespace Web.Models
     {
         [Required]
         public string ChildId { get; set; }
-        [Required]
+        //[Required]
         public string AppointmentId { get; set; }
+        //[Required]
+        public double Age { get; set; }
+        //[Required]
+        public double Height { get; set; }
+        //[Required]
+        public double Weight { get; set; }
+        //[Required]
+        public double HeadCircumference { get; set; }
+        //[Required]
+        public double ChestCircumference { get; set; }
+        //[Required]
+        public string Summary { get; set; }
+
         [Required]
-        public double Age { get; }
+        public DateTime DateCreated { get; set; }
         [Required]
-        public double Height { get; }
-        [Required]
-        public double Weight { get; }
-        [Required]
-        public string Summary { get; }
+        public DateTime DateReturn { get; set; }
 
     }
+
+    public class EditChildMedicalEntryInfo
+    {
+        [Required]
+        public string ChildMedicalEntryId { get; set; }
+        [Required]
+        public string Token { get; set; }
+        //[Required]
+        public double Age { get; set; }
+        //[Required]
+        public double Height { get; set; }
+        //[Required]
+        public double Weight { get; set; }
+        //[Required]
+        public double HeadCircumference { get; set; }
+        //[Required]
+        public double ChestCircumference { get; set; }
+        //[Required]
+        public string Summary { get; set; }
+
+        [Required]
+        public DateTime DateCreated { get; set; }
+        [Required]
+        public DateTime DateReturn { get; set; }
+
+    }
+
 }

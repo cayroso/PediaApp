@@ -12,6 +12,7 @@ namespace App.CQRS.Children.Common.Queries.Handler
 {
     public sealed class ChildrenCommonQueryHandler :
         IQueryHandler<GetChildByIdQuery, GetChildByIdQuery.Child>,
+        IQueryHandler<GetMedicalEntryByIdQuery, GetMedicalEntryByIdQuery.ChildMedicalEntry>,
         IQueryHandler<SearchChildrenByClinicQuery, Paged<SearchChildrenByClinicQuery.Child>>,
         IQueryHandler<SearchChildrenByParentIdQuery, Paged<SearchChildrenByParentIdQuery.Child>>
     {
@@ -45,14 +46,42 @@ namespace App.CQRS.Children.Common.Queries.Handler
                           DateOfBirth = c.DateOfBirth,
                           DateCreated = c.DateCreated,
                           Token = c.ConcurrencyToken,
-                          MedicalEntries = c.MedicalEntries.Select(e => new GetChildByIdQuery.ChildMedicalEntry
+                          MedicalEntries = c.MedicalEntries.OrderBy(e => e.DateCreated).Select(e => new GetChildByIdQuery.ChildMedicalEntry
                           {
+                              ChildMedicalEntryId = e.ChildMedicalEntryId,
                               Age = e.Age,
                               Height = e.Height,
                               Weight = e.Weight,
+                              ChestCircumference = e.ChestCircumference,
+                              HeadCircumference = e.HeadCircumference,
+                              DateReturn = e.DateReturn,
                               Summary = e.Summary,
                               DateCreated = e.DateCreated
                           })
+                      };
+
+            var dto = await sql.FirstOrDefaultAsync();
+
+            return dto;
+        }
+
+        async Task<GetMedicalEntryByIdQuery.ChildMedicalEntry> IQueryHandler<GetMedicalEntryByIdQuery, GetMedicalEntryByIdQuery.ChildMedicalEntry>.HandleAsync(GetMedicalEntryByIdQuery query)
+        {
+            var sql = from me in _appDbContext.ChildMedicalEntries.AsNoTracking()
+
+                      where me.ChildMedicalEntryId == query.ChildMedicalEntryId
+
+                      select new GetMedicalEntryByIdQuery.ChildMedicalEntry
+                      {
+                          Age = me.Age,
+                          Height = me.Height,
+                          Weight = me.Weight,
+                          HeadCircumference = me.HeadCircumference,
+                          ChestCircumference = me.ChestCircumference,
+                          Summary = me.Summary,
+                          DateCreated = me.DateCreated,
+                          DateReturn = me.DateReturn,
+                          Token = me.ConcurrencyToken
                       };
 
             var dto = await sql.FirstOrDefaultAsync();
@@ -119,6 +148,7 @@ namespace App.CQRS.Children.Common.Queries.Handler
 
             return dto;
         }
+
 
     }
 }

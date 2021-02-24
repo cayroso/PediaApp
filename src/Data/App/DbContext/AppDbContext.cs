@@ -68,6 +68,7 @@ namespace Data.App.DbContext
 
 
         public DbSet<Appointment> Appointments { get; set; }
+        public DbSet<AppointmentTimeline> AppointmentTimelines { get; set; }
 
         public DbSet<Calendar> Calendars { get; set; }
 
@@ -88,6 +89,7 @@ namespace Data.App.DbContext
 
         public DbSet<Parent> Parents { get; set; }
         public DbSet<Child> Children { get; set; }
+        public DbSet<ChildMedicalEntry> ChildMedicalEntries { get; set; }
         public DbSet<ParentClinic> ParentClinic { get; set; }
 
 
@@ -416,6 +418,16 @@ namespace Data.App.DbContext
                 b.Property(e => e.ChildMedicalEntryId).HasMaxLength(KeyMaxLength).IsRequired();
                 b.Property(e => e.AppointmentId).HasMaxLength(KeyMaxLength).IsRequired();
                 b.Property(e => e.ChildId).HasMaxLength(KeyMaxLength).IsRequired();
+
+                //b.Property(e => e.Age).IsRequired();
+                //b.Property(e => e.Weight).IsRequired();
+                //b.Property(e => e.Height).IsRequired();
+                //b.Property(e => e.HeadCircumference).IsRequired();
+                //b.Property(e => e.ChestCircumference).IsRequired();
+                b.Property(e => e.DateCreated).IsRequired();
+                b.Property(e => e.DateReturn).IsRequired();
+
+                b.Property(e => e.ConcurrencyToken).HasMaxLength(KeyMaxLength).IsRequired();
             });
 
             builder.Entity<ParentClinic>(b =>

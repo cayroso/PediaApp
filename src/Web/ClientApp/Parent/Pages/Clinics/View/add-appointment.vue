@@ -215,7 +215,7 @@
 
             vm.calendarOptions.initialView = settings.viewType;
 
-            
+
         },
 
         async mounted() {
@@ -281,7 +281,7 @@
                     info.revert();
                 }
             },
-            async onClickCalendar(selectionDateInfo) {                
+            async onClickCalendar(selectionDateInfo) {
                 if (selectionDateInfo.allDay)
                     return;
 
@@ -289,7 +289,7 @@
 
                 const start = moment(selectionDateInfo.start);
                 if (start.isBefore()) {
-                    vm.$bvToast.toast('Cannot book appointment in the past, move on let go..', { title: 'Book Appointment', variant: 'warning'});
+                    vm.$bvToast.toast('Cannot book appointment in the past, move on let go..', { title: 'Book Appointment', variant: 'warning' });
                     return;
                 }
 
@@ -425,6 +425,10 @@
                             });
 
                         });
+
+                    if (vm.lookups.children.length === 1) {
+                        vm.item.childId = vm.lookups.children[0].id;
+                    }
 
                 } catch (e) {
                     vm.$util.handleError(e);

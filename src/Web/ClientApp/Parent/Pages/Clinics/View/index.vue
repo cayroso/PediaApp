@@ -22,14 +22,13 @@
                             <i class="fas fa-fw fa-check-circle text-warning mr-1 d-none"></i>Grant Access
                         </span>
                     </button>
-
+                    <router-link :to="{name: 'clinicsAddAppointment', params:{id: id}}" v-bind:disabled="!item.allowed" class="btn btn-primary" tag="button">
+                        <i class="fas fa-fw fa-calendar"></i> Book
+                    </router-link>
                     <button @click="showMap = !showMap" class="btn" v-bind:class="showMap ?'btn-primary':'btn-outline-primary'">
                         <span v-if="showMap">Hide Map</span>
                         <span v-else>Show map</span>
                     </button>
-                    <router-link :to="{name: 'clinicsAddAppointment', params:{id: id}}" class="btn btn-primary">
-                        <i class="fas fa-fw fa-calendar"></i> Book Appointment
-                    </router-link>
 
                     <button @click="get" class="btn btn-primary">
                         <span class="fas fa-fw fa-sync"></span>

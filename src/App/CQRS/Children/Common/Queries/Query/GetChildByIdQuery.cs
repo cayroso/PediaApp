@@ -62,11 +62,13 @@ namespace App.CQRS.Children.Common.Queries.Query
         }
 
         public class ChildMedicalEntry
-        {            
+        {
+            public string ChildMedicalEntryId { get; set; }
             public double Age { get; set; }
-            public double Height { get; set; }
             public double Weight { get; set; }
-
+            public double Height { get; set; }
+            public double HeadCircumference { get; set; }
+            public double ChestCircumference { get; set; }
             public string Summary { get; set; }
 
             DateTime _dateCreated;
@@ -75,6 +77,14 @@ namespace App.CQRS.Children.Common.Queries.Query
                 get => _dateCreated.AsUtc();
                 set => _dateCreated = value;
             }
+
+            DateTime _dateReturn;
+            public DateTime DateReturn
+            {
+                get => _dateReturn.AsUtc();
+                set => _dateReturn = value;
+            }
+
         }
     }
 }

@@ -104,11 +104,33 @@ namespace Web.Controllers
         [HttpPost("medical-entry")]
         public async Task<IActionResult> PostMedicalEntry([FromBody] AddChildMedicalEntryInfo info)
         {
-            var cmd = new AddMedicalEntryCommand("", TenantId, UserId, info.AppointmentId, info.ChildId, info.Age, info.Height, info.Weight, info.Summary);
+            var cmd = new AddMedicalEntryCommand("", TenantId, UserId, GuidStr(), info.AppointmentId, info.ChildId, info.Age, info.Height, info.Weight,
+                info.HeadCircumference, info.ChestCircumference, info.Summary, info.DateCreated, info.DateReturn);
 
             await _commandHandlerDispatcher.HandleAsync(cmd);
 
-            return Ok(cmd.ChildId);
+            return Ok(cmd.ChildMedicalEntryId);
+        }
+
+        [HttpPut("medical-entry")]
+        public async Task<IActionResult> PutMedicalEntry([FromBody] EditChildMedicalEntryInfo info)
+        {
+            var cmd = new EditMedicalEntryCommand("", TenantId, UserId, info.ChildMedicalEntryId, info.Token, info.Age, info.Height, info.Weight,
+                info.HeadCircumference, info.ChestCircumference, info.Summary, info.DateCreated, info.DateReturn);
+
+            await _commandHandlerDispatcher.HandleAsync(cmd);
+
+            return Ok();
+        }
+
+        [HttpGet("medical-entry/{id}")]
+        public async Task<IActionResult> GetMedicalEntry(string id)
+        {
+            var query = new GetMedicalEntryByIdQuery("", TenantId, UserId, id);
+
+            var dto = await _queryHandlerDispatcher.HandleAsync<GetMedicalEntryByIdQuery, GetMedicalEntryByIdQuery.ChildMedicalEntry>(query);
+
+            return Ok(dto);
         }
 
     }

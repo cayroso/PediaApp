@@ -15,7 +15,8 @@ namespace App.CQRS.Children.Common.Commands.Handler
     public sealed class ChildrenCommonCommandHandler :
         ICommandHandler<AddChildCommand>,
         ICommandHandler<AddMedicalEntryCommand>,
-        ICommandHandler<EditChildCommand>
+        ICommandHandler<EditChildCommand>,
+        ICommandHandler<EditMedicalEntryCommand>
 
     {
         readonly AppDbContext _appDbContext;
@@ -56,12 +57,17 @@ namespace App.CQRS.Children.Common.Commands.Handler
 
             var childMedicalEntry = new ChildMedicalEntry
             {
+                ChildMedicalEntryId = command.ChildMedicalEntryId,
                 Child = child,
                 Appointment = appointment,
                 Age = command.Age,
                 Height = command.Height,
                 Weight = command.Weight,
+                HeadCircumference = command.HeadCircumference,
+                ChestCircumference = command.ChestCircumference,
                 Summary = command.Summary,
+                DateCreated = command.DateCreated,
+                DateReturn = command.DateReturn
             };
 
             await _appDbContext.AddAsync(childMedicalEntry);
@@ -80,6 +86,24 @@ namespace App.CQRS.Children.Common.Commands.Handler
             data.MiddleName = command.MiddleName;
             data.LastName = command.LastName;
             data.DateOfBirth = command.DateOfBirth;
+
+            await _appDbContext.SaveChangesAsync();
+        }
+
+        async Task ICommandHandler<EditMedicalEntryCommand>.HandleAsync(EditMedicalEntryCommand command)
+        {
+            var data = await _appDbContext.ChildMedicalEntries.FirstOrDefaultAsync(e => e.ChildMedicalEntryId == command.ChildMedicalEntryId);
+
+            data.ThrowIfNullOrAlreadyUpdated(command.Token, _sequentialGuidGenerator.NewId());
+
+            data.Age = command.Age;
+            data.Height = command.Height;
+            data.Weight = command.Weight;
+            data.HeadCircumference = command.HeadCircumference;
+            data.ChestCircumference = command.ChestCircumference;
+            data.Summary = command.Summary;
+            data.DateCreated = command.DateCreated;
+            data.DateReturn = command.DateReturn;
 
             await _appDbContext.SaveChangesAsync();
         }

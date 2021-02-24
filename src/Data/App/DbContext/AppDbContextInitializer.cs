@@ -90,6 +90,8 @@ namespace Data.App.DbContext
                     PhoneNumber = u.PhoneNumber,
                 };
 
+
+
                 var userRoles = identityWebContext.UserRoles.Where(e => e.UserId == u.Id).ToList();
 
                 appUser.UserRoles = userRoles.Select(e => new UserRole
@@ -121,12 +123,26 @@ namespace Data.App.DbContext
                     }
                     if (ur.RoleId == ApplicationRoles.Parent.Id)
                     {
-                        var customer = new Parent
+                        var parent = new Parent
                         {
                             ParentId = appUser.UserId,
+                            Children = new List<Child>
+                            {
+                                new Child
+                                {
+                                    ChildId = NewId(),
+                                    FirstName = appUser.FirstName,
+                                    MiddleName = appUser.MiddleName,
+                                    LastName = appUser.LastName + " II",
+                                    DateOfBirth = DateTime.UtcNow.AddYears(-5),
+                                    Gender = Enums.EnumGender.Male,
+                                    ParentId = appUser.UserId,
+                                }
+
+                            }
                         };
 
-                        appDbContext.Add(customer);
+                        appDbContext.Add(parent);
                     }
                 });
 

@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace App.CQRS.Children.Common.Commands.Command
 {
-    public sealed class AddMedicalEntryCommand : AbstractCommand
+    public sealed class EditMedicalEntryCommand : AbstractCommand
     {
-        public string ChildMedicalEntryId { get; }
-        public string AppointmentId { get; }
-        public string ChildId { get; }
+        public string ChildMedicalEntryId { get; }       
+        public string Token { get; set; }
+
         public double Age { get; }
         public double Height { get; }
         public double Weight { get; }
@@ -20,14 +20,13 @@ namespace App.CQRS.Children.Common.Commands.Command
         public DateTime DateCreated { get; }
         public DateTime DateReturn { get; }
 
-        public AddMedicalEntryCommand(string correlationId, string tenantId, string userId,
-            string childMedicalEntryId, string appointmentId, string childId, double age, double height, double weight,
+        public EditMedicalEntryCommand(string correlationId, string tenantId, string userId,
+            string childMedicalEntryId, string token, double age, double height, double weight,
             double headCircumference, double chestCircumference, string summary, DateTime dateCreated, DateTime dateReturn)
             : base(correlationId, tenantId, userId)
         {
             ChildMedicalEntryId = childMedicalEntryId;
-            AppointmentId = appointmentId;
-            ChildId = childId;
+            Token = token;
             Age = age;
             Height = height;
             Weight = weight;
