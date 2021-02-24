@@ -28,7 +28,7 @@
                         <span v-else>Show map</span>
                     </button>
                     <router-link :to="{name: 'clinicsAddAppointment', params:{id: id}}" class="btn btn-primary">
-                        <i class="fas fa-fw fa-calendar"></i> Book Appointment
+                        <i class="fas fa-fw fa-calendar"></i> Book
                     </router-link>
 
                     <button @click="get" class="btn btn-primary">
