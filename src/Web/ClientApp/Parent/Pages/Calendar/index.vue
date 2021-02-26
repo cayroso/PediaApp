@@ -26,7 +26,7 @@
         </div>
 
         <view-appointment ref="viewAppointment"></view-appointment>
-        
+
     </div>
 </template>
 <script>
@@ -110,7 +110,7 @@
 
             vm.calendarOptions.initialView = settings.viewType;
 
-            vm.$bus.$on('event:appointment-updated', async (resp) => {                
+            vm.$bus.$on('event:appointment-updated', async (resp) => {
                 await vm.refresh();
             });
         },
@@ -126,8 +126,8 @@
                 const vm = this;
 
                 const fullCalendar = vm.$refs.fullCalendar;
-
-                fullCalendar.getApi().refetchEvents();
+                if (fullCalendar)
+                    fullCalendar.getApi().refetchEvents();
             },
             datesSet(dateInfo) {
                 var setting = {

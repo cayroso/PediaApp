@@ -46,7 +46,9 @@ namespace Web.Areas.Pedia.Controllers
 
 
             var appointmentHistories = await appDbContext.AppointmentTimelines
+                .Include(e => e.Appointment)
                 .AsNoTracking()
+                .Where(e => e.Appointment.ClinicId == ClinicId)
                 .Where(e => e.DateTimeline >= startMonth && e.DateTimeline <= endMonth)
                 .ToListAsync();
 
@@ -86,6 +88,7 @@ namespace Web.Areas.Pedia.Controllers
                         .ThenInclude(e => e.Parent)
                             .ThenInclude(e => e.User)
                     .AsNoTracking()
+                    .Where(e => e.ClinicId == ClinicId)
                     .Where(e => e.DateStart >= DateTime.UtcNow && e.Status == Data.Enums.EnumAppointmentStatus.Accepted)
                     .OrderBy(e => e.DateStart).ThenBy(e => e.DateEnd)
                     .ToListAsync();

@@ -52,21 +52,52 @@
                 <div class="card-header">
                     Medical Entries
                 </div>
-                <div class="card-body">
-                    {{item.medicalEntries}}
+                <div class="table-responsive mb-0">
+                    <table class="table table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Age</th>
+                                <th>Height</th>
+                                <th>Weight</th>
+                                <th>Date</th>
+                                <th>Return</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(me,index) in item.medicalEntries">
+                                <td>{{index+1}}</td>
+                                <td>{{me.age}}</td>
+                                <td>{{me.height}}</td>
+                                <td>{{me.weight}}</td>
+                                <td>{{me.dateCreated|moment('calendar')}}</td>
+                                <td>{{me.dateReturn|moment('calendar')}}</td>
+                                <td>
+                                    <button @click="openModalViewMedicalEntry(me)" class="btn btn-sm btn-outline-info">
+                                        <i class="fas fa-fw fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
-        {{item}}
+        <modal-view-medical-entry ref="modalViewMedicalEntry"></modal-view-medical-entry>
+
     </div>
 </template>
 <script>
     import pageMixin from '../../../_Core/Mixins/pageMixin';
+    import modalViewMedicalEntry from './_modalViewMedicalEntry.vue';
 
     export default {
         mixins: [pageMixin],
-
+        components: {
+            modalViewMedicalEntry
+        },
         props: {
             uid: String,
             id: {
@@ -106,7 +137,12 @@
                 } catch (e) {
                     vm.$util.handleError(e);
                 }
-            }
+            },
+            openModalViewMedicalEntry(entry) {
+                const vm = this;
+
+                vm.$refs.modalViewMedicalEntry.open(entry.childMedicalEntryId);
+            },
         }
     }
 </script>

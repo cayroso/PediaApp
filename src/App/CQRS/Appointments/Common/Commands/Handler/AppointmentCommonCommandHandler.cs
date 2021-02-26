@@ -563,7 +563,7 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
 
         async Task AppointmentUpdated(Appointment data, IReadOnlyList<string> notifyIds)
         {
-            await _appointmentHubContext.Clients.Users(notifyIds).AppointmentUpdated(data.AppointmentId);
+            await _appointmentHubContext.Clients.Users(notifyIds.Distinct().ToList()).AppointmentUpdated(data.AppointmentId);
         }
 
         Appointment FindBlocking(IEnumerable<Appointment> appointments, string appointmentId, DateTime dateStart, DateTime dateEnd)

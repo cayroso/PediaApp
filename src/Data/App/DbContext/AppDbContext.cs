@@ -324,6 +324,10 @@ namespace Data.App.DbContext
                 b.Property(e => e.StaffId).HasMaxLength(KeyMaxLength).IsRequired();
 
                 b.HasOne(e => e.User).WithOne().HasForeignKey<Staff>(fk => fk.StaffId);
+
+                b.HasMany(e => e.Clinics)
+                    .WithOne(d => d.Staff)
+                    .HasForeignKey(f => f.StaffId);
             });
         }
 

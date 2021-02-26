@@ -106,11 +106,7 @@
         <div class="mt-2">
             <div class="card border-success">
                 <div class="card-header bg-success text-white">
-                    <div class="d-flex flex-row justify-content-between align-items-baseline">
                         <b>Upcoming Appointments</b>
-                        <i class="fas fa-fw fa-lg fa-user-tie"></i>
-                    </div>
-
                 </div>
                 <div class="table-responsive mb-0">
                     <table class="table">

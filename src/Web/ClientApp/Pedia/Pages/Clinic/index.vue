@@ -14,10 +14,7 @@
             </div>
             <div class="col-auto">
                 <div>
-                    <button @click="openModalAddBusinessHour" class="btn btn-primary">
-                        <span class="fas fa-fw fa-clock"></span> Add Business Hour
-                    </button>
-
+                   
                     <button @click="get" class="btn btn-primary">
                         <span class="fas fa-fw fa-sync"></span>
                     </button>
@@ -202,6 +199,13 @@
         },
 
         methods: {
+            reset() {
+                const vm = this;
+
+                vm.isDirty = false;
+                vm.validations.clear();
+
+            },
             async onMapReady() {
                 const vm = this;
 
@@ -254,9 +258,11 @@
                     await vm.$util.axios.put(`/api/clinics/`, payload)
                         .then(resp => {
                             vm.$bvToast.toast('Clinic information created.', { title: 'Updated Clinic Information', variant: 'success', toaster: 'b-toaster-bottom-right' });
+                        });
 
-                            vm.get();
-                        })
+                    vm.reset();
+                    await vm.get();
+
                 } catch (e) {
                     vm.$util.handleError(e);
                 } finally {

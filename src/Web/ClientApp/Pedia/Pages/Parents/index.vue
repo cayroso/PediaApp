@@ -65,52 +65,28 @@
                             <div class="form-group mb-0 row no-gutters">
                                 <label class="col-3 col-form-label">Name</label>
                                 <div class="col align-self-center">
-                                    <div>
+                                    <b-avatar :src="row.item.imageUrl"></b-avatar>
+                                    <router-link :to="{name:'parentsView', params:{id:row.item.parentId}}">
                                         {{row.item.name}}
-                                    </div>
-                                    <small>{{row.item.description}}</small>
+                                    </router-link>
                                 </div>
                             </div>
                             <div class="form-group mb-0 row no-gutters">
-                                <label class="col-3 col-form-label">Members</label>
+                                <label class="col-3 col-form-label">Email</label>
                                 <div class="col align-self-center">
-                                    <ul class="list-unstyled">
-                                        <li v-for="item in row.item.members">
-                                            <div class="d-flex flex-row justify-content-between">
-                                                <div>
-                                                    <b-avatar :src="item.urlProfilePicture" size="sm"></b-avatar>
-                                                    <span v-if="item.userId === uid">
-                                                        {{item.name}}
-                                                    </span>
-                                                    <a v-else @click.prevent="$bus.$emit('event:send-message', item.userId)" href="#">
-                                                        {{item.name}}
-                                                    </a>
-                                                </div>
-                                                <button @click="removeTeamMember(row.item, item)" class="btn btn-sm btn-outline-danger">
-                                                    <i class="fas fa-fw fa-trash"></i>
-                                                </button>
-                                            </div>
-                                        </li>
-                                    </ul>
+                                    {{row.item.email}}
                                 </div>
                             </div>
-
                             <div class="form-group mb-0 row no-gutters">
-                                <div class="offset-3 col align-self-center">
-                                    <div>
-                                        <button @click="addTeamMember(row.item)" class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-fw fa-user-plus"></i>
-                                            <span class="ml-1 d-none d-sm-inline-flex">
-                                                Add Member
-                                            </span>
-                                        </button>
-                                        <button @click="removeTeam(row.item)" class="btn btn-sm btn-outline-danger">
-                                            <i class="fas fa-fw fa-trash"></i>
-                                            <span class="ml-1 d-none d-sm-inline-flex">
-                                                Remove Team
-                                            </span>
-                                        </button>
-                                    </div>
+                                <label class="col-3 col-form-label">Phone Number</label>
+                                <div class="col align-self-center">
+                                    {{row.item.phoneNumber}}
+                                </div>
+                            </div>
+                            <div class="form-group mb-0 row no-gutters">
+                                <label class="col-3 col-form-label"># of Chidren</label>
+                                <div class="col align-self-center">
+                                    {{row.item.numberOfChildren}}
                                 </div>
                             </div>
                         </div>
@@ -126,8 +102,6 @@
 
 
         <m-pagination :filter="filter" :search="search" :showPerPage="true" class="mt-2"></m-pagination>
-
-        <modal-add-member ref="modalAddMember" @saved="search"></modal-add-member>
     </div>
 </template>
 <script>

@@ -11,5 +11,7 @@ namespace Data.App.Models.Clinics
     {
         public string StaffId { get; set; }
         public virtual User User { get; set; }
+
+        public virtual ICollection<ClinicStaff> Clinics { get; set; } = new List<ClinicStaff>();
     }
 }

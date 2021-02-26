@@ -13,7 +13,9 @@
             <div class="w-100">
                 <div class="d-flex flex-row  align-items-center justify-content-between">
                     <h5 class="m-0">
-                        View Appointment
+                        View Appointment - {{item.referenceNumber}}
+
+                        {{isClinic}} - {{viewMode}}
                     </h5>
                 </div>
             </div>
@@ -21,7 +23,7 @@
         <template v-slot:modal-footer>
             <!--{{item.type}}/{{item.status}}
             {{item.parent.parentId}}={{uid}}-->
-            <template v-if="viewMode==='clinic'">
+            <template v-if="isClinic">
                 <button v-if="canDelete" @click="deleteAppointment" class="btn btn-danger">
                     Delete
                 </button>
@@ -210,12 +212,22 @@
             }
         },
         computed: {
+            isClinic() {
+                const vm = this;
+                
+                if (vm.viewMode === 'pedia')
+                    return true;
+                if (vm.viewMode === 'staff')
+                    return true;
+
+                return false;
+            },
             canDelete() {
                 const vm = this;
                 const item = vm.item;
-
+                
                 //  clinic (clinicrequested, cliniccancelled, parentrejected)
-                if (item.type === 1 && vm.viewMode === 'clinic') {
+                if (item.type === 1 && vm.isClinic) {
                     return [2, 4, 5,].includes(item.status);
                 }
 
@@ -233,7 +245,7 @@
                 const item = vm.item;
 
                 //  clinic
-                if (item.type === 1 && vm.viewMode === 'clinic') {
+                if (item.type === 1 && vm.isClinic) {
                     return [1, 2].includes(item.status);
                 }
 
@@ -251,7 +263,7 @@
                 const item = vm.item;
 
                 //  parent initilated and viewed by clinic
-                if (item.type === 2 && vm.viewMode === 'clinic') {
+                if (item.type === 2 && vm.isClinic) {
                     return [1, 2].includes(item.status);
                     //return item.status === 1 || item.status === 2;
                 }
@@ -270,14 +282,20 @@
                 const vm = this;
                 const item = vm.item;
 
-                return item.status === 7;
+                if (vm.viewMode === 'pedia')
+                    return item.status === 7;
+
+                return false;
             },
 
             canComplete() {
                 const vm = this;
                 const item = vm.item;
 
-                return item.status === 8;
+                if (vm.viewMode === 'pedia')
+                    return item.status === 8;
+
+                return false;
             },
 
             clinicBusinessHours() {
@@ -388,8 +406,9 @@
                     token: item.token,
                     notes: notes
                 };
-
-                await vm.$util.axios.put(`/api/appointments/${vm.viewMode}/cancel`, payload)
+                const role = vm.isClinic ? 'clinic' : 'parent';
+                
+                await vm.$util.axios.put(`/api/appointments/${role}/cancel`, payload)
                     .then(_ => {
                         vm.$emit('saved');
                         vm.close();
@@ -405,8 +424,8 @@
                     token: item.token,
                     //notes: notes
                 };
-                debugger
-                await vm.$util.axios.put(`/api/appointments/${vm.viewMode}/accept`, payload)
+                const role = vm.isClinic ? 'clinic' : 'parent';
+                await vm.$util.axios.put(`/api/appointments/${role}/accept`, payload)
                     .then(_ => {
                         vm.$emit('saved');
                         vm.close();
@@ -428,8 +447,9 @@
                     token: item.token,
                     notes: notes
                 };
+                const role = vm.isClinic ? 'clinic' : 'parent';
 
-                await vm.$util.axios.put(`/api/appointments/${vm.viewMode}/reject`, payload)
+                await vm.$util.axios.put(`/api/appointments/${role}/reject`, payload)
                     .then(_ => {
                         vm.$emit('saved');
                         vm.close();
@@ -444,8 +464,8 @@
                     appointmentId: item.appointmentId,
                     token: item.token,
                 };
-
-                await vm.$util.axios.put(`/api/appointments/${vm.viewMode}/inprogress`, payload)
+                const role = vm.isClinic ? 'clinic' : 'parent';
+                await vm.$util.axios.put(`/api/appointments/${role}/inprogress`, payload)
                     .then(_ => {
                         vm.$emit('saved');
                         vm.close();
@@ -460,8 +480,8 @@
                     appointmentId: item.appointmentId,
                     token: item.token,
                 };
-
-                await vm.$util.axios.put(`/api/appointments/${vm.viewMode}/complete`, payload)
+                const role = vm.isClinic ? 'clinic' : 'parent';
+                await vm.$util.axios.put(`/api/appointments/${role}/complete`, payload)
                     .then(_ => {
                         vm.$emit('saved');
                         vm.close();

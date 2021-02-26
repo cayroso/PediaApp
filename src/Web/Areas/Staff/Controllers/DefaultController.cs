@@ -14,7 +14,7 @@ namespace Web.Areas.Staff.Controllers
 {
     [Authorize(Policy = ApplicationRoles.StaffRoleName)]
     [ApiController]
-    [Route("api/drivers/[controller]")]
+    [Route("api/staffs/[controller]")]
     [Produces("application/json")]
     public class DefaultController : BaseController
     {
@@ -24,128 +24,96 @@ namespace Web.Areas.Staff.Controllers
             _queryHandlerDispatcher = queryHandlerDispatcher ?? throw new ArgumentNullException(nameof(queryHandlerDispatcher));
         }
 
+
         [HttpGet("dashboard")]
         public async Task<IActionResult> GetDashboard([FromServices] AppDbContext appDbContext, int year, int month)
         {
-            //var now = DateTime.UtcNow;
+            var now = DateTime.UtcNow;
 
-            //var startMonth = new DateTime(now.Year, now.Month, 1);
-            //var endMonth = startMonth.AddMonths(1);
+            var startMonth = new DateTime(now.Year, now.Month, 1);
+            var endMonth = startMonth.AddMonths(1);
 
-            //var startWeek = now.AddDays(-(int)now.DayOfWeek);
-            //var endWeek = startWeek.AddDays(7);
+            var startWeek = now.AddDays(-(int)now.DayOfWeek);
+            var endWeek = startWeek.AddDays(7);
 
-            //var startLastWeek = startWeek.AddDays(-7);
-            //var endLastWeek = startWeek;
+            var startLastWeek = startWeek.AddDays(-7);
+            var endLastWeek = startWeek;
 
-            //var startToday = now.Date;
-            //var endToday = startToday.AddDays(1);
+            var startToday = now.Date;
+            var endToday = startToday.AddDays(1);
 
-            //var startYesterday = now.Date.AddDays(-1);
-            //var endYesterday = now.Date;
+            var startYesterday = now.Date.AddDays(-1);
+            var endYesterday = now.Date;
 
-            //var monthTrips = await appDbContext.Trips.Include(e => e.Rider).ThenInclude(e => e.User).AsNoTracking()
-            //    .Where(e => e.DriverId == UserId && e.DateCreated >= startMonth && e.DateCreated <= endMonth).ToListAsync();
 
-            //var weekTrips = monthTrips.Where(e => e.DateCreated >= startWeek && e.DateCreated <= endWeek).ToList();
+            var appointmentHistories = await appDbContext.AppointmentTimelines
+                .Include(e => e.Appointment)
+                .AsNoTracking()
+                .Where(e => e.Appointment.ClinicId == ClinicId)
+                .Where(e => e.DateTimeline >= startMonth && e.DateTimeline <= endMonth)
+                .ToListAsync();
 
-            //var lastWeekTrips = monthTrips.Where(e => e.DateCreated >= startLastWeek && e.DateCreated <= endLastWeek).ToList();
+            var appointmentHistoryWeek = appointmentHistories.Where(e => e.DateTimeline >= startWeek && e.DateTimeline <= endWeek);
+            var appointmentHistoryLastWeek = appointmentHistories.Where(e => e.DateTimeline >= startLastWeek && e.DateTimeline <= endLastWeek);
 
-            //var todayTrips = monthTrips.Where(e => e.DateCreated >= startToday && e.DateCreated <= endToday).ToList();
+            //  this month # of appointments requested, cancelled, completed
+            var monthRequested = appointmentHistories.Where(e => e.Status == Data.Enums.EnumAppointmentStatus.ClinicRequested
+                    || e.Status == Data.Enums.EnumAppointmentStatus.ParentRequested);
 
-            //var yesterdayTrips = monthTrips.Where(e => e.DateCreated >= startYesterday && e.DateCreated <= endYesterday).ToList();
+            var monthCancelled = appointmentHistories.Where(e => e.Status == Data.Enums.EnumAppointmentStatus.ClinicCancelled
+                    || e.Status == Data.Enums.EnumAppointmentStatus.ParentCancelled);
 
-            ////  no of trips month
-            //var totalMonthTrips = monthTrips.Where(e => e.Status == Data.Enums.EnumTripStatus.Complete).Count();
+            var monthCompleted = appointmentHistories.Where(e => e.Status == Data.Enums.EnumAppointmentStatus.Completed);
 
-            ////  total earning this month
-            //var sumMonthEarnings = monthTrips.Where(e => e.Status == Data.Enums.EnumTripStatus.Complete).Sum(e => e.Fare);
+            //  this week # of appointments requested, cancelled, completed
+            var weekRequested = appointmentHistoryWeek.Where(e => e.Status == Data.Enums.EnumAppointmentStatus.ClinicRequested
+                    || e.Status == Data.Enums.EnumAppointmentStatus.ParentRequested);
 
-            //// no of trips this week
-            //var totalWeekTrips = weekTrips.Where(e => e.Status == Data.Enums.EnumTripStatus.Complete).Count();
+            var weekCancelled = appointmentHistoryWeek.Where(e => e.Status == Data.Enums.EnumAppointmentStatus.ClinicCancelled
+                    || e.Status == Data.Enums.EnumAppointmentStatus.ParentCancelled);
 
-            //// total earnings this week
-            //var sumWeekEarnings = weekTrips.Where(e => e.Status == Data.Enums.EnumTripStatus.Complete).Sum(e => e.Fare);
+            var weekCompleted = appointmentHistoryWeek.Where(e => e.Status == Data.Enums.EnumAppointmentStatus.Completed);
 
-            ////  no of trips last week
-            //var totalLastWeekTrips = lastWeekTrips.Where(e => e.Status == Data.Enums.EnumTripStatus.Complete).Count();
+            //  last week # of appointments requested, cancelled, completed
+            var lastWeekRequested = appointmentHistoryLastWeek.Where(e => e.Status == Data.Enums.EnumAppointmentStatus.ClinicRequested
+                    || e.Status == Data.Enums.EnumAppointmentStatus.ParentRequested);
 
-            ////  sum of earnings last week
-            //var sumLastWeekEarnings = lastWeekTrips.Where(e => e.Status == Data.Enums.EnumTripStatus.Complete).Sum(e => e.Fare);
+            var lastWeekCancelled = appointmentHistoryLastWeek.Where(e => e.Status == Data.Enums.EnumAppointmentStatus.ClinicCancelled
+                    || e.Status == Data.Enums.EnumAppointmentStatus.ParentCancelled);
 
-            ////  no of trips today
-            //var totalTodayTrips = todayTrips.Where(e => e.Status == Data.Enums.EnumTripStatus.Complete).Count();
+            var lastWeekCompleted = appointmentHistoryLastWeek.Where(e => e.Status == Data.Enums.EnumAppointmentStatus.Completed);
 
-            ////  sum of earnings today
-            //var sumTodayEarnings = todayTrips.Where(e => e.Status == Data.Enums.EnumTripStatus.Complete).Sum(e => e.Fare);
+            //  todays upcoming appointments, accepted
+            var upcomingAppointments = await appDbContext.Appointments
+                    .Include(e => e.Child)
+                        .ThenInclude(e => e.Parent)
+                            .ThenInclude(e => e.User)
+                    .AsNoTracking()
+                    .Where(e => e.ClinicId == ClinicId)
+                    .Where(e => e.DateStart >= DateTime.UtcNow && e.Status == Data.Enums.EnumAppointmentStatus.Accepted)
+                    .OrderBy(e => e.DateStart).ThenBy(e => e.DateEnd)
+                    .ToListAsync();
 
-            ////  no of trips yesterday
-            //var totalYesterdayTrips = yesterdayTrips.Where(e => e.Status == Data.Enums.EnumTripStatus.Complete).Count();
+            var dto = new
+            {
+                monthRequested = monthRequested.Count(),
+                monthCancelled = monthCancelled.Count(),
+                monthCompleted = monthCompleted.Count(),
 
-            ////  sum of earnings yesterday
-            //var sumYesterdayEarnings = yesterdayTrips.Where(e => e.Status == Data.Enums.EnumTripStatus.Complete).Sum(e => e.Fare);
+                weekRequested = weekRequested.Count(),
+                weekCancelled = weekCancelled.Count(),
+                weekCompleted = weekCompleted.Count(),
 
-            //// top riders
-            //var topRiders = monthTrips.GroupBy(e => e.Rider)
-            //                .Select(e => new
-            //                {
-            //                    Rider = e.Key,
-            //                    TotalFare = e.Sum(p => p.Fare),
-            //                    TotalTrip = e.Count()
-            //                }).ToList();
+                lastWeekRequested = lastWeekRequested.Count(),
+                lastWeekCancelled = lastWeekCancelled.Count(),
+                lastWeekCompleted = lastWeekCompleted.Count(),
 
-            //var dto = new
-            //{
-            //    totalMonthTrips,
-            //    sumMonthEarnings,
-            //    totalWeekTrips,
-            //    sumWeekEarnings,
-            //    totalLastWeekTrips,
-            //    sumLastWeekEarnings,
-            //    totalTodayTrips,
-            //    sumTodayEarnings,
-            //    totalYesterdayTrips,
-            //    sumYesterdayEarnings,
-            //    topRiders
-            //};
+                upcomingAppointments
+            };
 
-            //return Ok(dto);
 
-            ////  number of teams
-            //var teams = await dbContext.TeamMembers.AsNoTracking().Where(m => m.MemberId == UserId).CountAsync();
-
-            ////  number of members
-            //var users = await dbContext.Teams
-            //                .AsNoTracking()
-            //                .Where(e => e.Members.Any(m => m.MemberId == UserId))
-            //                .SelectMany(e => e.Members).Select(e => e.MemberId)
-            //                .Distinct()
-            //                .CountAsync();
-
-            ////  number of contacts
-            //var contacts = await dbContext.Contacts.CountAsync();
-
-            ////  number of documens
-            //var documents = await dbContext.Documents.CountAsync();
-
-            ////  number of attachments
-            //var attachments = await dbContext.ContactAttachments.CountAsync();
-
-            ////  number of tasks
-            //var tasks = await dbContext.UserTasks.CountAsync();
-
-            //var dto = new
-            //{
-            //    teams,
-            //    users,
-            //    contacts,
-            //    documents,
-            //    attachments,
-            //    tasks
-            //};
-
-            //return Ok(dto);
-            return Ok();
+            return Ok(dto);
         }
+
     }
 }

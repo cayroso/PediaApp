@@ -90,11 +90,10 @@ namespace Data.App.DbContext
                     PhoneNumber = u.PhoneNumber,
                 };
 
-
-
                 var userRoles = identityWebContext.UserRoles.Where(e => e.UserId == u.Id).ToList();
 
-                appUser.UserRoles = userRoles.Select(e => new UserRole
+                appUser.UserRoles = userRoles.Where(e => e.RoleId != ApplicationRoles.System.Id)
+                .Select(e => new UserRole
                 {
                     UserId = e.UserId,
                     RoleId = e.RoleId

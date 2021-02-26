@@ -381,9 +381,9 @@
                             const items = resp.data.items.map(e => {
                                 return {
                                     id: e.appointmentId,
-                                    display: 'list-item',
-                                    //title: `${e.statusText}: ${e.clinic.name} - ${e.child.name}`,
-                                    title: vm.uid !== e.parent.parentId ? `RESERVED` : `${e.clinic.name} - ${e.child.name}`,
+                                    display: 'list-item',                                    
+                                    //title: vm.uid !== e.parent.parentId ? `RESERVED` : `${e.clinic.name} - ${e.child.name}`,
+                                    title: vm.uid !== e.parent.parentId ? `RESERVED` : e.referenceNumber,
                                     allDay: false,
                                     editable: vm.uid === e.parent.parentId,
                                     start: moment(e.dateStart).format('YYYY-MM-DDTHH:mm'),

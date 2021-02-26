@@ -30,9 +30,9 @@
                 </div>
             </template>
             <template v-slot:modal-footer>
-                <button @click="view" class="btn btn-primary mr-auto">
+                <!--<button @click="view" class="btn btn-primary mr-auto">
                     <i class="fas fa-fw fa-search mr-1"></i>View
-                </button>
+                </button>-->
                 <button @click="markAsRead" class="btn btn-info">
                     <i class="fas fa-fw fa-check-circle mr-1"></i>Mark As Read
                 </button>
@@ -65,7 +65,7 @@
         methods: {
             view() {
                 const vm = this;
-
+                
                 vm.$router.push({ name: vm.urlViewOrder, params: { id: vm.item.referenceId } });
 
                 vm.close();

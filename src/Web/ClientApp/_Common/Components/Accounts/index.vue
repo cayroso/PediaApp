@@ -47,7 +47,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
+                        <!--<div class="form-group">
                             <div>
                                 <button @click="$refs.modalUpdatePhoneNumber.open()" class="btn btn-sm btn-info">
                                     Update Phone Number
@@ -61,7 +61,7 @@
                                     Update Theme
                                 </button>
                             </div>
-                        </div>
+                        </div>-->
                     </div>
                 </div>
             </div>
