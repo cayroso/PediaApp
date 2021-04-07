@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Common.Extensions;
-using Data.Common;
-using Data.Enums;
-
-namespace App.CQRS.Orders.Common.Queries.Query
+﻿namespace App.CQRS.Orders.Common.Queries.Query
 {
     //public sealed class SearchOrderQuery : AbstractPagedQuery<SearchOrderQuery.Order>
     //{

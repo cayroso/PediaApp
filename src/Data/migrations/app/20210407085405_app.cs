@@ -88,8 +88,9 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    RoleId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false)
+                    RoleId = table.Column<string>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Discriminator = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -129,16 +130,17 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false),
                     ImageId = table.Column<string>(type: "TEXT", nullable: true),
-                    FirstName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    FirstName = table.Column<string>(type: "TEXT", nullable: true),
                     MiddleName = table.Column<string>(type: "TEXT", nullable: true),
-                    LastName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    Email = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    PhoneNumber = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    OverallRating = table.Column<double>(type: "REAL", nullable: false),
-                    TotalRating = table.Column<double>(type: "REAL", nullable: false),
-                    ConcurrencyToken = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false)
+                    LastName = table.Column<string>(type: "TEXT", nullable: true),
+                    Email = table.Column<string>(type: "TEXT", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "TEXT", nullable: true),
+                    ConcurrencyToken = table.Column<string>(type: "TEXT", nullable: true),
+                    Discriminator = table.Column<string>(type: "TEXT", nullable: false),
+                    OverallRating = table.Column<double>(type: "REAL", nullable: true),
+                    TotalRating = table.Column<double>(type: "REAL", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -247,7 +249,8 @@ namespace Data.migrations.app
                     NotificationId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
                     ReceiverId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
                     DateReceived = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    DateRead = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    DateRead = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UserId = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -266,6 +269,13 @@ namespace Data.migrations.app
                         principalTable: "User",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_NotificationReceiver_User_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "App",
+                        principalTable: "User",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -311,26 +321,28 @@ namespace Data.migrations.app
                 schema: "App",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
-                    RoleId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false)
+                    UserRoleId = table.Column<string>(type: "TEXT", nullable: false),
+                    UserId = table.Column<string>(type: "TEXT", nullable: true),
+                    RoleId = table.Column<string>(type: "TEXT", nullable: true),
+                    Discriminator = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserRole", x => new { x.UserId, x.RoleId });
+                    table.PrimaryKey("PK_UserRole", x => x.UserRoleId);
                     table.ForeignKey(
                         name: "FK_UserRole_Role_RoleId",
                         column: x => x.RoleId,
                         principalSchema: "App",
                         principalTable: "Role",
                         principalColumn: "RoleId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_UserRole_User_UserId",
                         column: x => x.UserId,
                         principalSchema: "App",
                         principalTable: "User",
                         principalColumn: "UserId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -590,7 +602,7 @@ namespace Data.migrations.app
                         principalSchema: "App",
                         principalTable: "User",
                         principalColumn: "UserId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -751,6 +763,12 @@ namespace Data.migrations.app
                 column: "ReceiverId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_NotificationReceiver_UserId",
+                schema: "App",
+                table: "NotificationReceiver",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ParentClinic_ClinicId",
                 schema: "App",
                 table: "ParentClinic",
@@ -773,6 +791,12 @@ namespace Data.migrations.app
                 schema: "App",
                 table: "UserRole",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserRole_UserId",
+                schema: "App",
+                table: "UserRole",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserTask_RoleId",

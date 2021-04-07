@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Data.App.Models.Chats;
+using Cayent.Core.Data.Chats;
+using Cayent.Core.Data.Users;
 using Data.App.Models.Clinics;
 using Data.App.Models.Parents;
 using Data.App.Models.Users;
 using Data.Constants;
 using Data.Identity.DbContext;
-using Data.Identity.Models.Users;
 using Data.Providers;
 using Microsoft.EntityFrameworkCore;
 
@@ -97,7 +96,7 @@ namespace Data.App.DbContext
                 {
                     UserId = e.UserId,
                     RoleId = e.RoleId
-                }).ToList();
+                }).ToList<UserRoleBase>();
 
                 appUsers.Add(appUser);
 

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Cayent.Core.CQRS.Commands;
+using System;
 
 namespace App.CQRS.Appointments.Common.Commands.Command.Parent
 {

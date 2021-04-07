@@ -1,15 +1,9 @@
-﻿using Common.Extensions;
-using Data.App.Models.Appointments;
-using Data.App.Models.Clinics;
-using Data.App.Models.FileUploads;
-using Data.App.Models.Users;
+﻿using Cayent.Core.Data.Fileuploads;
+using Common.Extensions;
 using Data.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Data.App.Models.Parents
 {

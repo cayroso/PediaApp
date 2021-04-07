@@ -3,10 +3,12 @@ using App.CQRS.Appointments.Common.Commands.Command.Clinic;
 using App.CQRS.Appointments.Common.Commands.Command.Parent;
 using App.Hubs;
 using App.Services;
+using Cayent.Core.CQRS.Commands;
+using Cayent.Core.CQRS.Services;
+using Cayent.Core.Data.Notifications;
 using Data.App.DbContext;
 using Data.App.Models.Appointments;
 using Data.App.Models.Clinics;
-using Data.App.Models.Notifications;
 using Data.App.Models.Parents;
 using Data.Enums;
 using Microsoft.AspNetCore.SignalR;
@@ -14,7 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace App.CQRS.Appointments.Common.Commands.Handler
@@ -57,7 +59,7 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
 
 
 
-        async Task ICommandHandler<EditAppointmentCommand>.HandleAsync(EditAppointmentCommand command)
+        async Task ICommandHandler<EditAppointmentCommand>.HandleAsync(EditAppointmentCommand command, CancellationToken cancellationToken)
         {
             var data = await GetAppointment(command.AppointmentId);
 
@@ -82,7 +84,7 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
             await AppointmentUpdated(data, allNotifyIds);
         }
 
-        async Task ICommandHandler<DeleteAppointmentCommand>.HandleAsync(DeleteAppointmentCommand command)
+        async Task ICommandHandler<DeleteAppointmentCommand>.HandleAsync(DeleteAppointmentCommand command, CancellationToken cancellationToken)
         {
             //var data = await _appDbContext.Appointments.FirstOrDefaultAsync(e => e.AppointmentId == command.AppointmentId);
             var data = await GetAppointment(command.AppointmentId);
@@ -124,7 +126,7 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
 
         #region Clinic
 
-        async Task ICommandHandler<ClinicAcceptedAppointmentCommand>.HandleAsync(ClinicAcceptedAppointmentCommand command)
+        async Task ICommandHandler<ClinicAcceptedAppointmentCommand>.HandleAsync(ClinicAcceptedAppointmentCommand command, CancellationToken cancellationToken)
         {
             var data = await _appDbContext.Appointments.FirstOrDefaultAsync(e => e.AppointmentId == command.AppointmentId);
 
@@ -149,7 +151,7 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
             await AppointmentUpdated(data, allNotifyIds);
         }
 
-        async Task ICommandHandler<ClinicArchivedAppointmentCommand>.HandleAsync(ClinicArchivedAppointmentCommand command)
+        async Task ICommandHandler<ClinicArchivedAppointmentCommand>.HandleAsync(ClinicArchivedAppointmentCommand command, CancellationToken cancellationToken)
         {
             var data = await _appDbContext.Appointments.FirstOrDefaultAsync(e => e.AppointmentId == command.AppointmentId);
 
@@ -174,7 +176,7 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
             await AppointmentUpdated(data, allNotifyIds);
         }
 
-        async Task ICommandHandler<ClinicCancelledAppointmentCommand>.HandleAsync(ClinicCancelledAppointmentCommand command)
+        async Task ICommandHandler<ClinicCancelledAppointmentCommand>.HandleAsync(ClinicCancelledAppointmentCommand command, CancellationToken cancellationToken)
         {
             var data = await _appDbContext.Appointments.FirstOrDefaultAsync(e => e.AppointmentId == command.AppointmentId);
 
@@ -199,7 +201,7 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
             await AppointmentUpdated(data, allNotifyIds);
         }
 
-        async Task ICommandHandler<ClinicCompletedAppointmentCommand>.HandleAsync(ClinicCompletedAppointmentCommand command)
+        async Task ICommandHandler<ClinicCompletedAppointmentCommand>.HandleAsync(ClinicCompletedAppointmentCommand command, CancellationToken cancellationToken)
         {
             var data = await _appDbContext.Appointments.FirstOrDefaultAsync(e => e.AppointmentId == command.AppointmentId);
 
@@ -224,7 +226,7 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
             await AppointmentUpdated(data, allNotifyIds);
         }
 
-        async Task ICommandHandler<ClinicRejectedAppointmentCommand>.HandleAsync(ClinicRejectedAppointmentCommand command)
+        async Task ICommandHandler<ClinicRejectedAppointmentCommand>.HandleAsync(ClinicRejectedAppointmentCommand command, CancellationToken cancellationToken)
         {
             var data = await _appDbContext.Appointments.FirstOrDefaultAsync(e => e.AppointmentId == command.AppointmentId);
 
@@ -249,7 +251,7 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
             await AppointmentUpdated(data, allNotifyIds);
         }
 
-        async Task ICommandHandler<ClinicRequestedAppointmentCommand>.HandleAsync(ClinicRequestedAppointmentCommand command)
+        async Task ICommandHandler<ClinicRequestedAppointmentCommand>.HandleAsync(ClinicRequestedAppointmentCommand command, CancellationToken cancellationToken)
         {
             var clinic = await _appDbContext.Clinics.Include(e => e.Appointments).AsNoTracking().FirstOrDefaultAsync(e => e.ClinicId == command.ClinicId);
             clinic.ThrowIfNull();
@@ -297,7 +299,7 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
             await AppointmentUpdated(data, allNotifyIds);
         }
 
-        async Task ICommandHandler<ClinicResubmittedAppointmentCommand>.HandleAsync(ClinicResubmittedAppointmentCommand command)
+        async Task ICommandHandler<ClinicResubmittedAppointmentCommand>.HandleAsync(ClinicResubmittedAppointmentCommand command, CancellationToken cancellationToken)
         {
             var data = await _appDbContext.Appointments.FirstOrDefaultAsync(e => e.AppointmentId == command.AppointmentId);
 
@@ -322,7 +324,7 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
             await AppointmentUpdated(data, allNotifyIds);
         }
 
-        async Task ICommandHandler<ClinicSetAppointmentInProgressCommand>.HandleAsync(ClinicSetAppointmentInProgressCommand command)
+        async Task ICommandHandler<ClinicSetAppointmentInProgressCommand>.HandleAsync(ClinicSetAppointmentInProgressCommand command, CancellationToken cancellationToken)
         {
             var data = await _appDbContext.Appointments.FirstOrDefaultAsync(e => e.AppointmentId == command.AppointmentId);
 
@@ -350,7 +352,7 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
         #endregion
 
         #region Parent
-        async Task ICommandHandler<ParentAcceptedAppointmentCommand>.HandleAsync(ParentAcceptedAppointmentCommand command)
+        async Task ICommandHandler<ParentAcceptedAppointmentCommand>.HandleAsync(ParentAcceptedAppointmentCommand command, CancellationToken cancellationToken)
         {
             var data = await _appDbContext.Appointments.FirstOrDefaultAsync(e => e.AppointmentId == command.AppointmentId);
 
@@ -377,7 +379,7 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
             await AppointmentUpdated(data, allNotifyIds);
         }
 
-        async Task ICommandHandler<ParentCancelledAppointmentCommand>.HandleAsync(ParentCancelledAppointmentCommand command)
+        async Task ICommandHandler<ParentCancelledAppointmentCommand>.HandleAsync(ParentCancelledAppointmentCommand command, CancellationToken cancellationToken)
         {
             var data = await _appDbContext.Appointments.FirstOrDefaultAsync(e => e.AppointmentId == command.AppointmentId);
 
@@ -404,7 +406,7 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
             await AppointmentUpdated(data, allNotifyIds);
         }
 
-        async Task ICommandHandler<ParentRejectedAppointmentCommand>.HandleAsync(ParentRejectedAppointmentCommand command)
+        async Task ICommandHandler<ParentRejectedAppointmentCommand>.HandleAsync(ParentRejectedAppointmentCommand command, CancellationToken cancellationToken)
         {
             var data = await _appDbContext.Appointments.FirstOrDefaultAsync(e => e.AppointmentId == command.AppointmentId);
 
@@ -431,7 +433,7 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
             await AppointmentUpdated(data, allNotifyIds);
         }
 
-        async Task ICommandHandler<ParentRequestedAppointmentCommand>.HandleAsync(ParentRequestedAppointmentCommand command)
+        async Task ICommandHandler<ParentRequestedAppointmentCommand>.HandleAsync(ParentRequestedAppointmentCommand command, CancellationToken cancellationToken)
         {
             var clinic = await _appDbContext.Clinics.Include(e => e.Appointments).AsNoTracking().FirstOrDefaultAsync(e => e.ClinicId == command.ClinicId);
             clinic.ThrowIfNull();
@@ -481,7 +483,7 @@ namespace App.CQRS.Appointments.Common.Commands.Handler
             await AppointmentUpdated(data, allNotifyIds);
         }
 
-        async Task ICommandHandler<ParentResubmittedAppointmentCommand>.HandleAsync(ParentResubmittedAppointmentCommand command)
+        async Task ICommandHandler<ParentResubmittedAppointmentCommand>.HandleAsync(ParentResubmittedAppointmentCommand command, CancellationToken cancellationToken)
         {
             var data = await _appDbContext.Appointments.FirstOrDefaultAsync(e => e.AppointmentId == command.AppointmentId);
 

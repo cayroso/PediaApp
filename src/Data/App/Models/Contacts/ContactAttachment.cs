@@ -1,11 +1,7 @@
-﻿using Common.Extensions;
-using Data.App.Models.FileUploads;
+﻿using Cayent.Core.Data.Fileuploads;
+using Common.Extensions;
 using Data.Enums;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Data.App.Models.Contacts
 {

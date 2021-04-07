@@ -1,13 +1,13 @@
 ﻿using App.CQRS.Children.Common.Commands.Command;
 using App.Services;
+using Cayent.Core.CQRS.Commands;
+using Cayent.Core.CQRS.Services;
 using Data.App.DbContext;
 using Data.App.Models.Appointments;
 using Data.App.Models.Parents;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace App.CQRS.Children.Common.Commands.Handler
@@ -27,7 +27,7 @@ namespace App.CQRS.Children.Common.Commands.Handler
             _sequentialGuidGenerator = sequentialGuidGenerator ?? throw new ArgumentNullException(nameof(sequentialGuidGenerator));
         }
 
-        async Task ICommandHandler<AddChildCommand>.HandleAsync(AddChildCommand command)
+        async Task ICommandHandler<AddChildCommand>.HandleAsync(AddChildCommand command, CancellationToken cancellationToken)
         {
             var child = new Child
             {
@@ -45,7 +45,7 @@ namespace App.CQRS.Children.Common.Commands.Handler
             await _appDbContext.SaveChangesAsync();
         }
 
-        async Task ICommandHandler<AddMedicalEntryCommand>.HandleAsync(AddMedicalEntryCommand command)
+        async Task ICommandHandler<AddMedicalEntryCommand>.HandleAsync(AddMedicalEntryCommand command, CancellationToken cancellationToken)
         {
             var child = await _appDbContext.Children.FirstOrDefaultAsync(e => e.ChildId == command.ChildId);
 
@@ -75,7 +75,7 @@ namespace App.CQRS.Children.Common.Commands.Handler
             await _appDbContext.SaveChangesAsync();
         }
 
-        async Task ICommandHandler<EditChildCommand>.HandleAsync(EditChildCommand command)
+        async Task ICommandHandler<EditChildCommand>.HandleAsync(EditChildCommand command, CancellationToken cancellationToken)
         {
             var data = await _appDbContext.Children.FirstOrDefaultAsync(e => e.ChildId == command.ChildId);
 
@@ -90,7 +90,7 @@ namespace App.CQRS.Children.Common.Commands.Handler
             await _appDbContext.SaveChangesAsync();
         }
 
-        async Task ICommandHandler<EditMedicalEntryCommand>.HandleAsync(EditMedicalEntryCommand command)
+        async Task ICommandHandler<EditMedicalEntryCommand>.HandleAsync(EditMedicalEntryCommand command, CancellationToken cancellationToken)
         {
             var data = await _appDbContext.ChildMedicalEntries.FirstOrDefaultAsync(e => e.ChildMedicalEntryId == command.ChildMedicalEntryId);
 

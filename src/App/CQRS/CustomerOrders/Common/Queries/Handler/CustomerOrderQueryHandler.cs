@@ -1,14 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using App.CQRS.Orders.Common.Queries.Query;
+﻿using System;
 using Data.App.DbContext;
-using Data.Common;
-using Data.Constants;
-using Data.Enums;
-using Data.Identity.DbContext;
 
 namespace App.CQRS.Orders.Common.Queries.Handler
 {

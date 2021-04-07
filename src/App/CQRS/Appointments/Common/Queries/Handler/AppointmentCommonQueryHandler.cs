@@ -1,12 +1,14 @@
 ﻿using App.CQRS.Appointments.Common.Queries.Query;
+using Cayent.Core.Common;
+using Cayent.Core.CQRS.Queries;
 using Data.App.DbContext;
 using Data.Common;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Cayent.Core.Common.Extensions;
 
 namespace App.CQRS.Appointments.Common.Queries.Handler
 {
@@ -20,7 +22,7 @@ namespace App.CQRS.Appointments.Common.Queries.Handler
             _appDbContext = appDbContext ?? throw new ArgumentNullException(nameof(appDbContext));
         }
 
-        async Task<GetAppointmentByIdQuery.Appointment> IQueryHandler<GetAppointmentByIdQuery, GetAppointmentByIdQuery.Appointment>.HandleAsync(GetAppointmentByIdQuery query)
+        async Task<GetAppointmentByIdQuery.Appointment> IQueryHandler<GetAppointmentByIdQuery, GetAppointmentByIdQuery.Appointment>.HandleAsync(GetAppointmentByIdQuery query, CancellationToken cancellationToken)
         {
             var sql = from a in _appDbContext.Appointments.AsNoTracking()
 
@@ -80,7 +82,7 @@ namespace App.CQRS.Appointments.Common.Queries.Handler
             return dto;
         }
 
-        async Task<Paged<SearchAppointmentQuery.Appointment>> IQueryHandler<SearchAppointmentQuery, Paged<SearchAppointmentQuery.Appointment>>.HandleAsync(SearchAppointmentQuery query)
+        async Task<Paged<SearchAppointmentQuery.Appointment>> IQueryHandler<SearchAppointmentQuery, Paged<SearchAppointmentQuery.Appointment>>.HandleAsync(SearchAppointmentQuery query, CancellationToken cancellationToken)
         {
             var sql = from a in _appDbContext.Appointments.AsNoTracking()
 

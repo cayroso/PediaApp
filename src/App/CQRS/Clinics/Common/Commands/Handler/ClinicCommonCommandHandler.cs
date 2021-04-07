@@ -1,12 +1,12 @@
 ﻿using App.CQRS.Clinics.Common.Commands.Command;
 using App.Services;
+using Cayent.Core.CQRS.Commands;
+using Cayent.Core.CQRS.Services;
 using Data.App.DbContext;
 using Data.App.Models.Clinics;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace App.CQRS.Clinics.Common.Commands.Handler
@@ -22,7 +22,7 @@ namespace App.CQRS.Clinics.Common.Commands.Handler
             _sequentialGuidGenerator = sequentialGuidGenerator ?? throw new ArgumentNullException(nameof(sequentialGuidGenerator));
         }
 
-        async Task ICommandHandler<EditClinicCommand>.HandleAsync(EditClinicCommand command)
+        async Task ICommandHandler<EditClinicCommand>.HandleAsync(EditClinicCommand command, CancellationToken cancellationToken)
         {
             var clinic = await _appDbContext.Clinics.FirstOrDefaultAsync(e => e.ClinicId == command.ClinicId);
 

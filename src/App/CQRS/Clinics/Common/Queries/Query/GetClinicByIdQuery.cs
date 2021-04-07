@@ -1,9 +1,5 @@
-﻿using Data.Enums;
-using System;
+﻿using Cayent.Core.CQRS.Queries;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace App.CQRS.Clinics.Common.Queries.Query
 {

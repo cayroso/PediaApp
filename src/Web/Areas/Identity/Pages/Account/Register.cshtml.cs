@@ -22,7 +22,7 @@ using Data.Constants;
 using Data.App.DbContext;
 using Data.App.Models.Users;
 using Data.App.Models.Clinics;
-using Data.App.Models.Chats;
+using Cayent.Core.Data.Chats;
 
 namespace Web.Areas.Identity.Pages.Account
 {

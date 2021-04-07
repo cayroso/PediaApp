@@ -3,8 +3,10 @@ using App.CQRS.Clinics.Common.Commands.Command;
 using App.CQRS.Clinics.Common.Queries.Query;
 using App.Hubs;
 using App.Services;
+using Cayent.Core.Common;
+using Cayent.Core.CQRS.Commands;
+using Cayent.Core.CQRS.Queries;
 using Data.App.DbContext;
-using Data.App.Models.Chats;
 using Data.App.Models.Clinics;
 using Data.App.Models.Parents;
 using Data.Common;
@@ -21,6 +23,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Web.BackgroundServices;
 using Web.Models;
@@ -51,43 +54,43 @@ namespace Web.Controllers
         }
 
         [HttpGet("search")]
-        public async Task<IActionResult> Search(string c, int p, int s, string sf, int so)
+        public async Task<IActionResult> Search(string c, int p, int s, string sf, int so, CancellationToken cancellationToken = default)
         {
             var query = new SearchClinicQuery("", TenantId, UserId, c, p, s, sf, so);
 
-            var dto = await _queryHandlerDispatcher.HandleAsync<SearchClinicQuery, Paged<SearchClinicQuery.Clinic>>(query);
+            var dto = await _queryHandlerDispatcher.HandleAsync<SearchClinicQuery, Paged<SearchClinicQuery.Clinic>>(query, cancellationToken);
 
             return Ok(dto);
         }
 
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Search(string id)
+        public async Task<IActionResult> Search(string id, CancellationToken cancellationToken = default)
         {
             var query = new GetClinicByIdQuery("", TenantId, UserId, id);
 
-            var dto = await _queryHandlerDispatcher.HandleAsync<GetClinicByIdQuery, GetClinicByIdQuery.Clinic>(query);
+            var dto = await _queryHandlerDispatcher.HandleAsync<GetClinicByIdQuery, GetClinicByIdQuery.Clinic>(query, cancellationToken);
 
             return Ok(dto);
         }
 
         [HttpGet("my-clinic")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellationToken = default)
         {
             var query = new GetClinicByIdQuery("", TenantId, UserId, ClinicId);
 
-            var dto = await _queryHandlerDispatcher.HandleAsync<GetClinicByIdQuery, GetClinicByIdQuery.Clinic>(query);
+            var dto = await _queryHandlerDispatcher.HandleAsync<GetClinicByIdQuery, GetClinicByIdQuery.Clinic>(query, cancellationToken);
 
             return Ok(dto);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Edit([FromBody] EditClinicInfo info)
+        public async Task<IActionResult> Edit([FromBody] EditClinicInfo info, CancellationToken cancellationToken = default)
         {
             var cmd = new EditClinicCommand("", TenantId, UserId, info.ClinicId, info.Token,
                 info.Name, info.PhoneNumber, info.MobileNumber, info.Email, info.Address, info.GeoX, info.GeoY);
 
-            await _commandHandlerDispatcher.HandleAsync(cmd);
+            await _commandHandlerDispatcher.HandleAsync(cmd, cancellationToken);
 
             return Ok();
         }

@@ -1,9 +1,6 @@
-﻿using Data.Enums;
+﻿using Cayent.Core.CQRS.Commands;
+using Data.Enums;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace App.CQRS.Children.Common.Commands.Command
 {

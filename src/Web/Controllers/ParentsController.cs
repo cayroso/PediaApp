@@ -1,5 +1,8 @@
 ﻿using App.CQRS;
 using App.CQRS.Clinics.Common.Queries.Query;
+using Cayent.Core.Common;
+using Cayent.Core.CQRS.Commands;
+using Cayent.Core.CQRS.Queries;
 using Data.App.DbContext;
 using Data.App.Models.Users;
 using Data.Common;
@@ -9,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Web.Controllers
@@ -34,21 +38,21 @@ namespace Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetParents(string c, int p, int s, string sf, int so)
+        public async Task<IActionResult> GetParents(string c, int p, int s, string sf, int so, CancellationToken cancellationToken = default)
         {
             var query = new SearchParentByClinicIdQuery("", TenantId, UserId, ClinicId, c, p, s, sf, so);
 
-            var dto = await _queryHandlerDispatcher.HandleAsync<SearchParentByClinicIdQuery, Paged<SearchParentByClinicIdQuery.Parent>>(query);
+            var dto = await _queryHandlerDispatcher.HandleAsync<SearchParentByClinicIdQuery, Paged<SearchParentByClinicIdQuery.Parent>>(query, cancellationToken);
 
             return Ok(dto);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetChildren(string id)
+        public async Task<IActionResult> GetChildren(string id, CancellationToken cancellationToken = default)
         {
             var query = new GetParentByIdQuery("", TenantId, UserId, id);
 
-            var dto = await _queryHandlerDispatcher.HandleAsync<GetParentByIdQuery, GetParentByIdQuery.Parent>(query);
+            var dto = await _queryHandlerDispatcher.HandleAsync<GetParentByIdQuery, GetParentByIdQuery.Parent>(query, cancellationToken);
 
             return Ok(dto);
         }

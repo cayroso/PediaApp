@@ -5,8 +5,10 @@ using App.CQRS.Clinics.Common.Commands.Command;
 using App.CQRS.Clinics.Common.Queries.Query;
 using App.Hubs;
 using App.Services;
+using Cayent.Core.Common;
+using Cayent.Core.CQRS.Commands;
+using Cayent.Core.CQRS.Queries;
 using Data.App.DbContext;
-using Data.App.Models.Chats;
 using Data.Common;
 using Data.Constants;
 using Data.Identity.DbContext;
@@ -21,6 +23,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Web.BackgroundServices;
 using Web.Models;
@@ -51,84 +54,84 @@ namespace Web.Controllers
         }
 
         [HttpGet("parent/search")]
-        public async Task<IActionResult> SearchByParent(string c, int p, int s, string sf, int so)
+        public async Task<IActionResult> SearchByParent(string c, int p, int s, string sf, int so, CancellationToken cancellationToken = default)
         {
             var query = new SearchChildrenByParentIdQuery("", TenantId, UserId, UserId, c, p, s, sf, so);
 
-            var dto = await _queryHandlerDispatcher.HandleAsync<SearchChildrenByParentIdQuery, Paged<SearchChildrenByParentIdQuery.Child>>(query);
+            var dto = await _queryHandlerDispatcher.HandleAsync<SearchChildrenByParentIdQuery, Paged<SearchChildrenByParentIdQuery.Child>>(query, cancellationToken);
 
             return Ok(dto);
         }
 
         [HttpGet("clinic/search")]
-        public async Task<IActionResult> SearchByCLinic(string c, int p, int s, string sf, int so)
+        public async Task<IActionResult> SearchByCLinic(string c, int p, int s, string sf, int so, CancellationToken cancellationToken = default)
         {
             var query = new SearchChildrenByClinicQuery("", TenantId, UserId, ClinicId, c, p, s, sf, so);
 
-            var dto = await _queryHandlerDispatcher.HandleAsync<SearchChildrenByClinicQuery, Paged<SearchChildrenByClinicQuery.Child>>(query);
+            var dto = await _queryHandlerDispatcher.HandleAsync<SearchChildrenByClinicQuery, Paged<SearchChildrenByClinicQuery.Child>>(query, cancellationToken);
 
             return Ok(dto);
         }
 
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(string id)
+        public async Task<IActionResult> Get(string id, CancellationToken cancellationToken = default)
         {
             var query = new GetChildByIdQuery("", TenantId, UserId, id);
 
-            var dto = await _queryHandlerDispatcher.HandleAsync<GetChildByIdQuery, GetChildByIdQuery.Child>(query);
+            var dto = await _queryHandlerDispatcher.HandleAsync<GetChildByIdQuery, GetChildByIdQuery.Child>(query, cancellationToken);
 
             return Ok(dto);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] AddChildInfo info)
+        public async Task<IActionResult> Post([FromBody] AddChildInfo info, CancellationToken cancellationToken = default)
         {
             var cmd = new AddChildCommand("", TenantId, UserId, GuidStr(), UserId, info.Gender, info.FirstName, info.MiddleName, info.LastName, info.DateOfBirth); ;
 
-            await _commandHandlerDispatcher.HandleAsync(cmd);
+            await _commandHandlerDispatcher.HandleAsync(cmd, cancellationToken);
 
             return Ok(cmd.ChildId);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody] EditChildInfo info)
+        public async Task<IActionResult> Put([FromBody] EditChildInfo info, CancellationToken cancellationToken = default)
         {
             var cmd = new EditChildCommand("", TenantId, UserId, info.ChildId, info.Token, info.Gender, info.FirstName, info.MiddleName, info.LastName, info.DateOfBirth); ;
 
-            await _commandHandlerDispatcher.HandleAsync(cmd);
+            await _commandHandlerDispatcher.HandleAsync(cmd, cancellationToken);
 
             return Ok(cmd.ChildId);
         }
 
         [HttpPost("medical-entry")]
-        public async Task<IActionResult> PostMedicalEntry([FromBody] AddChildMedicalEntryInfo info)
+        public async Task<IActionResult> PostMedicalEntry([FromBody] AddChildMedicalEntryInfo info, CancellationToken cancellationToken = default)
         {
             var cmd = new AddMedicalEntryCommand("", TenantId, UserId, GuidStr(), info.AppointmentId, info.ChildId, info.Age, info.Height, info.Weight,
                 info.HeadCircumference, info.ChestCircumference, info.Summary, info.DateCreated, info.DateReturn);
 
-            await _commandHandlerDispatcher.HandleAsync(cmd);
+            await _commandHandlerDispatcher.HandleAsync(cmd, cancellationToken);
 
             return Ok(cmd.ChildMedicalEntryId);
         }
 
         [HttpPut("medical-entry")]
-        public async Task<IActionResult> PutMedicalEntry([FromBody] EditChildMedicalEntryInfo info)
+        public async Task<IActionResult> PutMedicalEntry([FromBody] EditChildMedicalEntryInfo info, CancellationToken cancellationToken = default)
         {
             var cmd = new EditMedicalEntryCommand("", TenantId, UserId, info.ChildMedicalEntryId, info.Token, info.Age, info.Height, info.Weight,
                 info.HeadCircumference, info.ChestCircumference, info.Summary, info.DateCreated, info.DateReturn);
 
-            await _commandHandlerDispatcher.HandleAsync(cmd);
+            await _commandHandlerDispatcher.HandleAsync(cmd, cancellationToken);
 
             return Ok();
         }
 
         [HttpGet("medical-entry/{id}")]
-        public async Task<IActionResult> GetMedicalEntry(string id)
+        public async Task<IActionResult> GetMedicalEntry(string id, CancellationToken cancellationToken = default)
         {
             var query = new GetMedicalEntryByIdQuery("", TenantId, UserId, id);
 
-            var dto = await _queryHandlerDispatcher.HandleAsync<GetMedicalEntryByIdQuery, GetMedicalEntryByIdQuery.ChildMedicalEntry>(query);
+            var dto = await _queryHandlerDispatcher.HandleAsync<GetMedicalEntryByIdQuery, GetMedicalEntryByIdQuery.ChildMedicalEntry>(query,cancellationToken);
 
             return Ok(dto);
         }

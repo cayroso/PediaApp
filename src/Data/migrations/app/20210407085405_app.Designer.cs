@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.migrations.app
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20210225070558_app")]
+    [Migration("20210407085405_app")]
     partial class app
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -17,7 +17,302 @@ namespace Data.migrations.app
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("App")
-                .HasAnnotation("ProductVersion", "5.0.2");
+                .HasAnnotation("ProductVersion", "5.0.5");
+
+            modelBuilder.Entity("Cayent.Core.Data.Chats.Chat", b =>
+                {
+                    b.Property<string>("ChatId")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LastChatMessageId")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ChatId");
+
+                    b.ToTable("Chat");
+                });
+
+            modelBuilder.Entity("Cayent.Core.Data.Chats.ChatMessage", b =>
+                {
+                    b.Property<string>("ChatMessageId")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ChatId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ChatMessageType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateSent")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SenderId")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ChatMessageId");
+
+                    b.HasIndex("ChatId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("ChatMessage");
+                });
+
+            modelBuilder.Entity("Cayent.Core.Data.Chats.ChatReceiver", b =>
+                {
+                    b.Property<string>("ChatReceiverId")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ChatId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsRemoved")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("LastChatMessageId")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ReceiverId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ChatReceiverId");
+
+                    b.HasIndex("ChatId");
+
+                    b.HasIndex("ReceiverId");
+
+                    b.ToTable("ChatReceiver");
+                });
+
+            modelBuilder.Entity("Cayent.Core.Data.Fileuploads.FileUpload", b =>
+                {
+                    b.Property<string>("FileUploadId")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte[]>("Content")
+                        .HasColumnType("BLOB");
+
+                    b.Property<string>("ContentDisposition")
+                        .HasMaxLength(2048)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ContentType")
+                        .HasMaxLength(2048)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FileName")
+                        .HasMaxLength(2048)
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("Length")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Url")
+                        .HasMaxLength(2048)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("FileUploadId");
+
+                    b.ToTable("FileUpload");
+                });
+
+            modelBuilder.Entity("Cayent.Core.Data.Notifications.Notification", b =>
+                {
+                    b.Property<string>("NotificationId")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateSent")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("IconClass")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("NotificationType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ReferenceId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Subject")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("NotificationId");
+
+                    b.ToTable("Notification");
+                });
+
+            modelBuilder.Entity("Cayent.Core.Data.Notifications.NotificationReceiver", b =>
+                {
+                    b.Property<string>("NotificationReceiverId")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateRead")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateReceived")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NotificationId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ReceiverId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("NotificationReceiverId");
+
+                    b.HasIndex("NotificationId");
+
+                    b.HasIndex("ReceiverId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("NotificationReceiver");
+                });
+
+            modelBuilder.Entity("Cayent.Core.Data.Users.RoleBase", b =>
+                {
+                    b.Property<string>("RoleId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("RoleId");
+
+                    b.ToTable("Role");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("RoleBase");
+                });
+
+            modelBuilder.Entity("Cayent.Core.Data.Users.UserBase", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ConcurrencyToken")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("MiddleName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("UserId");
+
+                    b.HasIndex("ImageId");
+
+                    b.ToTable("User");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("UserBase");
+                });
+
+            modelBuilder.Entity("Cayent.Core.Data.Users.UserRoleBase", b =>
+                {
+                    b.Property<string>("UserRoleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("UserRoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserRole");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("UserRoleBase");
+                });
 
             modelBuilder.Entity("Data.App.Models.Appointments.Appointment", b =>
                 {
@@ -144,109 +439,6 @@ namespace Data.migrations.app
                     b.HasKey("Date");
 
                     b.ToTable("Calendar");
-                });
-
-            modelBuilder.Entity("Data.App.Models.Chats.Chat", b =>
-                {
-                    b.Property<string>("ChatId")
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("LastChatMessageId")
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("ChatId");
-
-                    b.ToTable("Chat");
-                });
-
-            modelBuilder.Entity("Data.App.Models.Chats.ChatMessage", b =>
-                {
-                    b.Property<string>("ChatMessageId")
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ChatId")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("ChatMessageType")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasMaxLength(2048)
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("DateSent")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("SenderId")
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("ChatMessageId");
-
-                    b.HasIndex("ChatId");
-
-                    b.HasIndex("SenderId");
-
-                    b.ToTable("ChatMessage");
-                });
-
-            modelBuilder.Entity("Data.App.Models.Chats.ChatReceiver", b =>
-                {
-                    b.Property<string>("ChatReceiverId")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ChatId")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsRemoved")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("LastChatMessageId")
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ReceiverId")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("ChatReceiverId");
-
-                    b.HasIndex("ChatId");
-
-                    b.HasIndex("ReceiverId");
-
-                    b.ToTable("ChatReceiver");
                 });
 
             modelBuilder.Entity("Data.App.Models.Clinics.Clinic", b =>
@@ -402,108 +594,6 @@ namespace Data.migrations.app
                     b.ToTable("Staff");
                 });
 
-            modelBuilder.Entity("Data.App.Models.FileUploads.FileUpload", b =>
-                {
-                    b.Property<string>("FileUploadId")
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<byte[]>("Content")
-                        .HasColumnType("BLOB");
-
-                    b.Property<string>("ContentDisposition")
-                        .HasMaxLength(2048)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ContentType")
-                        .HasMaxLength(2048)
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("FileName")
-                        .HasMaxLength(2048)
-                        .HasColumnType("TEXT");
-
-                    b.Property<long>("Length")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Url")
-                        .HasMaxLength(2048)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("FileUploadId");
-
-                    b.ToTable("FileUpload");
-                });
-
-            modelBuilder.Entity("Data.App.Models.Notifications.Notification", b =>
-                {
-                    b.Property<string>("NotificationId")
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Content")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("DateSent")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("IconClass")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("NotificationType")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("ReferenceId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Subject")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("NotificationId");
-
-                    b.ToTable("Notification");
-                });
-
-            modelBuilder.Entity("Data.App.Models.Notifications.NotificationReceiver", b =>
-                {
-                    b.Property<string>("NotificationReceiverId")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("DateRead")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("DateReceived")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("NotificationId")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ReceiverId")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("NotificationReceiverId");
-
-                    b.HasIndex("NotificationId");
-
-                    b.HasIndex("ReceiverId");
-
-                    b.ToTable("NotificationReceiver");
-                });
-
             modelBuilder.Entity("Data.App.Models.Parents.Child", b =>
                 {
                     b.Property<string>("ChildId")
@@ -643,89 +733,6 @@ namespace Data.migrations.app
                     b.ToTable("ParentClinic");
                 });
 
-            modelBuilder.Entity("Data.App.Models.Users.Role", b =>
-                {
-                    b.Property<string>("RoleId")
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("RoleId");
-
-                    b.ToTable("Role");
-                });
-
-            modelBuilder.Entity("Data.App.Models.Users.User", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ConcurrencyToken")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ImageId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("MiddleName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<double>("OverallRating")
-                        .HasColumnType("REAL");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<double>("TotalRating")
-                        .HasColumnType("REAL");
-
-                    b.HasKey("UserId");
-
-                    b.HasIndex("ImageId");
-
-                    b.ToTable("User");
-                });
-
-            modelBuilder.Entity("Data.App.Models.Users.UserRole", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("RoleId")
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("UserRole");
-                });
-
             modelBuilder.Entity("Data.App.Models.Users.UserTask", b =>
                 {
                     b.Property<string>("UserTaskId")
@@ -820,6 +827,122 @@ namespace Data.migrations.app
                     b.ToTable("UserTaskItem");
                 });
 
+            modelBuilder.Entity("Data.App.Models.Users.Role", b =>
+                {
+                    b.HasBaseType("Cayent.Core.Data.Users.RoleBase");
+
+                    b.ToTable("Role");
+
+                    b.HasDiscriminator().HasValue("Role");
+                });
+
+            modelBuilder.Entity("Data.App.Models.Users.User", b =>
+                {
+                    b.HasBaseType("Cayent.Core.Data.Users.UserBase");
+
+                    b.Property<double>("OverallRating")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("TotalRating")
+                        .HasColumnType("REAL");
+
+                    b.ToTable("User");
+
+                    b.HasDiscriminator().HasValue("User");
+                });
+
+            modelBuilder.Entity("Data.App.Models.Users.UserRole", b =>
+                {
+                    b.HasBaseType("Cayent.Core.Data.Users.UserRoleBase");
+
+                    b.ToTable("UserRole");
+
+                    b.HasDiscriminator().HasValue("UserRole");
+                });
+
+            modelBuilder.Entity("Cayent.Core.Data.Chats.ChatMessage", b =>
+                {
+                    b.HasOne("Cayent.Core.Data.Chats.Chat", "Chat")
+                        .WithMany("Messages")
+                        .HasForeignKey("ChatId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Cayent.Core.Data.Users.UserBase", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId");
+
+                    b.Navigation("Chat");
+
+                    b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("Cayent.Core.Data.Chats.ChatReceiver", b =>
+                {
+                    b.HasOne("Cayent.Core.Data.Chats.Chat", "Chat")
+                        .WithMany("Receivers")
+                        .HasForeignKey("ChatId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Cayent.Core.Data.Users.UserBase", "Receiver")
+                        .WithMany()
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Chat");
+
+                    b.Navigation("Receiver");
+                });
+
+            modelBuilder.Entity("Cayent.Core.Data.Notifications.NotificationReceiver", b =>
+                {
+                    b.HasOne("Cayent.Core.Data.Notifications.Notification", "Notification")
+                        .WithMany("Receivers")
+                        .HasForeignKey("NotificationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Cayent.Core.Data.Users.UserBase", "Receiver")
+                        .WithMany()
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Data.App.Models.Users.User", null)
+                        .WithMany("NotificationReceivers")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Notification");
+
+                    b.Navigation("Receiver");
+                });
+
+            modelBuilder.Entity("Cayent.Core.Data.Users.UserBase", b =>
+                {
+                    b.HasOne("Cayent.Core.Data.Fileuploads.FileUpload", "Image")
+                        .WithMany()
+                        .HasForeignKey("ImageId");
+
+                    b.Navigation("Image");
+                });
+
+            modelBuilder.Entity("Cayent.Core.Data.Users.UserRoleBase", b =>
+                {
+                    b.HasOne("Cayent.Core.Data.Users.RoleBase", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId");
+
+                    b.HasOne("Cayent.Core.Data.Users.UserBase", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Data.App.Models.Appointments.Appointment", b =>
                 {
                     b.HasOne("Data.App.Models.Parents.Child", "Child")
@@ -850,7 +973,7 @@ namespace Data.migrations.app
                     b.HasOne("Data.App.Models.Users.User", "User")
                         .WithMany("AppointmentTimelines")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Appointment");
@@ -858,45 +981,9 @@ namespace Data.migrations.app
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Data.App.Models.Chats.ChatMessage", b =>
-                {
-                    b.HasOne("Data.App.Models.Chats.Chat", "Chat")
-                        .WithMany("Messages")
-                        .HasForeignKey("ChatId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Data.App.Models.Users.User", "Sender")
-                        .WithMany()
-                        .HasForeignKey("SenderId");
-
-                    b.Navigation("Chat");
-
-                    b.Navigation("Sender");
-                });
-
-            modelBuilder.Entity("Data.App.Models.Chats.ChatReceiver", b =>
-                {
-                    b.HasOne("Data.App.Models.Chats.Chat", "Chat")
-                        .WithMany("Receivers")
-                        .HasForeignKey("ChatId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Data.App.Models.Users.User", "Receiver")
-                        .WithMany()
-                        .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Chat");
-
-                    b.Navigation("Receiver");
-                });
-
             modelBuilder.Entity("Data.App.Models.Clinics.Clinic", b =>
                 {
-                    b.HasOne("Data.App.Models.Chats.Chat", "Chat")
+                    b.HasOne("Cayent.Core.Data.Chats.Chat", "Chat")
                         .WithOne()
                         .HasForeignKey("Data.App.Models.Clinics.Clinic", "ClinicId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -950,7 +1037,7 @@ namespace Data.migrations.app
                         .IsRequired();
 
                     b.HasOne("Data.App.Models.Clinics.Staff", "Staff")
-                        .WithMany()
+                        .WithMany("Clinics")
                         .HasForeignKey("StaffId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -973,28 +1060,9 @@ namespace Data.migrations.app
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Data.App.Models.Notifications.NotificationReceiver", b =>
-                {
-                    b.HasOne("Data.App.Models.Notifications.Notification", "Notification")
-                        .WithMany("Receivers")
-                        .HasForeignKey("NotificationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Data.App.Models.Users.User", "Receiver")
-                        .WithMany("NotificationReceivers")
-                        .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Notification");
-
-                    b.Navigation("Receiver");
-                });
-
             modelBuilder.Entity("Data.App.Models.Parents.Child", b =>
                 {
-                    b.HasOne("Data.App.Models.FileUploads.FileUpload", "Image")
+                    b.HasOne("Cayent.Core.Data.Fileuploads.FileUpload", "Image")
                         .WithMany()
                         .HasForeignKey("ImageId");
 
@@ -1058,34 +1126,6 @@ namespace Data.migrations.app
                     b.Navigation("Parent");
                 });
 
-            modelBuilder.Entity("Data.App.Models.Users.User", b =>
-                {
-                    b.HasOne("Data.App.Models.FileUploads.FileUpload", "Image")
-                        .WithMany()
-                        .HasForeignKey("ImageId");
-
-                    b.Navigation("Image");
-                });
-
-            modelBuilder.Entity("Data.App.Models.Users.UserRole", b =>
-                {
-                    b.HasOne("Data.App.Models.Users.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Data.App.Models.Users.User", "User")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Role");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Data.App.Models.Users.UserTask", b =>
                 {
                     b.HasOne("Data.App.Models.Users.Role", "Role")
@@ -1114,18 +1154,28 @@ namespace Data.migrations.app
                     b.Navigation("UserTask");
                 });
 
+            modelBuilder.Entity("Cayent.Core.Data.Chats.Chat", b =>
+                {
+                    b.Navigation("Messages");
+
+                    b.Navigation("Receivers");
+                });
+
+            modelBuilder.Entity("Cayent.Core.Data.Notifications.Notification", b =>
+                {
+                    b.Navigation("Receivers");
+                });
+
+            modelBuilder.Entity("Cayent.Core.Data.Users.UserBase", b =>
+                {
+                    b.Navigation("UserRoles");
+                });
+
             modelBuilder.Entity("Data.App.Models.Appointments.Appointment", b =>
                 {
                     b.Navigation("MedicalEntries");
 
                     b.Navigation("Timelines");
-                });
-
-            modelBuilder.Entity("Data.App.Models.Chats.Chat", b =>
-                {
-                    b.Navigation("Messages");
-
-                    b.Navigation("Receivers");
                 });
 
             modelBuilder.Entity("Data.App.Models.Clinics.Clinic", b =>
@@ -1139,9 +1189,9 @@ namespace Data.migrations.app
                     b.Navigation("Staffs");
                 });
 
-            modelBuilder.Entity("Data.App.Models.Notifications.Notification", b =>
+            modelBuilder.Entity("Data.App.Models.Clinics.Staff", b =>
                 {
-                    b.Navigation("Receivers");
+                    b.Navigation("Clinics");
                 });
 
             modelBuilder.Entity("Data.App.Models.Parents.Child", b =>
@@ -1156,20 +1206,18 @@ namespace Data.migrations.app
                     b.Navigation("ParentClinics");
                 });
 
+            modelBuilder.Entity("Data.App.Models.Users.UserTask", b =>
+                {
+                    b.Navigation("UserTaskItems");
+                });
+
             modelBuilder.Entity("Data.App.Models.Users.User", b =>
                 {
                     b.Navigation("AppointmentTimelines");
 
                     b.Navigation("NotificationReceivers");
 
-                    b.Navigation("UserRoles");
-
                     b.Navigation("UserTasks");
-                });
-
-            modelBuilder.Entity("Data.App.Models.Users.UserTask", b =>
-                {
-                    b.Navigation("UserTaskItems");
                 });
 #pragma warning restore 612, 618
         }

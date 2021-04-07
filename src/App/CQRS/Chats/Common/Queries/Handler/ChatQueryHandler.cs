@@ -1,12 +1,15 @@
 ﻿using App.CQRS.Chats.Common.Queries.Query;
+using Cayent.Core.Common;
+using Cayent.Core.CQRS.Queries;
 using Data.App.DbContext;
 using Data.Common;
-using Data.Identity.DbContext;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Cayent.Core.Common.Extensions;
 
 namespace App.CQRS.Chats.Common.Queries.Handler
 {
@@ -23,7 +26,7 @@ namespace App.CQRS.Chats.Common.Queries.Handler
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
-        async Task<GetChatHeaderByIdQuery.ChatHeader> IQueryHandler<GetChatHeaderByIdQuery, GetChatHeaderByIdQuery.ChatHeader>.HandleAsync(GetChatHeaderByIdQuery query)
+        async Task<GetChatHeaderByIdQuery.ChatHeader> IQueryHandler<GetChatHeaderByIdQuery, GetChatHeaderByIdQuery.ChatHeader>.HandleAsync(GetChatHeaderByIdQuery query, CancellationToken cancellationToken)
         {
             var sql1 = from chat in _dbContext.Chats
 
@@ -63,7 +66,7 @@ namespace App.CQRS.Chats.Common.Queries.Handler
             return dto;
         }
 
-        async Task<Paged<SearchChatMessagesQuery.ChatMessage>> IQueryHandler<SearchChatMessagesQuery, Paged<SearchChatMessagesQuery.ChatMessage>>.HandleAsync(SearchChatMessagesQuery query)
+        async Task<Paged<SearchChatMessagesQuery.ChatMessage>> IQueryHandler<SearchChatMessagesQuery, Paged<SearchChatMessagesQuery.ChatMessage>>.HandleAsync(SearchChatMessagesQuery query, CancellationToken cancellationToken)
         {
             var sql1 = from chatMsg in _dbContext.ChatMessages
 
@@ -93,7 +96,7 @@ namespace App.CQRS.Chats.Common.Queries.Handler
 
         }
 
-        async Task<Paged<SearchChatQuery.Chat>> IQueryHandler<SearchChatQuery, Paged<SearchChatQuery.Chat>>.HandleAsync(SearchChatQuery query)
+        async Task<Paged<SearchChatQuery.Chat>> IQueryHandler<SearchChatQuery, Paged<SearchChatQuery.Chat>>.HandleAsync(SearchChatQuery query, CancellationToken cancellationToken)
         {
             var sql = from c in _dbContext.Chats
 
@@ -147,7 +150,7 @@ namespace App.CQRS.Chats.Common.Queries.Handler
             return dto;
         }
 
-        async Task<GetChatByMemberIdQuery.Chat> IQueryHandler<GetChatByMemberIdQuery, GetChatByMemberIdQuery.Chat>.HandleAsync(GetChatByMemberIdQuery query)
+        async Task<GetChatByMemberIdQuery.Chat> IQueryHandler<GetChatByMemberIdQuery, GetChatByMemberIdQuery.Chat>.HandleAsync(GetChatByMemberIdQuery query, CancellationToken cancellationToken)
         {
             var data = await _dbContext.Chats
                         .Include(e => e.Receivers)

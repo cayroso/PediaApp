@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "src\Common\Common
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App", "src\App\App.csproj", "{08FFFFFA-D2B1-43D0-A422-763DECD73222}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cayent.Core", "..\PharmaApp\src\Cayent\src\Cayent.Core\Cayent.Core.csproj", "{5FBA2CBF-1552-48DC-B8A4-39C0C702AE6E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{08FFFFFA-D2B1-43D0-A422-763DECD73222}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08FFFFFA-D2B1-43D0-A422-763DECD73222}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08FFFFFA-D2B1-43D0-A422-763DECD73222}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FBA2CBF-1552-48DC-B8A4-39C0C702AE6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FBA2CBF-1552-48DC-B8A4-39C0C702AE6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FBA2CBF-1552-48DC-B8A4-39C0C702AE6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FBA2CBF-1552-48DC-B8A4-39C0C702AE6E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

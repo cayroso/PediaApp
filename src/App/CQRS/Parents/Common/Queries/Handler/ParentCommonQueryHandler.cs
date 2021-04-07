@@ -1,12 +1,14 @@
 ﻿using App.CQRS.Clinics.Common.Queries.Query;
+using Cayent.Core.Common;
+using Cayent.Core.CQRS.Queries;
 using Data.App.DbContext;
 using Data.Common;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Cayent.Core.Common.Extensions;
+using System.Threading;
 
 namespace App.CQRS.Clinics.Common.Queries.Handler
 {
@@ -20,7 +22,7 @@ namespace App.CQRS.Clinics.Common.Queries.Handler
             _appDbContext = appDbContext ?? throw new ArgumentNullException(nameof(appDbContext));
         }
 
-        async Task<GetParentByIdQuery.Parent> IQueryHandler<GetParentByIdQuery, GetParentByIdQuery.Parent>.HandleAsync(GetParentByIdQuery query)
+        async Task<GetParentByIdQuery.Parent> IQueryHandler<GetParentByIdQuery, GetParentByIdQuery.Parent>.HandleAsync(GetParentByIdQuery query, CancellationToken cancellationToken)
         {
             var sql = from p in _appDbContext.Parents.Include(e => e.User).AsNoTracking()
 
@@ -49,7 +51,7 @@ namespace App.CQRS.Clinics.Common.Queries.Handler
             return dto;
         }
 
-        async Task<Paged<SearchParentByClinicIdQuery.Parent>> IQueryHandler<SearchParentByClinicIdQuery, Paged<SearchParentByClinicIdQuery.Parent>>.HandleAsync(SearchParentByClinicIdQuery query)
+        async Task<Paged<SearchParentByClinicIdQuery.Parent>> IQueryHandler<SearchParentByClinicIdQuery, Paged<SearchParentByClinicIdQuery.Parent>>.HandleAsync(SearchParentByClinicIdQuery query, CancellationToken cancellationToken)
         {
             var sql = from p in _appDbContext.Parents.Include(e => e.ParentClinics).AsNoTracking()
 

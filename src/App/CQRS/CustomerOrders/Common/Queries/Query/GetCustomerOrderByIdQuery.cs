@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using Cayent.Core.CQRS.Queries;
 using Common.Extensions;
 using Data.Enums;
 

@@ -1,12 +1,15 @@
 ﻿using App.CQRS.Children.Common.Queries.Query;
+using Cayent.Core.Common;
+using Cayent.Core.CQRS.Queries;
 using Data.App.DbContext;
 using Data.Common;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Cayent.Core.Common.Extensions;
 
 namespace App.CQRS.Children.Common.Queries.Handler
 {
@@ -22,7 +25,7 @@ namespace App.CQRS.Children.Common.Queries.Handler
             _appDbContext = appDbContext ?? throw new ArgumentNullException(nameof(appDbContext));
         }
 
-        async Task<GetChildByIdQuery.Child> IQueryHandler<GetChildByIdQuery, GetChildByIdQuery.Child>.HandleAsync(GetChildByIdQuery query)
+        async Task<GetChildByIdQuery.Child> IQueryHandler<GetChildByIdQuery, GetChildByIdQuery.Child>.HandleAsync(GetChildByIdQuery query, CancellationToken cancellationToken)
         {
             var sql = from c in _appDbContext.Children.AsNoTracking()
 
@@ -65,7 +68,7 @@ namespace App.CQRS.Children.Common.Queries.Handler
             return dto;
         }
 
-        async Task<GetMedicalEntryByIdQuery.ChildMedicalEntry> IQueryHandler<GetMedicalEntryByIdQuery, GetMedicalEntryByIdQuery.ChildMedicalEntry>.HandleAsync(GetMedicalEntryByIdQuery query)
+        async Task<GetMedicalEntryByIdQuery.ChildMedicalEntry> IQueryHandler<GetMedicalEntryByIdQuery, GetMedicalEntryByIdQuery.ChildMedicalEntry>.HandleAsync(GetMedicalEntryByIdQuery query, CancellationToken cancellation)
         {
             var sql = from me in _appDbContext.ChildMedicalEntries.AsNoTracking()
 
@@ -89,7 +92,7 @@ namespace App.CQRS.Children.Common.Queries.Handler
             return dto;
         }
 
-        async Task<Paged<SearchChildrenByClinicQuery.Child>> IQueryHandler<SearchChildrenByClinicQuery, Paged<SearchChildrenByClinicQuery.Child>>.HandleAsync(SearchChildrenByClinicQuery query)
+        async Task<Paged<SearchChildrenByClinicQuery.Child>> IQueryHandler<SearchChildrenByClinicQuery, Paged<SearchChildrenByClinicQuery.Child>>.HandleAsync(SearchChildrenByClinicQuery query, CancellationToken cancellation)
         {
             var sql = from c in _appDbContext.Children.AsNoTracking()
                       join pc in _appDbContext.ParentClinic.AsNoTracking() on c.ParentId equals pc.ParentId
@@ -120,7 +123,7 @@ namespace App.CQRS.Children.Common.Queries.Handler
             return dto;
         }
 
-        async Task<Paged<SearchChildrenByParentIdQuery.Child>> IQueryHandler<SearchChildrenByParentIdQuery, Paged<SearchChildrenByParentIdQuery.Child>>.HandleAsync(SearchChildrenByParentIdQuery query)
+        async Task<Paged<SearchChildrenByParentIdQuery.Child>> IQueryHandler<SearchChildrenByParentIdQuery, Paged<SearchChildrenByParentIdQuery.Child>>.HandleAsync(SearchChildrenByParentIdQuery query, CancellationToken cancellation)
         {
             var sql = from c in _appDbContext.Children.AsNoTracking()
 

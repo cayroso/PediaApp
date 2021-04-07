@@ -1,11 +1,7 @@
-﻿using Common.Extensions;
-using Data.App.Models.Chats;
-using Data.App.Models.Users;
+﻿using Cayent.Core.Data.Chats;
+using Common.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Data.App.Models.Teams
 {
