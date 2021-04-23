@@ -1,11 +1,11 @@
 ﻿<template>
     <b-navbar toggleable="sm" fixed="top" :sticky="true" type="dark" variant="dark">
         <div class="container-lg">
-            <a href="/" class="navbar-brand">{{appName}}</a>
+            <a href="/" class="navbar-brand text-white">{{appName}}</a>
             <div class="collapse navbar-collapse" id="navbarColor01">
                 <ul class="navbar-nav">
                     <li v-for="menu in menus" class="nav-item">
-                        <router-link :to="menu.to" class="nav-link">
+                        <router-link :to="menu.to" class="nav-link text-white">
                             <span v-bind:class="menu.icon" class="mr-1"></span>
                             <span v-text="menu.label" class="d-none d-md-inline"></span>
                         </router-link>
