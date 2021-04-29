@@ -58,6 +58,12 @@ namespace App.CQRS.Clinics.Common.Queries.Handler
         {
             var sql = from c in _appDbContext.Clinics.Include(e => e.ParentClinics).AsNoTracking()
 
+                      where string.IsNullOrWhiteSpace(query.Criteria)
+                        || EF.Functions.Like(c.Name, $"%{query.Criteria}%")
+                        || EF.Functions.Like(c.PhoneNumber, $"%{query.Criteria}%")
+                        || EF.Functions.Like(c.MobileNumber, $"%{query.Criteria}%")
+                        || EF.Functions.Like(c.Email, $"%{query.Criteria}%")
+                        || EF.Functions.Like(c.Address, $"%{query.Criteria}%")
                       select new SearchClinicQuery.Clinic
                       {
                           ClinicId = c.ClinicId,

@@ -1,0 +1,57 @@
+.main {
+    margin-top: 0.5rem;
+    /*margin-bottom: 0.5rem;*/
+    opacity: 0;
+    transition: opacity 1s;
+}
+
+.main-loaded {
+    opacity: 1;
+}
+
+
+label[data-v-1d1291d2] {
+    font-size: small;
+    font-weight: bold;
+}
+
+
+label[data-v-bf46a42c] {
+    font-size: small;
+}
+
+
+label[data-v-21ff7b3b] {
+    font-size: small;
+    font-weight: bold;
+}
+
+
+label[data-v-08f27bf1] {
+    font-size: small;
+    font-weight: bold;
+}
+
+
+label[data-v-04cb7025] {
+    font-size: small;
+    font-weight: bold;
+}
+
+
+label[data-v-c6bc44f4] {
+    font-size: small;
+}
+
+
+label[data-v-3efc4437] {
+    font-size: small;
+    font-weight: bold;
+}
+
+
+.fc-header-toolbar .fc-toolbar .fc-toolbar-ltr[data-v-020b2fda] {
+    display: flex;
+    padding: 2px 4px;
+}
+

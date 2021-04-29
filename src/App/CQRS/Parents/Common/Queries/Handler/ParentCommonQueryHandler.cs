@@ -55,7 +55,7 @@ namespace App.CQRS.Clinics.Common.Queries.Handler
         {
             var sql = from p in _appDbContext.Parents.Include(e => e.ParentClinics).AsNoTracking()
 
-                      where p.ParentClinics.Any(e => e.ClinicId == query.ClinicId)
+                      where string.IsNullOrWhiteSpace(query.ClinicId) || p.ParentClinics.Any(e => e.ClinicId == query.ClinicId)
 
                       select new SearchParentByClinicIdQuery.Parent
                       {

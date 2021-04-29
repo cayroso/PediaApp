@@ -13,8 +13,8 @@ namespace Data.Constants
         public string Id { get; }
         public string Name { get; }
 
-        public const string SystemRoleName = "System";
-        public static ApplicationRoles System = new ApplicationRoles(SystemRoleName.ToLower(), SystemRoleName);
+        public const string SystemsRoleName = "Systems";
+        public static ApplicationRoles Systems = new ApplicationRoles(SystemsRoleName.ToLower(), SystemsRoleName);
 
         public const string PediaRoleName = "Pedia";
         public static ApplicationRoles Pedia = new ApplicationRoles(PediaRoleName.ToLower(), PediaRoleName);
@@ -31,7 +31,7 @@ namespace Data.Constants
             {
                 return new List<ApplicationRoles>
                 {
-                    System,
+                    Systems,
                     Pedia,
                     Staff,
                     Parent

@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using Data.Identity.Models.Users;
+using Cayent.Core.Data.Identity.Models.Users;
+using Data.Identity.DbContext;
+using Microsoft.EntityFrameworkCore;
 
 namespace Web.Areas.Identity.Pages.Account
 {
@@ -34,6 +33,8 @@ namespace Web.Areas.Identity.Pages.Account
         [BindProperty]
         public InputModel Input { get; set; }
 
+        public List<EmailRoles> EmailRoles { get; set; }
+
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
         public string ReturnUrl { get; set; }
@@ -55,7 +56,7 @@ namespace Web.Areas.Identity.Pages.Account
             public bool RememberMe { get; set; }
         }
 
-        public async Task OnGetAsync(string returnUrl = null)
+        public async Task OnGetAsync([FromServices] IdentityWebContext webContext, string returnUrl = null)
         {
             if (!string.IsNullOrEmpty(ErrorMessage))
             {
@@ -70,6 +71,27 @@ namespace Web.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
             ReturnUrl = returnUrl;
+
+            //  get all existing user in the system
+            var sql = from u in webContext.Users
+                      join ur in webContext.UserRoles on u.Id equals ur.UserId
+                      join r in webContext.Roles on ur.RoleId equals r.Id
+                      select new
+                      {
+                          u.Email,
+                          r.Name
+                      };
+
+            var dto = await sql.ToListAsync();
+
+            EmailRoles = dto.GroupBy(e => e.Email).Select(e =>
+                new EmailRoles
+                {
+                    Email = e.Key,
+                    Roles = e.Select(p => p.Name).OrderBy(e => e).ToList()
+                })
+                .OrderByDescending(e => e.Roles.Count).ThenBy(e => e.Email)
+                .ToList();
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
@@ -107,5 +129,11 @@ namespace Web.Areas.Identity.Pages.Account
             // If we got this far, something failed, redisplay form
             return Page();
         }
+    }
+
+    public class EmailRoles
+    {
+        public string Email { get; set; }
+        public List<string> Roles { get; set; }
     }
 }

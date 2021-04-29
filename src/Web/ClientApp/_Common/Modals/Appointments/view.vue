@@ -15,7 +15,7 @@
                     <h5 class="m-0">
                         View Appointment - {{item.referenceNumber}}
 
-                        {{isClinic}} - {{viewMode}}
+                        <!--{{isClinic}} - {{viewMode}}-->
                     </h5>
                 </div>
             </div>

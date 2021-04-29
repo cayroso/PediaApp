@@ -5,7 +5,7 @@
             <div class="collapse navbar-collapse" id="navbarColor01">
                 <ul class="navbar-nav">
                     <li v-for="menu in menus" class="nav-item">
-                        <router-link :to="menu.to" class="nav-link">
+                        <router-link :to="menu.to" class="nav-link text-white">
                             <span v-bind:class="menu.icon" class="mr-1"></span>
                             <span v-text="menu.label" class="d-none d-md-inline"></span>
                         </router-link>

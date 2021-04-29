@@ -1,4 +1,9 @@
-﻿
+﻿<style scoped>
+    .fc-header-toolbar .fc-toolbar .fc-toolbar-ltr {
+        display: flex;
+        padding: 2px 4px;
+    }
+</style>
 <template>
     <div v-cloak>
         <div class="row align-items-center">

@@ -53,7 +53,7 @@
                                     Update Phone Number
                                 </button>
                             </div>
-                        </div>
+                        </div>-->
 
                         <div class="form-group">
                             <div>
@@ -61,7 +61,7 @@
                                     Update Theme
                                 </button>
                             </div>
-                        </div>-->
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,18 +1,13 @@
-﻿using App.CQRS;
-using App.CQRS.Chats.Common.Commands.Command;
+﻿using App.CQRS.Chats.Common.Commands.Command;
 using App.CQRS.Chats.Common.Queries.Query;
-using App.Services;
 using Cayent.Core.Common;
 using Cayent.Core.CQRS.Commands;
 using Cayent.Core.CQRS.Queries;
 using Cayent.Core.CQRS.Services;
 using Cayent.Core.Data.Chats;
-using Data.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 

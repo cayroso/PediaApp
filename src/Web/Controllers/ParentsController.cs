@@ -1,17 +1,11 @@
-﻿using App.CQRS;
-using App.CQRS.Clinics.Common.Queries.Query;
+﻿using App.CQRS.Clinics.Common.Queries.Query;
 using Cayent.Core.Common;
 using Cayent.Core.CQRS.Commands;
 using Cayent.Core.CQRS.Queries;
 using Data.App.DbContext;
-using Data.App.Models.Users;
-using Data.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 

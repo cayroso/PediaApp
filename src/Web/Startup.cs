@@ -5,17 +5,11 @@ using Data.Constants;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 using Web.Middlewares;
 
 namespace Web
@@ -59,6 +53,12 @@ namespace Web
 
             services.AddAuthorization(options =>
             {
+                options.AddPolicy(ApplicationRoles.SystemsRoleName, policy =>
+                  policy.RequireAssertion(context =>
+                      context.User.HasClaim(c =>
+                      c.Type == System.Security.Claims.ClaimTypes.Role && c.Value == ApplicationRoles.SystemsRoleName
+                          )));
+
                 options.AddPolicy(ApplicationRoles.PediaRoleName, policy =>
                    policy.RequireAssertion(context =>
                        context.User.HasClaim(c =>
@@ -96,6 +96,7 @@ namespace Web
             })
             .AddRazorPagesOptions(opt =>
             {
+                opt.Conventions.AuthorizeAreaFolder(ApplicationRoles.SystemsRoleName, "/", ApplicationRoles.SystemsRoleName);
                 opt.Conventions.AuthorizeAreaFolder(ApplicationRoles.PediaRoleName, "/", ApplicationRoles.PediaRoleName);
                 opt.Conventions.AuthorizeAreaFolder(ApplicationRoles.StaffRoleName, "/", ApplicationRoles.StaffRoleName);
                 opt.Conventions.AuthorizeAreaFolder(ApplicationRoles.ParentRoleName, "/", ApplicationRoles.ParentRoleName);

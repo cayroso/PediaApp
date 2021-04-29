@@ -1,0 +1,47 @@
+.main {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    transition: opacity 1s;
+}
+
+.main-loaded {
+    opacity: 1;
+}
+
+
+label[data-v-beb46b74] {
+    font-size: small;
+    font-weight: bold;
+}
+
+
+label[data-v-7b7c37e1]{
+    font-size: small;
+    font-weight: bold;
+}
+
+
+label[data-v-6f5f2177] {
+    font-size: small;
+    font-weight: bold;
+}
+
+
+label[data-v-2995eadc] {
+    font-size: small;
+    font-weight: bold;
+}
+
+
+label[data-v-5e8dbdb6] {
+    font-size: small;
+    font-weight: bold;
+}
+
+
+label[data-v-0f634f2e] {
+    font-size: small;
+    font-weight: bold;
+}
+

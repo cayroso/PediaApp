@@ -18,6 +18,7 @@ module.exports = {
         }
     },
     entry: {
+        'systems': './ClientApp/Systems/main.js',
         'pedia': './ClientApp/Pedia/main.js',
         'staff': './ClientApp/Staff/main.js',
         'parent': './ClientApp/Parent/main.js',
@@ -93,6 +94,13 @@ module.exports = {
         new BundleAnalyzerPlugin(),
         // avoid publishing when compilation failed.
         new webpack.NoEmitOnErrorsPlugin(),
+        new HtmlWebpackPlugin({
+            inject: false,
+            scriptLoading: 'defer',
+            chunks: ['systems'],
+            filename: path.resolve(__dirname, "Areas/Systems/Pages/_Shared/_Layout.cshtml"),
+            template: path.resolve(__dirname, "Areas/Systems/Pages/_Shared/_Layout_Template.cshtml")
+        }), 
         new HtmlWebpackPlugin({
             inject: false,
             scriptLoading: 'defer',

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cayent.Core.Data.Chats;
+using Cayent.Core.Data.Identity.Models.Users;
 using Cayent.Core.Data.Users;
 using Data.App.Models.Clinics;
 using Data.App.Models.Parents;
@@ -9,6 +10,7 @@ using Data.App.Models.Users;
 using Data.Constants;
 using Data.Identity.DbContext;
 using Data.Providers;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data.App.DbContext
@@ -26,10 +28,14 @@ namespace Data.App.DbContext
 
             CreateRoles(ctx, clinic);
 
-            CopyIdentityUserToApp(identityWebContext, ctx, clinic);
+            CreateDefaultClinicStaffs(identityWebContext, ctx, clinic);
+            //CopyIdentityUserToApp(identityWebContext, ctx, clinic);
 
             ctx.Add(clinic);
 
+            CreateParents(identityWebContext, ctx);
+
+            identityWebContext.SaveChanges();
             ctx.SaveChanges();
         }
 
@@ -91,7 +97,7 @@ namespace Data.App.DbContext
 
                 var userRoles = identityWebContext.UserRoles.Where(e => e.UserId == u.Id).ToList();
 
-                appUser.UserRoles = userRoles.Where(e => e.RoleId != ApplicationRoles.System.Id)
+                appUser.UserRoles = userRoles.Where(e => e.RoleId != ApplicationRoles.Systems.Id)
                 .Select(e => new UserRole
                 {
                     UserId = e.UserId,
@@ -154,38 +160,181 @@ namespace Data.App.DbContext
             appDbContext.AddRange(appUsers);
         }
 
-        static List<Tuple<string, string, string, string>> GetNames()
+        static void CreateDefaultClinicStaffs(IdentityWebContext identityWebContext, AppDbContext appDbContext, Clinic clinic)
         {
-            var list = new List<Tuple<string, string, string, string>>();
+            for (var i = 1; i <= 3; i++)
+            {
+                var token = NewId();
+                var email = $"clinic-user{i}@pediaapp.com";
+                var user = new IdentityWebUser
+                {
+                    Id = $"clinic-user{i}",
+                    UserName = email,
+                    NormalizedUserName = email.ToUpper(),
 
-            //list.Add(new Tuple<string, string, string, string>("Juan", "Dela Cruz", "09191234567", "105 Paz Street, Barangay 11, Balayan, Batangas City"));
-            //list.Add(new Tuple<string, string, string, string>("Pening", "Garcia", "09191234567", "101 Subdivision 202 Street, Barangay, Town, City, Philippines"));
-            //list.Add(new Tuple<string, string, string, string>("Nadia", "Cole", "09191234567", "301 Main Street, Barangay 3, Balayan, Batangas City"));
-            //list.Add(new Tuple<string, string, string, string>("Chino", "Pacia", "09191234567", "202 Subdivision 303 Street, Barangay, Town, City, Philippines"));
-            //list.Add(new Tuple<string, string, string, string>("Vina", "Ruruth", "09191234567", "501 Main Street, Barangay 5, Balayan, Batangas City"));
-            //list.Add(new Tuple<string, string, string, string>("Lina", "Mutac", "09191234567", "601 Main Street, Barangay 6, Balayan, Batangas City"));
+                    Email = email,
+                    NormalizedEmail = email.ToUpper(),
+                    EmailConfirmed = true,
+                    PhoneNumber = "+639198262335",
+                    PhoneNumberConfirmed = true,
 
-            list.Add(new Tuple<string, string, string, string>("Pening", "Garcia", "09191234567", "101 Subdivision 202 Street, Barangay, Town, City, Philippines"));
-            list.Add(new Tuple<string, string, string, string>("Chino", "Pacia", "09191234567", "202 Subdivision 303 Street, Barangay, Town, City, Philippines"));
+                    LockoutEnabled = false,
+                    LockoutEnd = null,
+                    PasswordHash = "AQAAAAEAACcQAAAAEKGIieH17t5bYXa5tUfxRwN9UIEwApTKbQBRaUtIHplIUG2OfYxvBS8uvKy5E2Stsg==",
+                    SecurityStamp = "6SADCY3NMMLOHA2S26ZJCEWGHWSQUYRM",
+                    TwoFactorEnabled = false,
+                    AccessFailedCount = 0,
+                    //TenantId = tenant.TenantId,
+                    ConcurrencyStamp = token,
+                    UserInformation = new UserInformation
+                    {
+                        FirstName = $"Clinc-User{i}",
+                        MiddleName = $"Clinc-User{i}",
+                        LastName = $"Clinc-User{i}",
+                        ConcurrencyToken = token,
+                        //Theme = "https://bootswatch.com/4/sketchy/bootstrap.min.css"
+                    }
+                };
 
-            return list;
+                var userRoles = new List<IdentityUserRole<string>>();
+                if (i == 1)
+                {
+                    var userRole1 = new IdentityUserRole<string>
+                    {
+                        UserId = user.Id,
+                        RoleId = ApplicationRoles.Pedia.Id
+                    };
+                    userRoles.Add(userRole1);
+
+                }
+                var userRole2 = new IdentityUserRole<string>
+                {
+                    UserId = user.Id,
+                    RoleId = ApplicationRoles.Staff.Id
+                };
+                userRoles.Add(userRole2);
+
+                identityWebContext.AddRange(user);
+                identityWebContext.AddRange(userRoles);
+
+                var appUser = new User
+                {
+                    UserId = user.Id,
+                    FirstName = user.UserInformation.FirstName,
+                    MiddleName = user.UserInformation.MiddleName,
+                    LastName = user.UserInformation.LastName,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                };
+                var appUserRoles = userRoles.Select(e => new UserRole
+                {
+                    UserId = user.Id,
+                    RoleId = e.RoleId
+                });
+
+                var staff = new Staff
+                {
+                    StaffId = appUser.UserId
+                };
+
+                var staffs = userRoles.Select(e =>
+                    new ClinicStaff
+                    {
+                        ClinicId = clinic.ClinicId,
+                        RoleId = e.RoleId,
+                        Staff = staff
+                    });
+
+                appDbContext.Add(appUser);
+                appDbContext.AddRange(appUserRoles);
+                appDbContext.AddRange(staffs);
+
+            }
+
         }
+
 
         static string NewId()
         {
             return Guid.NewGuid().ToString().ToLower();
         }
 
-        static string NewCouponCode()
+        static void CreateParents(IdentityWebContext identityWebContext, AppDbContext appDbContext)
         {
-            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            var random = _rnd;
-            var result = new string(
-                Enumerable.Repeat(chars, 8)
-                          .Select(s => s[random.Next(s.Length)])
-                          .ToArray());
+            for (var i = 1; i <= 5; i++)
+            {
+                var token = NewId();
+                var email = $"user{i}@pediaapp.com";
+                var user = new IdentityWebUser
+                {
+                    Id = $"parent{i}",
+                    UserName = email,
+                    NormalizedUserName = email.ToUpper(),
 
-            return result;
+                    Email = email,
+                    NormalizedEmail = email.ToUpper(),
+                    EmailConfirmed = true,
+                    PhoneNumber = "+639198262335",
+                    PhoneNumberConfirmed = true,
+
+                    LockoutEnabled = false,
+                    LockoutEnd = null,
+                    PasswordHash = "AQAAAAEAACcQAAAAEKGIieH17t5bYXa5tUfxRwN9UIEwApTKbQBRaUtIHplIUG2OfYxvBS8uvKy5E2Stsg==",
+                    SecurityStamp = "6SADCY3NMMLOHA2S26ZJCEWGHWSQUYRM",
+                    TwoFactorEnabled = false,
+                    AccessFailedCount = 0,
+                    //TenantId = tenant.TenantId,
+                    ConcurrencyStamp = token,
+                    UserInformation = new UserInformation
+                    {
+                        FirstName = $"Parent{i}",
+                        MiddleName = $"Parent{i}",
+                        LastName = $"Parent{i}",
+                        ConcurrencyToken = token,
+                        //Theme = "https://bootswatch.com/4/sketchy/bootstrap.min.css"
+                    }
+                };
+                var userRole = new IdentityUserRole<string>
+                {
+                    UserId = user.Id,
+                    RoleId = ApplicationRoles.Parent.Id
+                };
+
+                identityWebContext.AddRange(user);
+                identityWebContext.AddRange(userRole);
+
+                var appUser = new User
+                {
+                    UserId = user.Id,
+                    FirstName = user.UserInformation.FirstName,
+                    MiddleName = user.UserInformation.MiddleName,
+                    LastName = user.UserInformation.LastName,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                };
+
+                appDbContext.Add(appUser);
+
+                var parent = new Parent
+                {
+                    ParentId = appUser.UserId,
+                    Children = new List<Child>
+                    {
+                        new Child
+                        {
+                            ChildId = NewId(),
+                            FirstName = appUser.FirstName,
+                            MiddleName = appUser.MiddleName,
+                            LastName = appUser.LastName + " II",
+                            DateOfBirth = DateTime.UtcNow.AddYears(-5),
+                            Gender = Enums.EnumGender.Male,
+                            ParentId = appUser.UserId,
+                        }
+                    }
+                };
+
+                appDbContext.Add(parent);
+            }
         }
     }
 }
